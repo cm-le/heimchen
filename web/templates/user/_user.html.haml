@@ -1,0 +1,36 @@
+.form-group.row
+  %label.col-form-label.col-sm-2(for="user_gender") Anrede
+  .col-sm-10
+    =select @f, :gender, ["Herr": "m", "Frau": "f"]
+.form-group.row
+  %label.col-form-label.col-sm-2 Titel
+  .col-sm-10
+    =select @f, :academic, ["": "", "Dr.": "Dr.", "Prof.": "Prof."]
+.form-group.row
+  %label.col-form-label.col-sm-2 Vorname
+  .col-sm-10
+    =text_input @f, :firstname, placeholder: "Vorname", class: "form-control"
+    =error_tag @f, :firstname
+.form-group.row
+  %label.col-form-label.col-sm-2 Nachname
+  .col-sm-10
+    =text_input @f, :lastname, placeholder: "Nachname", class: "form-control"
+    =error_tag @f, :lastname
+.form-group.row
+  %label.col-form-label.col-sm-2 Benutzername / Login
+  .col-sm-10
+    =text_input @f, :username, placeholder: "Login", class: "form-control"
+    =error_tag @f, :username
+.form-group.row
+  %label.col-form-label.col-sm-2 Email
+  .col-sm-10
+    =email_input @f, :email, placeholder: "Email", class: "form-control"
+    =error_tag @f, :email
+- if @current_user.admin do    
+  .form-group.row
+    %label.col-form-label.col-sm-2 Administrator
+    .col-sm-10
+      .form-check
+        %label.form-check-label
+          =checkbox @f, :admin, class: "form-check-input"
+          Rechte für Nutzerverwaltung etc.

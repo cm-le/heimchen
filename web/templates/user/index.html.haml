@@ -1,0 +1,19 @@
+%h1.page-header Benutzer
+%table.table.table-hover
+  %thead
+    %tr
+      %th Name
+      %th Login
+      %th Aktiv
+  %tbody
+    = for user <- @users do
+      %tr
+        %td= link(name(user), to: user_path(@conn, :show, user.id))
+        %td= user.username
+        %td
+          - if user.active do
+            %i.fa-check
+          - else
+            %i.fa-ban
+    - end
+=link("Neuer Benutzer", to: user_path(@conn, :new), class: "btn btn-primary")

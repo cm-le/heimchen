@@ -1,0 +1,29 @@
+%h1.page-header Benutzerdaten ändern
+%row
+  = form_for @changeset, user_path(@conn, :update, @id), fn f ->
+    =render("_user.html", f: f, current_user: @current_user)
+    - if @current_user.admin && "#{@current_user.id}" != @id do
+      .form-group.row
+        %label.col-form-label.col-sm-2 Aktiv
+        .col-sm-10
+          .form-check
+            %label.form-check-label
+              =checkbox f, :active, class: "form-check-input"
+              Kann sich einloggen
+    .form-group.row
+      .offset-sm-2.col-sm-10
+        =submit("Benutzer ändern", class: "btn btn-primary")
+  - end
+
+%h1.page-header Passwort ändern
+%row
+  = form_for @changeset, user_path(@conn, :changepw, @id), fn f ->
+    .form-group.row
+      %label.col-form-label.col-sm-2 Passwort
+      .col-sm-10
+        =password_input f, :password, class: "form-control"
+        =error_tag f, :password
+    .form-group.row
+      .offset-sm-2.col-sm-10
+        =submit("Passwort ändern", class: "btn btn-primary")
+  - end

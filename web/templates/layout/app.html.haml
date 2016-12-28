@@ -1,0 +1,59 @@
+!!! 5
+%html(lang="en")
+  %head
+    %meta(charset="utf-8")
+    %meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    %meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    %meta(name="description" content="")
+    %meta(name="author" content="")
+
+    %title Bildatenbank der Heimatkundlichen Sammlung Seuzach
+    %link(rel="stylesheet" href='#{static_path(@conn, "/css/app.css")}')
+    %link(rel="stylesheet" href='#{static_path(@conn, "/css/bootstrap.min.css")}')
+    %link(rel="stylesheet" href='#{static_path(@conn, "/css/font-awesome.min.css")}')
+
+  %body
+    .container
+      %nav.navbar.navbar-light(style="background-color: #e3f2fd;")
+        %a.navbar-brand(href="#") HKS
+        - if @current_user do
+          %ul.nav.navbar-nav
+            %li.nav-item
+              %a.nav-link(href="") Bilder
+            %li.nav-item
+              %a.nav-link(href="") Stichwörter
+            %li.nav-item
+              %a.nav-link(href="") Personen
+            - if @current_user.admin do
+              %li.nav-item
+                %a.nav-link(href="#{user_path(@conn, :index)}") Benutzer
+            - else
+              %li.nav-item
+                %a.nav-link(href="#{user_path(@conn, :show,  @current_user.id)}") Profil
+              
+        %ul.nav.navbar-nav.float-xs-right
+          %li.nav-item
+            - if @current_user do
+              %a.nav-link(href="#{session_path(@conn, :delete)}")= "Logout #{@current_user.username}"
+            - else
+              %a.nav-link(href="#{session_path(@conn, :new)}") Login
+      - if get_flash(@conn, :info) do
+        %p.alert.alert-info(role="alert")
+          %button.close(data-dismiss="alert", type="button") &times;
+          =get_flash(@conn, :info)
+      - if get_flash(@conn, :error) do
+        %p.alert.alert-danger(role="alert")
+          %button.close(data-dismiss="alert", type="button") &times;
+          =get_flash(@conn, :error)
+      - if get_flash(@conn, :success) do
+        %p.alert.alert-success(role="alert")
+          =get_flash(@conn, :success)
+          %script window.setTimeout(function(){$(".alert-success").remove()},5000)
+
+      %row
+        %main(role="main")
+          = render @view_module, @view_template, assigns
+
+    %script(src='#{static_path(@conn, "/js/jquery.min.js")}')
+    %script(src='#{static_path(@conn, "/js/tether.min.js")}')
+    %script(src='#{static_path(@conn, "/js/bootstrap.min.js")}')  

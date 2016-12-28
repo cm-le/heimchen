@@ -1,0 +1,9 @@
+%h1.page-header Login
+=form_for @conn, session_path(@conn, :create), [as: :session], fn f ->
+  .form-group
+    =text_input f, :username, placeholder: "Benutzername", class: "form-control"
+  .form-group
+    =password_input f, :password, placeholder: "Passwort", class: "form-control"
+  %button.btn.btn-primary Login
+- end
+

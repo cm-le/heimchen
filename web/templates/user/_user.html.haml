@@ -1,11 +1,11 @@
 .form-group.row
   %label.col-form-label.col-sm-2(for="user_gender") Anrede
   .col-sm-10
-    =select @f, :gender, ["Herr": "m", "Frau": "f"]
+    =select @f, :gender, ["Herr": "m", "Frau": "f"], class: "form-control"
 .form-group.row
   %label.col-form-label.col-sm-2 Titel
   .col-sm-10
-    =select @f, :academic, ["": "", "Dr.": "Dr.", "Prof.": "Prof."]
+    =select @f, :academic, ["": "", "Dr.": "Dr.", "Prof.": "Prof."], class: "form-control"
 .form-group.row
   %label.col-form-label.col-sm-2 Vorname
   .col-sm-10

@@ -13,6 +13,7 @@
     %link(rel="stylesheet" href='#{static_path(@conn, "/css/font-awesome.min.css")}')
 
   %body
+    %script(src='#{static_path(@conn, "/js/jquery.min.js")}')
     .container
       %nav.navbar.navbar-light(style="background-color: #e3f2fd;")
         %a.navbar-brand(href="#") HKS
@@ -54,6 +55,5 @@
         %main(role="main")
           = render @view_module, @view_template, assigns
 
-    %script(src='#{static_path(@conn, "/js/jquery.min.js")}')
     %script(src='#{static_path(@conn, "/js/tether.min.js")}')
     %script(src='#{static_path(@conn, "/js/bootstrap.min.js")}')  

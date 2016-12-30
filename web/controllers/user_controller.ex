@@ -4,7 +4,7 @@ defmodule Heimchen.UserController do
 	plug :authenticate_admin when action in ~w(index new create)
 	alias Heimchen.User
 
-	defp authenticate(conn, opts) do
+	defp authenticate(conn, _opts) do
 		if conn.assigns.current_user do
 			conn
 		else
@@ -15,7 +15,7 @@ defmodule Heimchen.UserController do
 		end
 	end
 
-	defp authenticate_admin(conn, opts) do
+	defp authenticate_admin(conn, _opts) do
 		if conn.assigns.current_user.admin do
 			conn
 		else
@@ -25,11 +25,9 @@ defmodule Heimchen.UserController do
 			|> halt()
 		end
 	end
-
-	
 	
 	def index(conn, _params) do
-		users = Repo.all(User)
+		users = Repo.all from u in User, order_by: [u.lastname, u.firstname]
 		render conn, "index.html", users: users
 	end
 
@@ -47,8 +45,8 @@ defmodule Heimchen.UserController do
 
 
 	def new(conn, _params) do
-		changeset = User.changeset(%User{}, :empty)
-		render conn, "new.html", changeset: changeset
+		changeset = User.changeset(%User{})
+		render(conn, "new.html", changeset: changeset)
 	end
 
 
@@ -74,11 +72,6 @@ defmodule Heimchen.UserController do
 			|> halt()
 		end
 
-		# Nur admins dürfen admin ändern
-		if !conn.assigns.current_user.admin do
-			user_params = Map.drop user_params, [:admin]
-		end
-		
 		changeset = User.changeset(Repo.get(User, id), user_params)
 		case Repo.update(changeset) do
 			{:ok, user} ->

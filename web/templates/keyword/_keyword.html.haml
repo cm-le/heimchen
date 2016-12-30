@@ -1,0 +1,39 @@
+.form-group.row
+  %label.col-form-label.col-sm-2 Kategorie
+  .col-sm-4
+    =select @f, :category, @categories, class: "form-control"
+    =error_tag @f, :category
+  .col-sm-1
+    %i oder
+  .col-sm-5
+    =text_input @f, :new_category, class: "form-control", placeholder: "Neue Kategorie"
+.form-group.row
+  %label.col-form-label.col-sm-2 Stichwort
+  .col-sm-10
+    =text_input @f, :name, class: "form-control", placeholder: "Stichwort"
+    =error_tag @f, :name
+.form-group.row
+  %label.col-form-label.col-sm-2 Anwendbar auf
+  .col-sm-10
+    .form-check
+      %label.form-check-label
+        =checkbox @f, :for_person, class: "form-check-input"
+        Personen
+      %label.form-check-label
+        =checkbox @f, :for_place, class: "form-check-input"
+        Orte
+      %label.form-check-label
+        =checkbox @f, :for_photo_item, class: "form-check-input"
+        Bilder
+      %label.form-check-label
+        =checkbox @f, :for_film_item, class: "form-check-input"
+        Filme
+      %label.form-check-label
+        =checkbox @f, :for_thing_item, class: "form-check-input"
+        Gegenstände
+      %label.form-check-label
+        =checkbox @f, :for_event_item, class: "form-check-input"
+        Ereignisse
+        
+        
+      

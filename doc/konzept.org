@@ -1,0 +1,177 @@
+* Inhaltstypen
+
+Im Prinzip gibt es vier Inhaltstypen (Seite 1):
+
+- Fotos
+- Gegenstände
+- Dokumente 
+- Filme
+
+Felder
+Von den Feldern, die es im Moment braucht wären Fotos, Dokumente und Filme gleich, Gegenstände leicht anders.
+Bild (mit Thumbnail und Vollversion beim klicken)
+Titel (Text)
+Inhalt (Text)
+Objekt (Dropdown mit Schlagwörtern, die man irgendwo anders verwalten kann, Bild s/w, Bild farbig, Dia etc.)
+Datum (Tag, Monat, Jahr) mit Option zusätzliche Information zu erfassen (Dropdown mit Schlagwörtern, z.B. vor, nach, ca. etc.)
+Bildbeschreibung:
+Wo auf dem Bild („Präfix“ im Screenshot)
+Wer oder was ist auf dem Bild
+Bisher wurde das als Text verwaltet, gut wäre es, wenn man Personen
+und Topographie jetzt als eigene Entitäten haben könnte, zum Beispiel
+für „zeige mir alle Bilder mit der Person ID 17“
+
+Personen
+Vorname
+Nachname
+Geburtsdatum
+Sterbedatum 
+Funktion (Textfeld)
+Anmerkungen
+
+Topographie
+Ort
+Strasse 
+Gebäude 
+--> evtl. mit Hierarchiefunktion wie in Lonsea und Geokoordinaten
+
+Kommentar
+Erhalten von 
+Verknüpfung mit Personen
+Anmerkung
+
+Tags (evtl. als Checkboxes)
+Dateiname (automatisch generiert aus Dateinamen)
+
+Nur für Gegenstände: Da die Gegenstände real irgendwo in einem Raum
+liegen braucht es da das zusätzliche Feld
+
+Standort:
+Dropdown-Liste bearbeitbar mit den Räumen
+Ablageort
+Ablagenummer
+Inventarnummer
+Inventarkommentar	
+
+Suche
+Normale Suche über alle Felder
+
+Erweiterte Suche entsprechend der Feld mit Kombinationsmöglichkeiten,
+zum Beispiel Nachname: Rüesch, Strasse: Bachtobelstrasse
+
+--> Wichtig: Auch nach Dateiname suchen und Uploaddatum
+
+
+Upload (mit Mulitfile-Möglichkeit)
+
+Ideal wäre es, wenn man den Upload so machen könnte, dass man
+grundlegende Metadaten schon vorher eingibt und alle Dateien, die man
+dann hochlädt würden diese Metadatenbekommen.  (Szenario: Jemand macht
+100 Fotos vom Dorfjubiläum, die „irgendwann“ mal systematisch erfasst
+werden sollen, jetzt kann man dann aber schon mal den 100 Bildern
+sagen: ihr zeigt das Dorfjubiläum, das wird momentan für jedes
+einzelne Bild dann jeweils von Hand ergänzt) Wenn beim Upload zu
+kompliziert, kann man es auch später machen, vgl. Leuchttisch
+
+Leuchttisch
+
+Cool wäre es, wenn man eine Art Galerie-Ansicht haben könnte mit
+Thumbnails in seniorentauglicher Grösse und Titel und
+Inhaltsbeschreibung.
+
+Warenkorb 
+
+Da die Bilder immer wieder in unterschiedlichen Kontexten
+verwendet werden, wäre es super, wenn es eine Art Warenkorb geben
+könnte, in den ich Bilder reinlegen und dann thematischen Sammlungen
+zuordnen kann (z.B. Ausstellung 2017).
+
+Nice to have
+
+Das mit dem Beschreiben der Bilder ist ja gut und schön, aber richtig
+cool wäre natürlich, wenn man zum Beispiel ein Bild hochladen würde,
+dann das Bild öffnet, den Bearbeitungsmodus markiert und dann sowas
+käme wie „Add Person“ oder „Add Location“ und man könnte dann
+Markierungen auf dem Bild aufziehen und dann direkt dort die
+Informationen eingeben, oder wenigstens sagen, das ist Person XY, das
+ist Ort xy.
+
+
+* DB
+
+Denkt man das ganze primär von den Bildern her:
+- Bild, und man markiert, was daruf ist: Personen, Gegenstände der Sammlung, 
+	ein bestimmter Ort, eine bestimmte Begebenheit ("Dorffest")
+- Für andere Fälle mag es sinnvoll sein, von den Dingen, zB
+	Gegenständen der Sammlung, auszugehen, und dann hat man halt
+	zu diesem Gegenstand ein paar Bilder
+
+- Um beides zu ermöglichen, also eine n:m- Beziehung: Auf einem
+	Bild können zB mehrere Personen sein, und zu einem Event/Gegenstand
+	kann es mehrere Bilder geben
+
+- In den meisten Fällen wird jedoch genau ein Bild pro Gegenstand exisitieren,
+	oder das Bild _ist_ der Gegenstand der Sammlung (aber selbst dann kann
+	es Bildausschnitte, etc geben)
+
+- Bestimmte Stichwörter hängen eher an einem Bild ("s/w"), 
+	bestimmte Stichwörter hängen eher an dem Objekt 
+
+
+** Stichwörter
+- Name
+- Kategorie
+- Anwendbar auf: Person, Topographie, Gegenstand, Fotos, Filme, Events
+
+** Personen
+- Vorname
+- Nachname
+- Geburtsdatum
+- Sterbedatum 
+- Funktion (Textfeld) -> Stichwort
+- Anmerkungen
+
+** Topographie
+- Ort
+- Strasse 
+- Gebäude 
+- lat/long
+- parent_id
+
+** Gegenstände
+- Filme, Dokumente, Fotos, Events
+- Titel (Text)
+- Inhalt (Text)
+- Datum (Tag, Monat, Jahr) mit Option zusätzliche Information zu erfassen 
+  (Dropdown mit Schlagwörtern, z.B. vor, nach, ca. etc.)
+- 1x Topographie ABER Bildmarkierung Topographie?
+- Stichwörter
+- optional: Dropdown-Liste bearbeitbar mit den Räumen
+     Ablageort
+     Ablagenummer
+     Inventarnummer
+     Inventarkommentar	
+
+** Bilder
+- Bild (mit Thumbnail und Vollversion beim klicken) -> also mind 3 Varianten
+- Dateiname (automatisch generiert aus Dateinamen)
+- Stichwörter
+- Datum (Tag, Monat, Jahr) mit Option zusätzliche Information zu erfassen (Dropdown mit Schlagwörtern, z.B. vor, nach, ca. etc.)
+- Bildmarkierungen: Personen, Orte, Bildbereich (optional: Polygon mit 0/1 normierten Koordinaten)
+- Bild gehört zu Gegenstand: Kommentar, Film: Filmausschnitt Zeit
+*** Bilddaten
+- Auflösung x,y, typ "small/medium/large/original"
+- path (auf dem server)
+- typ (jpeg)
+
+
+* SQL
+
+- people
+- places
+- keywords
+
+- items (type = Filme, Dokumente, Fotos, Gegenstände, Ereignisse / "magic number")
+- tags (keyword_id, + one of person_id, place_id, item_id)
+- images
+- imagetags (image_id, optional Bildbereich, person_id, item_id, place_id

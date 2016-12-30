@@ -8,12 +8,12 @@
   %tbody
     = for user <- @users do
       %tr
-        %td= link(name(user), to: user_path(@conn, :show, user.id))
+        %td= link(User.name(user), to: user_path(@conn, :show, user.id))
         %td= user.username
         %td
           - if user.active do
-            %i.fa-check
+            %i.fa.fa-check
           - else
-            %i.fa-ban
+            %i.fa.fa-ban
     - end
 =link("Neuer Benutzer", to: user_path(@conn, :new), class: "btn btn-primary")

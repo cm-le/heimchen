@@ -1,6 +1,8 @@
 defmodule Heimchen.User do
 	use Heimchen.Web, :model
 
+	alias Heimchen.User
+	
 	schema "users" do
 		field :firstname, :string
 		field :lastname, :string
@@ -18,9 +20,10 @@ defmodule Heimchen.User do
 		timestamps
 	end
 
-	def changeset(model, params \\ :empty) do
+	def changeset(model, params \\ :invalid) do
 		model
-		|> cast(params, ~w(firstname lastname gender username email), ~w(academic active))
+		|> cast(params, ~w(firstname lastname gender username email academic active admin))
+		|> validate_required([:firstname, :lastname, :gender, :username, :email], message: "Darf nicht leer sein")
 		|> unique_constraint(:username, message: "Benutzername bereits vergeben")
 	end
 
@@ -35,7 +38,7 @@ defmodule Heimchen.User do
 	
 	def password_changeset(changeset, params) do
 		changeset
-		|> cast(params, ~w(password), [])
+		|> cast(params, ~w(password))
 		|> validate_length(:password, min: 6, message: "Das Passwort muß mindestens 6 Buchstaben lang sein")
 		|> put_pass_hash()
 	end
@@ -45,6 +48,13 @@ defmodule Heimchen.User do
 		|> changeset(params)
 		|> put_change(:active, true)
 		|> password_changeset(params)
+	end
+
+
+	def name(%User{firstname: firstname, academic: academic, lastname: lastname}) do
+		[academic, firstname, lastname]
+		|> Enum.filter(&(&1 && String.length(&1)>0))
+		|> Enum.join(" ")
 	end
 	
 end

@@ -1,0 +1,8 @@
+%h1.page-header Person ändern
+%row
+  = form_for @changeset, person_path(@conn, :create), fn f ->
+    =render("_person.html", f: f, changeset: @changeset)
+    .form-group.row
+      .offset-sm-2.col-sm-10
+        =submit("Speichern", class: "btn btn-primary")
+  - end 

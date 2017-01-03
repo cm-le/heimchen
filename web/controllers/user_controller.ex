@@ -27,7 +27,7 @@ defmodule Heimchen.UserController do
 	end
 	
 	def index(conn, _params) do
-		users = Repo.all from u in User, order_by: [u.lastname, u.firstname]
+		users = Repo.all from u in User, order_by: [{:desc, u.active}, u.lastname, u.firstname]
 		render conn, "index.html", users: users
 	end
 

@@ -5,6 +5,7 @@ defmodule Heimchen.Repo.Migrations.CreateKeywords do
 		create table(:keywords) do
 			add :category, :string
 			add :name, :string
+			add :comment, :text
 			add :user_id, references(:users)
 
 			add :for_person, :boolean

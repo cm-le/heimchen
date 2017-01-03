@@ -33,7 +33,10 @@ defmodule Heimchen.KeywordController do
 	end
 	
 	def index(conn, _params, user) do
-		
+		keywords = Repo.all from k in Keyword, left_join: u in assoc(k, :user),
+			select: %{keyword: k, user: u},
+			order_by: [k.category, k.name]
+		render conn, "index.html", keywords: keywords
 	end
 
 
@@ -60,8 +63,8 @@ defmodule Heimchen.KeywordController do
 		end
 	end
 
-	def update(conn, %{"id" => id, "keyword" => keyword_params}) do
-		changeset = Keyword.changeset(Repo.get(Keyword, id), keyword_params)
+	def update(conn, %{"id" => id, "keyword" => keyword_params}, user) do
+		changeset = Keyword.changeset(Repo.get(Keyword, id), keyword_params, user)
 		case Repo.update(changeset) do
 			{:ok, keyword} ->
 				conn

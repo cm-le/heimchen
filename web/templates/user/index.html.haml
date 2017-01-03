@@ -1,10 +1,15 @@
-%h1.page-header Benutzer
+.row.page-header
+  .col-sm-10
+    %h1 Benutzer
+  .offset-sm-10
+    =link("Neuer Benutzer", to: user_path(@conn, :new), class: "btn btn-primary")
 %table.table.table-hover
   %thead
     %tr
       %th Name
       %th Login
       %th Aktiv
+      %th Admin
   %tbody
     = for user <- @users do
       %tr
@@ -15,5 +20,11 @@
             %i.fa.fa-check
           - else
             %i.fa.fa-ban
+        %td
+          - if user.admin do
+            %i.fa.fa-check
+          - else
+            %i.fa.fa-ban
+
     - end
-=link("Neuer Benutzer", to: user_path(@conn, :new), class: "btn btn-primary")
+

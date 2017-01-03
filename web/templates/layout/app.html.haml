@@ -20,12 +20,16 @@
         - if @current_user do
           %ul.nav.navbar-nav
             %li.nav-item
-              %a.nav-link(href="") Bilder
+              %a.nav-link(href="") Sammlung
             %li.nav-item
-              %a.nav-link(href="") Stichwörter
+              %a.nav-link(href="") Bildarchiv
             %li.nav-item
-              %a.nav-link(href="") Personen
+              %a.nav-link(href="#{person_path(@conn, :index)}") Personen
+            %li.nav-item
+              %a.nav-link(href="") Orte
             - if @current_user.admin do
+              %li.nav-item
+                %a.nav-link(href="#{keyword_path(@conn, :index)}") Stichwörter
               %li.nav-item
                 %a.nav-link(href="#{user_path(@conn, :index)}") Benutzer
             - else

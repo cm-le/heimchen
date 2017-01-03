@@ -1,0 +1,31 @@
+.form-group.row
+  %label.col-form-label.col-sm-2(for="person_gender") Geschlecht
+  .col-sm-10
+    =select @f, :gender, ["männlich": "m", "weiblich": "f"], class: "form-control"
+.form-group.row
+  %label.col-form-label.col-sm-2 Vorname
+  .col-sm-10
+    =text_input @f, :firstname, placeholder: "Vorname", class: "form-control"
+    =error_tag @f, :firstname
+.form-group.row
+  %label.col-form-label.col-sm-2 Nachname
+  .col-sm-10
+    =text_input @f, :lastname, placeholder: "Nachname", class: "form-control"
+    =error_tag @f, :lastname
+.form-group.row
+  %label.col-form-label.col-sm-2 Geboren
+  .col-sm-3
+    =heimchen_date_precision @f, :born_precision, class: "form-control"
+  =heimchen_date_select @f, :born_on, class: "form-control col-sm-2"
+.form-group.row
+  %label.col-form-label.col-sm-2 Gestorben
+  .col-sm-3
+    =heimchen_date_precision @f, :died_precision, class: "form-control"
+  =heimchen_date_select @f, :died_on, class: "form-control col-sm-2"
+
+
+.form-group.row
+  %label.col-form-label.col-sm-2 Kommentar
+  .col-sm-10
+    =textarea @f, :comment, class: "form-control"
+    =error_tag @f, :comment

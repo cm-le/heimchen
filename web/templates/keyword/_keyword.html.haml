@@ -1,7 +1,7 @@
 .form-group.row
   %label.col-form-label.col-sm-2 Kategorie
   .col-sm-4
-    =select @f, :category, @categories, class: "form-control"
+    =select @f, :category, @categories, class: "form-control", value: @changeset.data.category
     =error_tag @f, :category
   .col-sm-1
     %i oder
@@ -34,6 +34,8 @@
       %label.form-check-label
         =checkbox @f, :for_event_item, class: "form-check-input"
         Ereignisse
-        
-        
-      
+.form-group.row
+  %label.col-form-label.col-sm-2 Kommentar
+  .col-sm-10
+    =textarea @f, :comment, class: "form-control"
+    =error_tag @f, :comment

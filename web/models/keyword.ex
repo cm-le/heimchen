@@ -5,6 +5,7 @@ defmodule Heimchen.Keyword do
 	
 	schema "keywords" do
 		field :name, :string
+		field :comment, :string
 		field :category, :string
 
 		field :for_person, :boolean
@@ -21,8 +22,10 @@ defmodule Heimchen.Keyword do
 	
 	def changeset(model, params, user) do
 		model
-		|> cast(params, ~w(name category for_person for_place for_film_item for_event_item for_thing_item for_photo_item))
+		|> cast(params, ~w(name category comment for_person for_place
+					for_film_item for_event_item for_thing_item for_photo_item))
 		|> put_change(:user_id,  user.id)
+		|> put_change(:category, if params != :invalid do if params["new_category"] != "" do params["new_category"] else params["category"] end else "" end)
 		|> validate_required([:name, :category], message: "Darf nicht leer sein")
 		|> unique_constraint(:name, name: :keywords_category_name_index,
 			message: "Dieses Stichwort existiert bereits in dieser Kategorie")

@@ -1,0 +1,21 @@
+
+- if length(@people) > 0 do
+  %table.table.table-hover
+    %thead
+      %tr
+        %th Name
+        %th Geburtsdatum
+        %th Sterbedatum
+        %th Stichwörter
+    %tbody
+      = for {person, keywords} <- @people do
+        %tr
+          %td= link(Person.name(person), to: person_path(@conn, :show, person.id))
+          %td= heimchen_show_date(person.born_precision, person.born_on)
+          %td= heimchen_show_date(person.died_precision, person.died_on)
+          %td= keywords
+      - end
+- else
+  .row.page-header
+    .col-xs-12
+      %i Keine Personen gefunden

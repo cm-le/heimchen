@@ -1,0 +1,42 @@
+.row.page-header
+  .col-xs-12
+    %h1 Stichwörter
+      .float-xs-right
+        =link("Neues Stichwort", to: keyword_path(@conn, :new), class: "btn btn-outline-primary")
+
+#accordion(role="tablist", aria-multiselectable="true")
+  - for {c, index} <- Enum.with_index(@categories) do
+    .card
+      .card-header(role="tab", id="heading#{index}")
+        %h5.mb-0
+          %a(data-toggle="collapse", data-parent="#accordion", href="#collapse#{index}", aria-expanded="false", aria-controls="collapse#{index}")=c
+      .collapse(id="collapse#{index}", role="tabpanel", area-labelledby="heading#{index}")
+        .card-block
+          %table.table.table-hover
+            %thead
+              %tr
+                %th Stichwort
+                %th Verwendung
+                %th Kommentar
+                %th Geändert von
+                %th Geändert am
+            %tbody
+              - for %{keyword: k, user: u} <- Enum.filter(@keywords, &(&1.keyword.category == c)) do
+                %tr
+                  %td=link(k.name, to: keyword_path(@conn, :show, k.id))
+                  %td
+                    - if k.for_person do
+                      Personen
+                    - if k.for_place do
+                      Orte
+                    - if k.for_photo_item do
+                      Bilder
+                    - if k.for_film_item do
+                      Filme
+                    - if k.for_event_item do
+                      Ereignisse
+                    - if k.for_thing_item do
+                      Gegenstände
+                  %td=k.comment
+                  %td=Heimchen.User.name(u)
+                  %td=show_timestamp(k.updated_at)

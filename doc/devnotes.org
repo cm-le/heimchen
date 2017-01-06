@@ -1,0 +1,3 @@
+* Debugging
+	- do require IEx at the to of the source file/module you want to debug
+	- do IEx.pry at the point of debugging, refresh ... off you go!

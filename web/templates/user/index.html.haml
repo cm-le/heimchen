@@ -1,8 +1,8 @@
 .row.page-header
-  .col-sm-10
+  .col-xs-12
     %h1 Benutzer
-  .offset-sm-10
-    =link("Neuer Benutzer", to: user_path(@conn, :new), class: "btn btn-primary")
+      .float-xs-right
+        =link("Neuer Benutzer", to: user_path(@conn, :new), class: "btn btn-outline-primary")
 %table.table.table-hover
   %thead
     %tr

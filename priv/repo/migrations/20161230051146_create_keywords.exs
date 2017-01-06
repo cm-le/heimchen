@@ -20,5 +20,6 @@ defmodule Heimchen.Repo.Migrations.CreateKeywords do
 		end
 
 		create unique_index(:keywords, [:category, :name])
+		
   end
 end

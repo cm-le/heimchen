@@ -40,10 +40,13 @@ defmodule Heimchen.Router do
 		get  "/person", PersonController, :index
 		get  "/person/show/:id", PersonController, :show
 		get  "/person/new", PersonController, :new
+		get  "/person/edit/:id", PersonController, :edit
 		post "/person/create", PersonController, :create
 		put  "/person/update/:id", PersonController, :update
-		post "/person/add_keyword/:id/:keyword_id", PersonController, :add_keyword
-
+		get  "/person/add_keyword/:id", PersonController, :add_keyword # sorry for making this "get"
+		get  "/person/keyword_select", PersonController, :keyword_select
+		get  "/person/delete_keyword/:id", PersonController, :delete_keyword
+		get  "/person/search/:name", PersonController, :search
 		
   end
 

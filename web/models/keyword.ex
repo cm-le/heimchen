@@ -25,13 +25,25 @@ defmodule Heimchen.Keyword do
 		|> cast(params, ~w(name category comment for_person for_place
 					for_film_item for_event_item for_thing_item for_photo_item))
 		|> put_change(:user_id,  user.id)
-		|> put_change(:category, if params != :invalid do if params["new_category"] != "" do params["new_category"] else params["category"] end else "" end)
+		|> put_change(:category,
+		   if params != :invalid do
+				 if params["new_category"] != "" do
+					 params["new_category"]
+				 else params["category"]
+				 end
+			 else ""
+			 end)
 		|> validate_required([:name, :category], message: "Darf nicht leer sein")
 		|> unique_constraint(:name, name: :keywords_category_name_index,
 			message: "Dieses Stichwort existiert bereits in dieser Kategorie")
 	end
 
 
+	def keywords_for_person() do
+		Repo.all(from k in Keyword, where: k.for_person == true, order_by: [:category, k.name])
+	end
+
+	
 	
 	def categories() do
 		Repo.all from(k in Keyword, distinct: true, select: k.category, order_by: k.category)

@@ -1,0 +1,7 @@
+%select.form-control(name="keyword_id")
+  %option(value="")="-- Stichwort auswählen --"
+  - for c <- Enum.uniq(Enum.map(@keywords, &(&1.category))) do
+    %optgroup(label="#{c}")
+      - for k <- Enum.filter(@keywords, &(&1.category == c)) do
+        %option(value="#{k.id}")=k.name
+      

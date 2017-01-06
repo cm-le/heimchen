@@ -40,6 +40,12 @@ defmodule Heimchen.KeywordController do
 	end
 
 
+	def keywords(conn, %{"for" => which_keywords}, _) do
+		json conn, ((from k in Keyword, where: k.for_person, # FIXME
+			select: %{c: k.category, n: k.name}, order_by: [k.category, k.name])
+			|> Repo.all |> Enum.map(&(&1.c <> ": " <> &1.n)))
+	end
+	
 	def show(conn, %{"id" => id}, user) do
 		render(conn, "show.html", changeset: Keyword.changeset(Repo.get(Keyword,id), :invalid, user),
 			id: id)

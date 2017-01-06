@@ -32,6 +32,7 @@ defmodule Heimchen.Router do
 		get  "/item", ItemController, :index
 
 		get  "/keyword", KeywordController, :index
+		get  "/keyword/keywords", KeywordController, :keywords
 		get  "/keyword/show/:id", KeywordController, :show
 		get  "/keyword/new", KeywordController, :new
 		post "/keyword/create", KeywordController, :create

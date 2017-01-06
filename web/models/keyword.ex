@@ -1,3 +1,4 @@
+require IEx
 defmodule Heimchen.Keyword do
 	use Heimchen.Web, :model
 	alias Heimchen.Keyword
@@ -38,11 +39,10 @@ defmodule Heimchen.Keyword do
 			message: "Dieses Stichwort existiert bereits in dieser Kategorie")
 	end
 
-
-	def keywords_for_person() do
-		Repo.all(from k in Keyword, where: k.for_person == true, order_by: [:category, k.name])
+	def by_cat_name(cn) do
+		[c,n] = String.split(cn, ~r{: }, parts: 2)
+		Repo.get_by(Keyword, category: c, name: n) 
 	end
-
 	
 	
 	def categories() do

@@ -1,0 +1,18 @@
+
+/* Phoenix flash messages */
+.alert:empty { display: none; }
+
+.alert {
+		margin-top: 10px;
+		margin-bottom: 10px;
+}
+
+/* Phoenix inline forms in links and buttons */
+form.link, form.button {
+  display: inline;
+}
+
+.page-header {
+		margin-top: 12px;
+		margin-bottom: 12px;
+}

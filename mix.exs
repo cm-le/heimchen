@@ -19,7 +19,7 @@ defmodule Heimchen.Mixfile do
   def application do
     [mod: {Heimchen, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :comeonin]]
+                    :phoenix_ecto, :postgrex, :comeonin, :phoenix_haml]]
   end
 
   # Specifies which paths to compile per environment.
@@ -39,7 +39,8 @@ defmodule Heimchen.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
 		 {:comeonin, "~> 3.0"},
-		 {:phoenix_haml, github: "chrismccord/phoenix_haml"}]
+		 {:phoenix_haml, github: "chrismccord/phoenix_haml"},
+		 {:exrm, "~> 0.14.2" } ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

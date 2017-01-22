@@ -28,6 +28,15 @@ defmodule Heimchen.Image do
 		{:ok, image}
 	end
 
+	def recently_uploaded() do
+		Repo.all from i in Heimchen.Image, select:
+		%{:image => i,
+			:minutes => fragment("extract(minute from current_timestamp - inserted_at)::int"),
+			:hours => fragment("extract(hour from current_timestamp::timestamp without time zone - inserted_at)::int"),
+			:days => fragment("extract(day from current_timestamp::timestamp without time zone - inserted_at)::int")},
+			order_by: [desc: i.inserted_at], limit: 500
+	end
+	
 	def dir(image) do
 		{{y,m,_},_} = NaiveDateTime.to_erl(image.inserted_at)
 		@base_path <> "/#{y}/#{m}/" <> "#{image.id}"

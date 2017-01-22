@@ -23,18 +23,17 @@ defmodule Heimchen.ImageController do
 	############
 	
 	def index(conn, _params, _user) do
-		images = Repo.all from i in Image, order_by: i.inserted_at, limit: 500
-		render(conn, "index.html", [images: images])
+		render(conn, "index.html", [images: Heimchen.Image.recently_uploaded()])
 	end
 
 	def new(conn, _params, _user) do
 		render(conn, "new.html", [])
 	end
 
-	def thumb(conn, id, _user) do
-		case Repo.get(Image, id) do
-			{:ok, image} -> send_file(conn, 200, Image.dir(image) <> "/thumb.jpg")
-			_ -> resp(conn, 404, "")
+	def thumb(conn, %{"id" => id}, _user) do
+		case Repo.get(Heimchen.Image, id) do
+			nil -> resp(conn, 404, "Not found")
+			image -> send_file(conn, 200, Heimchen.Image.dir(image) <> "/thumb.jpg")
 		end
 	end
 	

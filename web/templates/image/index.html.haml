@@ -13,6 +13,8 @@
       .card-block  
         %p.card-subtitle
           %small.text-muted
+            = i.original_filename
+            %br
             - if days == 0 do
               - if hours == 0 do
                 - if minutes < 3 do

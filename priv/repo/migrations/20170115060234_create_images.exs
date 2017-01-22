@@ -4,19 +4,16 @@ defmodule Heimchen.Repo.Migrations.CreateImages do
   def change do
 		create table(:images) do
 			add :original_filename, :string
+			add :original_sha1, :string
 			add :exif, :map
-			add :ratio_x_by_y, :real
-			add :pathname_orig, :string
-			add :pathname_thumb, :string
-			add :pathname_medium, :string
-			add :pathname_large, :string
 			add :comment, :text
-			add :shot_at, :timestamp
-			add :shot_by, :string
-			
+
+			add :processed, :boolean
 			add :user_id, references(:users)
 			timestamps()
 		end
+
+		create index(:images, [:inserted_at])
 
 		create table(:imagetags) do
 			add :image_id, references(:images)

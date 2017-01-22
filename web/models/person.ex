@@ -2,7 +2,6 @@ defmodule Heimchen.Person do
 	use Heimchen.Web, :model
 	alias Heimchen.Person
 	alias Heimchen.Repo
-	alias Heimchen.Keyword
 	
 	schema "people" do
 		field :firstname, :string

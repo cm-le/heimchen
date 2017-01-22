@@ -40,6 +40,7 @@ defmodule Heimchen.Mixfile do
      {:cowboy, "~> 1.0"},
 		 {:comeonin, "~> 3.0"},
 		 {:phoenix_haml, github: "chrismccord/phoenix_haml"},
+		 {:kerosene, "~> 0.5.0"},
 		 {:exrm, "~> 0.14.2" } ]
   end
 

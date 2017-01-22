@@ -23,11 +23,11 @@
             %li.nav-item
               %a.nav-link(href="") Sammlung
             %li.nav-item
-              %a.nav-link(href="") Bildarchiv
-            %li.nav-item
               %a.nav-link(href="#{person_path(@conn, :index)}") Personen
             %li.nav-item
               %a.nav-link(href="") Orte
+            %li.nav-item
+              %a.nav-link(href="#{image_path(@conn, :index)}") Dateien
             - if @current_user.admin do
               %li.nav-item
                 %a.nav-link(href="#{keyword_path(@conn, :index)}") Stichwörter

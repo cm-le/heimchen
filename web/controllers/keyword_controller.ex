@@ -32,7 +32,7 @@ defmodule Heimchen.KeywordController do
 			[conn, conn.params, conn.assigns.current_user])
 	end
 	
-	def index(conn, _params, user) do
+	def index(conn, _params, _user) do
 		keywords = Repo.all from k in Keyword, left_join: u in assoc(k, :user),
 			select: %{keyword: k, user: u},
 			order_by: [k.category, k.name]
@@ -60,7 +60,7 @@ defmodule Heimchen.KeywordController do
 		case Repo.insert(changeset) do
 			{:ok, keyword} ->
 				conn
-				|> put_flash(:success, "Stichwort angelegt")
+				|> put_flash(:success, "Stichwort #{keyword.name} angelegt")
 				|> redirect(to: keyword_path(conn, :index))
 			{:error, changeset} ->
 				conn
@@ -74,7 +74,7 @@ defmodule Heimchen.KeywordController do
 		case Repo.update(changeset) do
 			{:ok, keyword} ->
 				conn
-				|> put_flash(:success, "Stichwort geändert")
+				|> put_flash(:success, "Stichwort #{keyword.name} geändert")
 				|> redirect(to: keyword_path(conn, :index))
 			{:error, changeset} ->
 				conn

@@ -24,12 +24,11 @@ defmodule Heimchen.PersonController do
 			[conn, conn.params, conn.assigns.current_user])
 	end
 	
-	def index(conn, _params, user) do
-		users = Repo.all from p in Person, order_by: [p.lastname, p.firstname]
+	def index(conn, _params, _user) do
 		render(conn, "index.html")
 	end
 
-	def search(conn, %{"name" => name}, user) do
+	def search(conn, %{"name" => name}, _user) do
 		people = Heimchen.Person.search(name)
 		render(conn, "search.html", layout: {Heimchen.LayoutView, "empty.html"}, people: people)
 	end
@@ -37,7 +36,7 @@ defmodule Heimchen.PersonController do
 
 	def add_keyword(conn, %{"id" => id, "keyword" => keyword}, user) do
 		case Repo.insert(PersonKeyword.changeset(%PersonKeyword{},
-							%{"keyword_id" => Heimchen.Keyword.by_cat_name(keyword).id, "person_id" => id}, user)) do
+							%{"keyword_id" => Heimchen.Keyword.id_by_cat_name(keyword), "person_id" => id}, user)) do
 			{:ok, _} ->
 				conn
 				|> put_flash(:success, "Stichwort hinzugefügt")
@@ -61,7 +60,7 @@ defmodule Heimchen.PersonController do
 		end
 	end
 
-	def show(conn, %{"id" => id}, user) do
+	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Person,id) |> Repo.preload([:user]) do
 			nil -> conn |> put_flash(:error, "Person nicht gefunden") |> redirect(to: person_path(conn, :index))
 			person -> conn |> render("show.html", person: person, id: id, keywords: Person.keywords(person))
@@ -96,7 +95,7 @@ defmodule Heimchen.PersonController do
 		case Repo.update(changeset) do
 			{:ok, person} ->
 				conn
-				|> put_flash(:success, "Person geändert")
+				|> put_flash(:success, "Person #{Person.name(person)} geändert")
 				|> redirect(to: person_path(conn, :show, id))
 			{:error, changeset} ->
 				conn

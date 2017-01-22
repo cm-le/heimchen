@@ -1,9 +1,5 @@
 defmodule Heimchen.PersonKeyword do
 	use Heimchen.Web, :model
-	alias Heimchen.Person
-	alias Heimchen.Repo
-	alias Heimchen.Keyword
-
 
 	schema "people_keywords" do
 		belongs_to :person, Heimchen.Person

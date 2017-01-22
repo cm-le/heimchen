@@ -39,9 +39,13 @@ defmodule Heimchen.Keyword do
 			message: "Dieses Stichwort existiert bereits in dieser Kategorie")
 	end
 
-	def by_cat_name(cn) do
+	def id_by_cat_name("") do nil end
+	def id_by_cat_name(cn) do
 		[c,n] = String.split(cn, ~r{: }, parts: 2)
-		Repo.get_by(Keyword, category: c, name: n) 
+		case Repo.get_by(Keyword, category: c, name: n) do
+			nil -> nil
+			keyword -> keyword.id
+		end
 	end
 	
 	

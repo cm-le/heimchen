@@ -48,7 +48,10 @@ defmodule Heimchen.Router do
 		get  "/person/keyword_select", PersonController, :keyword_select
 		get  "/person/delete_keyword/:id", PersonController, :delete_keyword
 		get  "/person/search/:name", PersonController, :search
-		
+
+		get  "/image", ImageController, :index
+		get  "/image/new", ImageController, :new
+		post "/image/create", ImageController, :create
   end
 
   # Other scopes may use custom stacks.

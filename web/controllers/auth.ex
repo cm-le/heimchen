@@ -5,7 +5,7 @@ defmodule Heimchen.Auth do
 	def init(_) do
 	end
 	
-	def call(conn, repo) do
+	def call(conn, _repo) do
 		user_id = get_session(conn, :user_id)
 		user    = user_id && Repo.get(Heimchen.User, user_id)
 		assign(conn, :current_user, user)

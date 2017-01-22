@@ -1,0 +1,29 @@
+.row.page-header
+  .col-xs-12
+    %h1 Bilddateien
+      .float-xs-right
+        =link("Datei hochladen", to: image_path(@conn, :new), class: "btn btn-outline-primary")
+      .float-xs-right(style="padding-right: 8px")
+        =link("Zwischenablage", to: image_path(@conn, :new), class: "btn btn-outline-primary")
+
+.card-columns        
+  - for %{image: i, hours: hours, days: days, minutes: minutes} <- @images do
+    .card(style="width: 160px;padding:5px;margin:5px;")
+      %img.card-img-top.img-fluid(src="#{image_path(@conn, :thumb, i.id)}")
+      .card-block  
+        %p.card-subtitle
+          %small.text-muted
+            - if days == 0 do
+              - if hours == 0 do
+                - if minutes < 3 do
+                  = " gerade eben"
+                - else
+                  = " vor #{minutes} min "
+              - else
+                = " vor #{hours} St. #{minutes} min"
+            - else
+              - if days == 1 do
+                = "gestern"
+              - else
+                = "vor #{days} Tagen"
+      

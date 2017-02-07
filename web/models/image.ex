@@ -1,3 +1,4 @@
+require IEx
 defmodule Heimchen.Image do
 	use Heimchen.Web, :model
 	alias Heimchen.Person
@@ -86,12 +87,12 @@ defmodule Heimchen.Image do
 		  {Path.dirname(file.path), Path.basename(file.path), Path.extname(file.filename)}
 		if String.downcase(extension) == ".zip" do
 			{output, _} = System.cmd("unzip", ["-Z", "-1", basename], cd: dirname)
-			{output2, _} = System.cmd("unzip", ["-f", basename], cd: dirname)
+			{output2, _} = System.cmd("unzip", ["-o", basename], cd: dirname)
 			String.split(output, "\n", trim: true)
 			|> Enum.filter(fn(filename) ->
 				Enum.member?(@image_extensions, String.downcase(Path.extname(filename))) end)
 			|> Enum.map(fn(filename) ->
-				create_one(dirname <> "/" <> filename, filename, comment, user) end)
+				create_one(dirname <> "/" <> filename, Path.basename(filename), comment, user) end)
 		else
 			create_one(file.path, file.filename, comment, user)
 		end

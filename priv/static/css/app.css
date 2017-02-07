@@ -7,6 +7,10 @@
 		margin-bottom: 10px;
 }
 
+.spanlink{
+		cursor: pointer;
+}
+
 /* Phoenix inline forms in links and buttons */
 form.link, form.button {
   display: inline;

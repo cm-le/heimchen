@@ -12,15 +12,10 @@
             %button.btn.btn-outline-primary(type="submit")
               %i.fa.fa-plus
     %script
-      var bloodHound = new Bloodhound({
-      datumTokenizer: Bloodhound.tokenizers.whitespace,
-      queryTokenizer: Bloodhound.tokenizers.whitespace,
-      prefetch: '../../keyword/keywords?for=person'});
-      $('#prefetch-keywords .typeahead').typeahead(null, {
-      name: 'keyword',
-      source: keywords });
-      bloodHound.clearPrefetchCache();
-      bloodHound.initialize();
+      var bloodHound = new Bloodhound({ datumTokenizer: Bloodhound.tokenizers.whitespace,
+      queryTokenizer: Bloodhound.tokenizers.whitespace, prefetch: '../../keyword/keywords?for=person'});
+      $('#prefetch-keywords .typeahead').typeahead(null, {name: 'keyword', source: bloodHound });
+      bloodHound.clearPrefetchCache(); bloodHound.initialize();
   .float-xs-right
     =link("Ändern", to: person_path(@conn, :edit, @id), class: "btn btn-outline-primary")
 

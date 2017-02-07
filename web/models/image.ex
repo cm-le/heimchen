@@ -1,11 +1,10 @@
-require IEx
 defmodule Heimchen.Image do
 	use Heimchen.Web, :model
 	alias Heimchen.Person
 	alias Heimchen.Repo
 
 	@base_path  Application.app_dir(:heimchen, "uploads")
-	@image_extensions ["jpg", "jpeg", "png"]
+	@image_extensions [".jpg", ".jpeg", ".png", ".gif"]
 	
 	schema "images" do
 		field :original_filename, :string
@@ -23,12 +22,11 @@ defmodule Heimchen.Image do
 
 
 	def create_one(file_path,original_filename, comment, user) do
-		# IEx.pry
 		{:ok, image} = Repo.insert(changeset(%Heimchen.Image{},
 					%{:comment => comment,
 						:original_filename => original_filename}, user))
 		spawn fn -> amend(image, file_path) end
-		{:ok, [image]}
+		image
 	end
 
 	def recently_uploaded() do
@@ -44,6 +42,19 @@ defmodule Heimchen.Image do
 		{{y,m,_},_} = NaiveDateTime.to_erl(image.inserted_at)
 		@base_path <> "/#{y}/#{m}/" <> "#{image.id}"
 	end
+
+	# give the dir name, but delay it, maybe gm was not ready?
+	# FIXME should take timestamp into account
+	def delayed_dir(image) do delayed_dir(image, 0) end
+	def delayed_dir(image, delay) when delay < 30 do
+		if File.exists?(dir(image) <> "/thumb.jpg") do
+			dir(image)
+		else
+			Process.sleep(1)
+			delayed_dir(image, delay+1)
+		end
+	end
+	def delayed_dir(_, _) do :error end
 
 	def orig_name(image) do
 		"orig" <> String.downcase(Path.extname(image.original_filename))
@@ -73,15 +84,14 @@ defmodule Heimchen.Image do
 	def create(%{"file" => file, "comment" => comment}, user) do
 		{dirname, basename, extension} =
 		  {Path.dirname(file.path), Path.basename(file.path), Path.extname(file.filename)}
-		if String.downcase(extension) == "zip" do
+		if String.downcase(extension) == ".zip" do
 			{output, _} = System.cmd("unzip", ["-Z", "-1", basename], cd: dirname)
-			{output2, _} = System.cmd("unzip", [basename], cd: dirname)
+			{output2, _} = System.cmd("unzip", ["-f", basename], cd: dirname)
 			String.split(output, "\n", trim: true)
 			|> Enum.filter(fn(filename) ->
-				Enum.member?(@image_extensions, String.downcase(Path.extension(filename))) end)
+				Enum.member?(@image_extensions, String.downcase(Path.extname(filename))) end)
 			|> Enum.map(fn(filename) ->
 				create_one(dirname <> "/" <> filename, filename, comment, user) end)
-			|> List.flatten()
 		else
 			create_one(file.path, file.filename, comment, user)
 		end

@@ -1,0 +1,35 @@
+%script(src='#{static_path(@conn, "/js/typeahead.bundle.min.js")}')  
+
+.row.page-header
+  .col-xs-12
+    %h1 Zwischenablage Bilddateien
+      .float-xs-right
+        =link("Leeren", to: image_path(@conn, :new), class: "btn btn-outline-primary")
+      .float-xs-right(style="padding-right: 8px")
+        =link("Alle löschen", to: image_path(@conn, :new), class: "btn btn-outline-primary")
+      .float-xs-right.col-xs-3(style="padding-right: 8px")
+        %form(action="#{image_path(@conn, :clipboard_mark)}", method="get")
+          #prefetch-marklist
+            .input-group
+              %input.typeahead.form-control(type="text", name="mark", placeholder="Markierung")
+              %span.input-group-btn
+                %button.btn.btn-outline-primary(type="submit")
+                  %i.fa.fa-plus
+        %script
+          var bloodHound = new Bloodhound({ datumTokenizer: Bloodhound.tokenizers.whitespace,
+          queryTokenizer: Bloodhound.tokenizers.whitespace, prefetch: 'marklist'});
+          $('#prefetch-marklist .typeahead').typeahead(null, {name: 'keyword', source: bloodHound });
+          bloodHound.clearPrefetchCache(); bloodHound.initialize();
+
+.card-columns        
+  - for image <- @images do
+    .card(style="width: 160px;margin:5px;")
+      %a(href="#{image_path(@conn, :show, image.id)}")
+        %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, image.id, 1)}")
+        .card-block  
+          %p.card-subtitle
+            %small.text-muted
+              = image.original_filename
+      .card-footer
+        %i.fa.fa-ban.spanlink(onclick="image_cp_remove(#{image.id})", id="image_cp_#{image.id}")
+        

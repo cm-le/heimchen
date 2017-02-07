@@ -1,0 +1,42 @@
+%h1.page-header Datei-Details
+%row
+  .col-sm-4
+    = form_for @changeset, image_path(@conn, :update, @id), fn f ->
+      .form-group.row
+        %label.col-form-label.col-sm-3(for="image_comment") Kommentar
+        .col-sm-9
+          =textarea f, :comment, class: "form-control"
+      .form-group.row
+        .col-sm-10.offset-sm-3
+          %button.btn.btn-primary(type="submit") Speichern
+    - end
+  .col-sm-8
+    %row
+      .col-sm-3
+        Dateiname:
+      .col-sm-9
+        %tt=link(@changeset.data.original_filename, to: image_path(@conn, :image, @id, 4), target: "_blank")
+    %row
+      .col-sm-3
+        Auflösung:
+      .col-sm-9
+        %tt="#{@changeset.data.orig_w}x#{@changeset.data.orig_w}"
+    %row
+      .col-sm-3
+        Zusatz-Infos:
+      .col-sm-9
+        - if @changeset.data.exif do
+          %button.btn.btn-secondary(data-toggle="collapse", type="button" data-target="#exifData", aria-expanded="false", aria-controls="exifData")
+            Einblenden
+            %i.fa.fa-caret-down(aria-hidden="true")
+          .collapse#exifData
+            %dl.row
+              - for {k,v} <- @changeset.data.exif do
+                %dt.col-sm-6=k
+                %dd.col-sm-6.text-truncate=v
+
+      
+    
+%row
+  .col-sm-12
+    %img.rounded.mx-auto.d-block#ipreview(src="#{image_path(@conn, :image, @id, 2)}")

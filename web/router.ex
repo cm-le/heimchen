@@ -52,7 +52,12 @@ defmodule Heimchen.Router do
 		get  "/image", ImageController, :index
 		get  "/image/new", ImageController, :new
 		post "/image/create", ImageController, :create
-		get  "/image/thumb/:id", ImageController, :thumb
+		get  "/image/image/:id/:size", ImageController, :image
+		get  "/image/show/:id", ImageController, :show
+		put  "/image/update/:id", ImageController, :update
+		get  "/image/clipboard", ImageController, :clipboard
+		get  "/image/clipboard_mark", ImageController, :clipboard_mark
+		get  "/image/mark/:what/:id", ImageController, :mark
   end
 
   # Other scopes may use custom stacks.

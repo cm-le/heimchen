@@ -13,11 +13,16 @@
   - for %{image: i, hours: hours, days: days, minutes: minutes} <- @images do
     .card(style="width: 160px;margin:5px;")
       %a(href="#{image_path(@conn, :show, i.id)}")
-        %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, i.id, 1)}")
+        %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, i.id, 1)}",title="#{i.original_filename}")
         .card-block  
           %p.card-subtitle
             %small.text-muted
-              = i.original_filename
+              - if i.imagetags == [] do
+                ="#{i.original_filename}"
+              - else 
+                - for it <- i.imagetags do
+                  %a(href="#{person_path(@conn, :show, it.person_id)}")
+                    ="#{it.person.firstname} #{it.person.lastname}"
       .card-footer
         - if @clipboard[i.id] do
           %i.fa.fa-check.spanlink(onclick="image_cp_toggle(#{i.id})", id="image_cp_#{i.id}")

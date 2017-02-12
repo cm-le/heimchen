@@ -11,9 +11,12 @@
       %i.fa.fa-search
 %script
   $(function(){$('#search_field').observe_field(0.5, 
-  function(){if (this.value){$.get('/person/search/' + encodeURIComponent(this.value), function(html){$('#result').html(html)})}});
+  function(){if (this.value){$("#result2").show(); $("#result1").hide(); $.get('/person/search/' + encodeURIComponent(this.value), function(html){$('#result3').html(html)})} else{$("#result1").show(); $("#result2").hide();  }});
   $(function() { $('#search_field').focus()});});
-#result
-
-
+#result1
+  %h3(style="margin-top: 12px") Kürzlich bearbeit
+  =render(@view_module, "search.html", people: @people, conn: @conn)
+#result2(style="display:none")
+  %h3(style="margin-top: 12px") Suchergebnis
+  #result3
 %script(src='#{static_path(@conn, "/js/jquery.observe_field.js")}')

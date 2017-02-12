@@ -57,7 +57,12 @@ defmodule Heimchen.Router do
 		put  "/image/update/:id", ImageController, :update
 		get  "/image/clipboard", ImageController, :clipboard
 		get  "/image/clipboard_mark", ImageController, :clipboard_mark
+		get  "/image/clipboard_empty", ImageController, :clipboard_empty
+		get  "/image/add_and_show_clipboard/:id", ImageController, :add_and_show_clipboard
 		get  "/image/mark/:what/:id", ImageController, :mark
+		get  "/image/marklist", ImageController, :marklist
+		get  "/image/del_imagetag/:id", ImageController, :del_imagetag
+		get  "/image/edit_imagetag/:id", ImageController, :edit_imagetag
   end
 
   # Other scopes may use custom stacks.

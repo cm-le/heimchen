@@ -1,5 +1,11 @@
-%h1.page-header Datei-Details
-%row
+.row.page-header
+  .col-xs-12
+    %h1 Datei-Details
+      .float-xs-right(style="padding-right: 8px")
+        %a(href="#{image_path(@conn, :add_and_show_clipboard, @id)}", class: "btn btn-outline-primary")
+          = "In die Zwischenablage (#{@clipboard_n})"
+%h1.page-header 
+.row
   .col-sm-4
     = form_for @changeset, image_path(@conn, :update, @id), fn f ->
       .form-group.row
@@ -11,21 +17,27 @@
           %button.btn.btn-primary(type="submit") Speichern
     - end
   .col-sm-8
-    %row
-      .col-sm-3
-        Dateiname:
+    .row
+      .col-sm-3 Dateiname:
       .col-sm-9
         %tt=link(@changeset.data.original_filename, to: image_path(@conn, :image, @id, 4), target: "_blank")
-    %row
-      .col-sm-3
-        Auflösung:
+    .row
+      .col-sm-3 Auflösung:
       .col-sm-9
         %tt="#{@changeset.data.orig_w}x#{@changeset.data.orig_w}"
-    %row
-      .col-sm-3
-        Zusatz-Infos:
+    .row
+      .col-sm-3  Verknüpfungen:
       .col-sm-9
-        - if @changeset.data.exif do
+        - for it <- @changeset.data.imagetags do
+          %a(href="#{person_path(@conn, :show, it.person_id)}")
+            %i.fa.fa-link
+            ="#{it.person.firstname} #{it.person.lastname}"
+          %br
+    - if @changeset.data.exif do      
+      .row
+        .col-sm-3
+          Zusatz-Infos:
+        .col-sm-9
           %button.btn.btn-secondary(data-toggle="collapse", type="button" data-target="#exifData", aria-expanded="false", aria-controls="exifData")
             Einblenden
             %i.fa.fa-caret-down(aria-hidden="true")
@@ -35,8 +47,9 @@
                 %dt.col-sm-6=k
                 %dd.col-sm-6.text-truncate=v
 
-      
+.row
+  
     
-%row
+.row
   .col-sm-12
     %img.rounded.mx-auto.d-block#ipreview(src="#{image_path(@conn, :image, @id, 2)}")

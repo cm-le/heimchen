@@ -14,6 +14,7 @@ defmodule Heimchen.Person do
 		field :comment, :string
 
 		has_many   :people_keywords, Heimchen.PersonKeyword
+		has_many   :imagetags, Heimchen.Imagetag
 		
 		belongs_to :user, Heimchen.User
 		timestamps
@@ -34,7 +35,13 @@ defmodule Heimchen.Person do
 		|> order_by([:lastname, :firstname])
 		|> limit(100)
 	end
-	
+
+	def recently_updated() do
+		(from p in Heimchen.Person, order_by: [desc: p.updated_at], limit: 100)
+		|> with_keywords()
+		|> Repo.all
+	end
+
 	
 	def search(s) do
 		case String.split(s, ~r{\s*,\s*}, parts: 2) do

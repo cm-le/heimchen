@@ -25,7 +25,7 @@ defmodule Heimchen.PersonController do
 	end
 	
 	def index(conn, _params, _user) do
-		render(conn, "index.html")
+		render(conn, "index.html", [people: Heimchen.Person.recently_updated()])
 	end
 
 	def search(conn, %{"name" => name}, _user) do
@@ -61,7 +61,7 @@ defmodule Heimchen.PersonController do
 	end
 
 	def show(conn, %{"id" => id}, _user) do
-		case Repo.get(Person,id) |> Repo.preload([:user]) do
+		case Repo.get(Person,id) |> Repo.preload([:user, imagetags: :image]) do
 			nil -> conn |> put_flash(:error, "Person nicht gefunden") |> redirect(to: person_path(conn, :index))
 			person -> conn |> render("show.html", person: person, id: id, keywords: Person.keywords(person))
 		end

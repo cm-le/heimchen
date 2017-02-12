@@ -63,7 +63,10 @@ defmodule Heimchen.ImageController do
 				|>put_flash(:error, "Bild nicht gefunden, wurde es gerade gelöscht?")
 				|> redirect(to: image_path(conn, :index))
 			image ->
-				conn |> render("show.html", [id: id, changeset: Heimchen.Image.changeset(image, :invalid)])
+				conn
+				|> render("show.html",
+					[id: id, clipboard_n: length(Map.keys(get_session(conn, :image_clipboard))),
+					 changeset: Heimchen.Image.changeset(image |> Repo.preload(imagetags: :person), :invalid)])
 		end
 	end	
 
@@ -82,10 +85,6 @@ defmodule Heimchen.ImageController do
 		end
 	end
 
-	
-	def clipboard(conn, user) do
-	end
-
 	def mark(conn, %{"what" => "add", "id" => id}, user) do
 		conn
 		|> put_session(:image_clipboard,
@@ -100,13 +99,46 @@ defmodule Heimchen.ImageController do
 		|> json "ok"
 	end
 
+	def marklist(conn, _, _user) do
+		conn |> json Heimchen.Imagetag.marklist()
+	end
 
-	def clipboard(conn, _, user) do
+	def add_and_show_clipboard(conn, %{"id" => id}, _user) do
+		conn
+		|> put_session(:image_clipboard,
+			Map.merge(get_session(conn, :image_clipboard), %{String.to_integer(id) => true}))
+		|> redirect(to: image_path(conn, :clipboard))
+	end
+
+	def clipboard(conn, _, _user) do
 		ids = Map.keys(get_session(conn, :image_clipboard))
 		conn
 		|> render("clipboard.html",
 			[images: Heimchen.Repo.all(from i in Heimchen.Image,
-					where: fragment("id = any(?)", ^ids))])
+					where: fragment("id = any(?)", ^ids),preload: [imagetags: :person])])
 	end
+
+
+	def clipboard_mark(conn, %{"mark" => mark}, user) do
+		imageids = Map.keys(get_session(conn, :image_clipboard))
+		c = Heimchen.Imagetag.create_from_marklist(imageids, mark, user)
+		conn
+		|> put_flash(:success, "#{c} Bilder neu markiert")
+		|> redirect(to: image_path(conn, :clipboard))
+	end
+
+	def clipboard_empty(conn, _, _user) do
+		conn
+		|> put_flash(:success, "Zwischenablage geleert")
+		|> put_session(:image_clipboard, %{})
+		|> redirect(to: image_path(conn, :index))
+	end
+	
+	def del_imagetag(conn, %{"id" => id}, user) do
+		it = Heimchen.Repo.get(Heimchen.Imagetag,id)
+		Heimchen.Repo.delete(it)
+		conn
+		|> redirect(to: person_path(conn, :show, it.person_id))
+	end 
 	
 end

@@ -36,6 +36,7 @@ defmodule Heimchen.Image do
 			:minutes => fragment("extract(minute from current_timestamp - inserted_at)::int"),
 			:hours => fragment("extract(hour from current_timestamp - inserted_at)::int - 1"), # FIXME hard coded time zone
 			:days => fragment("extract(day from current_timestamp - inserted_at)::int")},
+			preload: [imagetags: :person],
 			order_by: [desc: i.inserted_at], limit: 500
 	end
 	

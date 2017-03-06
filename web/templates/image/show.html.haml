@@ -41,7 +41,7 @@
             %i.fa.fa-edit
           %br
           %script
-            =raw("$(function(){attach_canvas('img-cont',#{elem(Poison.encode(it.marks||'{}'),1)}, imagetag_colors[imagetag_colorindex]);imagetag_colorindex++});")
+            =raw("$(window).one('load', function(){attach_canvas('img-cont',#{elem(Poison.encode(it.marks||'{}'),1)}, imagetag_colors[imagetag_colorindex]);imagetag_colorindex++});")
     %script
       imagetag_colorindex=0
 

@@ -10,7 +10,7 @@
       .canvas-container#img-cont
         %img.rounded#ipreview(width="#{@w}", src="#{image_path(@conn, :image, @imagetag.image_id, 2)}")
         %script
-          $(function(){
+          $("#ipreview").one('load', function(){
           =raw("attach_canvas('img-cont',#{elem(Poison.encode(@imagetag.marks||'{}'),1)}, imagetag_colors[0]);")
           });
     .col-sm-2

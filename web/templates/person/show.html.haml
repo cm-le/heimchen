@@ -52,16 +52,11 @@
     .card(style="width: 160px;margin:5px;")
       %a(href="#{image_path(@conn, :show, it.image_id)}")
         .canvas-container(id="#{it.id}_cc")
-          %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, it.image_id, 1)}")
+          %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, it.image_id, 1)}",id="#{it.id}_img", onload="attach_canvas('#{it.id}_cc',#{elem(Poison.encode(it.marks),1)}, '#ff0000');")
       .card-block
         %p.card-subtitle
           %small.text-muted
             =it.comment
-        - if it.marks do
-          %script
-            $(function(){
-            =raw("attach_canvas('#{it.id}_cc',#{elem(Poison.encode(it.marks),1)}, '#ff0000');")
-            });
       .card-footer
         %small.text-muted
           %a(href="#{image_path(@conn, :edit_imagetag, it.id)}")

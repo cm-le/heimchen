@@ -51,7 +51,7 @@ defmodule Heimchen.Imagetag do
 	def changeset(model, params, user) do
 		result = changeset(model, params)
 		|> put_change(:user_id,  user.id)
-		if params["marks"] && is_binary(params["marks"]) do
+		if params["marks"] && is_binary(params["marks"]) && String.length(params["marks"])>0 do
 			result |> put_change(:marks, Poison.decode!(params["marks"]))
 		else
 			result

@@ -37,6 +37,8 @@
                 =raw("$('#connection_#{it.id}').css('color', imagetag_colors[imagetag_colorindex]);")
                 imagetag_colorindex++
             ="#{it.person.firstname} #{it.person.lastname}"
+          %a(href="#{image_path(@conn, :edit_imagetag, it.id)}")
+            %i.fa.fa-edit
           %br
           %script
             =raw("$(function(){attach_canvas('img-cont',#{elem(Poison.encode(it.marks||'{}'),1)}, imagetag_colors[imagetag_colorindex]);imagetag_colorindex++});")

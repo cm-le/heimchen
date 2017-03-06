@@ -59,7 +59,9 @@
             =it.comment
         - if it.marks do
           %script
+            $(function(){
             =raw("attach_canvas('#{it.id}_cc',#{elem(Poison.encode(it.marks),1)}, '#ff0000');")
+            });
       .card-footer
         %small.text-muted
           %a(href="#{image_path(@conn, :edit_imagetag, it.id)}")

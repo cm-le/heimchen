@@ -72,7 +72,7 @@ defmodule Heimchen.ImageController do
 
 
 	def update(conn, %{"id" => id, "image" => image_params}, user) do
-		changeset = Image.changeset(Repo.get(Heimchen.Image, id), image_params, user)
+		changeset = Heimchen.Image.changeset(Repo.get(Heimchen.Image, id), image_params, user)
 		case Repo.update(changeset) do
 			{:ok, image} ->
 				conn
@@ -80,7 +80,7 @@ defmodule Heimchen.ImageController do
 				|> redirect(to: image_path(conn, :show, id))
 				{:error ,changeset}
 				conn
-				|> put_flash(:error, "Person konnte nicht geändert werden")
+				|> put_flash(:error, "Bild konnte nicht geändert werden")
 				|> render("show.html", changeset: changeset, id: id)
 		end
 	end

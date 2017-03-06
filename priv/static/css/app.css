@@ -20,3 +20,22 @@ form.link, form.button {
 		margin-top: 12px;
 		margin-bottom: 12px;
 }
+
+/* images and canvases */
+
+.canvas-container {
+		position: relative;
+}
+		
+.canvas-container > img{
+		top:0px;
+    left:0px;
+		z-index:1;
+}
+
+.canvas-container > canvas{
+		position:absolute;
+		top:0px;
+    left:0px;
+    z-index:20;
+}

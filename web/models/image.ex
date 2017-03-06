@@ -21,7 +21,19 @@ defmodule Heimchen.Image do
 		timestamps
 	end
 
+	def resolution(zoom) do
+		case zoom do
+			1 -> {160,120}
+			2 -> {640, 480}
+			3 -> {1280, 1024}
+		end
+	end
 
+	def real_resolution(image, zoom) do
+		# XXX FIXME depending on orig_w and orig_h of image
+		resolution(zoom)
+	end
+	
 	def create_one(file_path,original_filename, comment, user) do
 		{:ok, image} = Repo.insert(changeset(%Heimchen.Image{},
 					%{:comment => comment,
@@ -67,9 +79,13 @@ defmodule Heimchen.Image do
 		File.mkdir_p(target_path)
 		on = orig_name(image)
 		File.cp(file_path, target_path <> "/" <> on)
-		System.cmd("gm",["convert", "-resize", "160x100", on, "-scale", "160x120", "thumb.jpg"], cd: target_path)
-		System.cmd("gm",["convert", "-resize", "640x480", on, "-scale", "640x480", "medium.jpg"], cd: target_path)
-		System.cmd("gm",["convert", "-resize", "1280x1024", on,"-scale", "1280x1024", "large.jpg"], cd: target_path)
+		{w1,h1} = resolution(1)
+		{w2,h2} = resolution(2)
+		{w3,h3} = resolution(3)
+		
+		System.cmd("gm",["convert", "-resize", "#{w1}x#{h1}", on, "-scale", "#{w1}x#{h1}", "thumb.jpg"], cd: target_path)
+		System.cmd("gm",["convert", "-resize", "#{w2}x#{h2}", on, "-scale", "#{w2}x#{h2}", "medium.jpg"], cd: target_path)
+		System.cmd("gm",["convert", "-resize", "#{w3}x#{h3}", on,"-scale",  "#{w3}x#{h3}", "large.jpg"], cd: target_path)
 		{checksum, _} = System.cmd("sha1sum", [on], cd: target_path)
 		Repo.update(changeset(image, %{:processed => true, :original_sha1 => hd(String.split(checksum, " "))}))
 		{output, _} = System.cmd("gm", ["identify", "-format", "%w %h", on], cd: target_path)

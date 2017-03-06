@@ -1,0 +1,29 @@
+%h1.page-header
+  Bildmarkierung
+  %i
+    =@name
+  bearbeiten
+
+= form_for @conn, image_path(@conn, :update_imagetag, @id), [as: :imagetag], fn f ->  
+  .row
+    .col-sm-9
+      .canvas-container#img-cont
+        %img.rounded#ipreview(width="#{@w}", src="#{image_path(@conn, :image, @imagetag.image_id, 2)}")
+        %script
+          =raw("attach_canvas('img-cont',#{elem(Poison.encode(@imagetag.marks||'{}'),1)}, imagetag_colors[0]);")
+    .col-sm-2
+      .row.form-group
+        %a.btn.btn-secondary(href="#{imagetag_backlink(@conn, @imagetag)}")
+          Zurück zu
+          =@name
+      .row.form-group
+        .btn.btn-outline-primary(onclick="imagetag_init_draw('img-cont')")
+          Neue Markierung zeichnen
+      .row.form-group
+        =textarea f, :comment, class: "form-control", value: @imagetag.comment || ""
+        =hidden_input f, :marks
+      .row.form-group
+        =submit "Markierung speichern", class: "btn btn-primary"
+      
+- end 
+

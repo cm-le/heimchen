@@ -140,5 +140,37 @@ defmodule Heimchen.ImageController do
 		conn
 		|> redirect(to: person_path(conn, :show, it.person_id))
 	end 
+
+	def edit_imagetag(conn, %{"id" => id}, user) do
+		{w,_} = Heimchen.Image.resolution(2)
+		case Repo.get(Heimchen.Imagetag, id) do
+			nil -> resp(conn, 404, "Not found")
+			it ->     it = Repo.preload(it, :image)
+			          render(conn, "edit_imagetag.html",
+                  [id: it.id, name: Heimchen.Imagetag.name(it),
+									 w: w, imagetag: it ])
+		end
+	end
+
+	def update_imagetag(conn, %{"id" => id, "imagetag" => imagetag_params}, user) do
+		changeset = Heimchen.Imagetag.changeset(Repo.get(Heimchen.Imagetag, id), imagetag_params, user)
+		case Repo.update(changeset) do
+			{:ok, imagetag} ->
+				if imagetag.person_id do
+					conn
+					|> put_flash(:success, "Markierung gespeichert")
+					|> redirect(to: person_path(conn, :show, imagetag.person_id))
+				else
+					conn
+					|> put_flash(:error, "Markierung nur für personen n implementiert")
+					|> redirect(to: person_path(conn, :index))
+				end
+			{:error, what} ->
+				conn
+				|> put_flash(:error, "Markierung konnte nicht gespeichert werden: " <> what)
+				|> redirect(to: person_path(conn, :index))
+		end
+	end
+
 	
 end

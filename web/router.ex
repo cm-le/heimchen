@@ -63,6 +63,7 @@ defmodule Heimchen.Router do
 		get  "/image/marklist", ImageController, :marklist
 		get  "/image/del_imagetag/:id", ImageController, :del_imagetag
 		get  "/image/edit_imagetag/:id", ImageController, :edit_imagetag
+		post "/image/update_imagetag/:id", ImageController, :update_imagetag
   end
 
   # Other scopes may use custom stacks.

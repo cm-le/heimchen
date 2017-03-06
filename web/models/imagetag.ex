@@ -7,7 +7,7 @@ defmodule Heimchen.Imagetag do
 		belongs_to :person, Heimchen.Person
 
 		field :marks, :map
-
+		field :comment, :string
 		belongs_to :user, Heimchen.User
 		timestamps
 	end
@@ -38,11 +38,31 @@ defmodule Heimchen.Imagetag do
 			add_person_mark(markmap.person_id, image_id, user)
 		end) |> Enum.sum()
 	end
-	
-#	def changeset(model, params, user) do # XXX 
-#		model
-#		|> cast(params, ~w(marks))
-#		|> put_change(:user_id,  user.id)
-#	end
 
+	def name(it) do
+		if it.person_id do
+			it = Heimchen.Repo.preload(it, :person)
+			Heimchen.Person.name(it.person)
+		else
+			""
+		end
+	end
+	
+	def changeset(model, params, user) do
+		result = changeset(model, params)
+		|> put_change(:user_id,  user.id)
+		if params["marks"] && is_binary(params["marks"]) do
+			result |> put_change(:marks, Poison.decode!(params["marks"]))
+		else
+			result
+		end
+	end
+
+	def changeset(model, params \\ :invalid) do
+		model
+		|> cast(params, ~w(comment))
+	end
+
+
+	
 end

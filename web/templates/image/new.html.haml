@@ -1,5 +1,5 @@
 %h1.page-header Bilddateien hochladen
-%row
+.row
   = form_for @conn, image_path(@conn, :create), [as: :upload, multipart: true], fn f ->
     .form-group.row
       %label.col-form-label.col-sm-2(for="upload_file") Datei

@@ -44,4 +44,9 @@ defmodule Heimchen.Item do
 			order_by: [desc: i.updated_at], limit: 100
 	end
 
+	def longname(item) do
+		Repo.preload(item, :itemtype)
+		"#{item.itemtype.name}: #{item.name}"
+	end
+	
 end

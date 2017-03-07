@@ -118,7 +118,7 @@ defmodule Heimchen.ImageController do
 		conn
 		|> render("clipboard.html",
 			[images: Heimchen.Repo.all(from i in Heimchen.Image,
-					where: fragment("id = any(?)", ^ids),preload: [imagetags: [:person, :item]])])
+					where: fragment("id = any(?)", ^ids),preload: [imagetags: [:person, [item: :itemtype]]])])
 	end
 
 
@@ -148,7 +148,7 @@ defmodule Heimchen.ImageController do
 		{w,_} = Heimchen.Image.resolution(2)
 		case Repo.get(Heimchen.Imagetag, id) do
 			nil -> resp(conn, 404, "Not found")
-			it ->     it = Repo.preload(it, :image)
+			it ->     it = Repo.preload(it, [:image, :person, [item: :itemtype]])
 			          render(conn, "edit_imagetag.html",
                   [id: it.id, name: Heimchen.Imagetag.name(it),
 									 w: w, imagetag: it ])
@@ -159,14 +159,19 @@ defmodule Heimchen.ImageController do
 		changeset = Heimchen.Imagetag.changeset(Repo.get(Heimchen.Imagetag, id), imagetag_params, user)
 		case Repo.update(changeset) do
 			{:ok, imagetag} ->
-				if imagetag.person_id do
-					conn
-					|> put_flash(:success, "Markierung gespeichert")
-					|> redirect(to: person_path(conn, :show, imagetag.person_id))
-				else
-					conn
-					|> put_flash(:error, "Markierung nur für personen n implementiert")
-					|> redirect(to: person_path(conn, :index))
+				cond do
+					imagetag.person_id ->
+						conn
+						|> put_flash(:success, "Markierung gespeichert")
+						|> redirect(to: person_path(conn, :show, imagetag.person_id))
+					imagetag.item_id ->
+						conn
+						|> put_flash(:success, "Markierung gespeichert")
+						|> redirect(to: item_path(conn, :show, imagetag.item_id))
+					true ->
+						conn
+						|> put_flash(:error, "Markierung nur für personen und Sammlungsstücke implementiert")
+						|> redirect(to: person_path(conn, :index))
 				end
 			{:error, what} ->
 				conn

@@ -2,6 +2,7 @@ require IEx
 defmodule Heimchen.Imagetag do
 	use Heimchen.Web, :model
 	alias Heimchen.Repo
+	alias Heimchen.Imagetag
 	
 	schema "imagetags" do
 		belongs_to :image, Heimchen.Image
@@ -22,31 +23,43 @@ defmodule Heimchen.Imagetag do
 	end
 
 	def find_mark(mark) do
-		m = Regex.named_captures(~r/Person: (?<lastname>[^,]+), (?<firstname>.+)/, mark)
-		person = Repo.get_by(Heimchen.Person, lastname: m["lastname"], firstname: m["firstname"])
-		%{:person_id => person.id}
+		case Regex.run(~r{([^:]+).*\[(\d+)\]$}, mark) do
+			[_, "Person", id] -> {:person, String.to_integer(id)}
+			[_, _, id] -> {:item, String.to_integer(id)}
+			_ -> {:error}
+		end
 	end
 
 	def add_person_mark(person_id, image_id, user) do
-		if Repo.get_by(Heimchen.Imagetag, person_id: person_id, image_id: image_id) do 0 else
-			Repo.insert(%Heimchen.Imagetag{image_id: image_id, person_id: person_id, user_id: user.id})
+		if Repo.get_by(Imagetag, person_id: person_id, image_id: image_id) do 0 else
+			Repo.insert(%Imagetag{image_id: image_id, person_id: person_id, user_id: user.id})
 			1
 		end
 	end
+
+	def add_item_mark(item_id, image_id, user) do
+		if Repo.get_by(Imagetag, item_id: item_id, image_id: image_id) do 0 else
+			Repo.insert(%Imagetag{image_id: image_id, item_id: item_id, user_id: user.id})
+			1
+		end
+	end
+
 	
 	def create_from_marklist(imageids, mark, user) do
-		markmap = find_mark(mark)
+		mark = find_mark(mark)
 		Enum.map(imageids, fn(image_id) -> # FIXME differenciate by markmap entry
-			add_person_mark(markmap.person_id, image_id, user)
+			case mark do
+				{:person, id} -> add_person_mark(id, image_id, user)
+				{:item, id} ->   add_item_mark(id, image_id, user)
+			end
 		end) |> Enum.sum()
 	end
 
 	def name(it) do
-		if it.person_id do
-			it = Repo.preload(it, :person)
-			Heimchen.Person.name(it.person)
-		else
-			""
+		cond do
+			it.person_id -> Heimchen.Person.name(Repo.preload(it, :person).person)
+			it.item_id   -> Heimchen.Item.longname(Repo.preload(it, :item).item)
+			true -> ""
 		end
 	end
 	

@@ -48,6 +48,31 @@ defmodule Heimchen.ItemController do
 			id: id)
 	end
 
+	def new(conn, _params, user) do
+		render(conn, "new.html",
+			itemtypes: Repo.all(Heimchen.Itemtype),
+			people: Repo.all(Heimchen.Person, order_by: [:lastname, :firstname]),
+			rooms: Repo.all(Heimchen.Room, order_by: [:name]),
+			changeset: Item.changeset(%Item{}, :invalid, user))
+	end
+	
+	def create(conn, %{"item" => item_params}, user) do
+		changeset = Item.changeset(%Item{}, item_params, user)
+		case Repo.insert(changeset) do
+			{:ok, item} ->
+				conn
+				|> put_flash(:success, "Eintrag angelegt")
+				|> redirect(to: item_path(conn, :show, item.id))
+			{:error, changeset} ->
+				conn
+				|> put_flash(:error, "Eintrag konnte nicht angelegt werden")
+				|> render("new.html", changeset: changeset,	itemtypes: Repo.all(Heimchen.Itemtype),
+					people: Repo.all(Heimchen.Person, order_by: [:lastname, :firstname]),
+					rooms: Repo.all(Heimchen.Room, order_by: [:name]))
+		end
+	end
+
+	
 	def update(conn, %{"id" => id, "item" => item_params}, user) do
 		changeset = Item.changeset(Repo.get(Item, id), item_params, user)
 		case Repo.update(changeset) do
@@ -70,6 +95,7 @@ defmodule Heimchen.ItemController do
 		case Repo.insert(ItemKeyword.changeset(%ItemKeyword{},
 							%{"keyword_id" => Heimchen.Keyword.id_by_cat_name(keyword), "item_id" => id}, user)) do
 			{:ok, _} ->
+				Heimchen.Item.touch_id!(id, user)
 				conn
 				|> put_flash(:success, "Stichwort hinzugefügt")
 				|> redirect(to: item_path(conn, :show, id))
@@ -81,8 +107,8 @@ defmodule Heimchen.ItemController do
 	end
 
 
-	def delete_keyword(conn, %{"id" => id}, _) do
-		case Repo.get(ItemKeyword, id) do
+	def delete_keyword(conn, %{"item_id" => item_id, "keyword_id" => keyword_id}, _) do
+		case Repo.get_by(ItemKeyword, item_id: item_id, keyword_id: keyword_id) do
 			nil ->
 				conn |> put_flash(:error, "Stichwort nicht gefunden") |>
 					redirect(to: item_path(conn, :index))

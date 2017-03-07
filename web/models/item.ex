@@ -24,9 +24,20 @@ defmodule Heimchen.Item do
 	end
 
 
+	def touch!(item,user) do
+		Repo.update(change(item, %{:user_id => user.id}), force: true)
+	end
+	
+	def touch_id!(item_id,user) do
+		Repo.update(change(Repo.get(Item, item_id), %{:user_id => user.id}), force: true)
+	end
+
+
+	
 	def changeset(model, params, user) do
 		model
-		|> cast(params, ~w(name comment date_on date_precision received_by_id received_comment inventory filenr filecomment))
+		|> cast(params, ~w(name comment date_on date_precision received_by_id
+					received_comment inventory filenr filecomment itemtype_id))
 		|> put_change(:user_id,  user.id)
 		|> validate_required([:name], message: "Darf nicht leer sein")
 	end
@@ -45,7 +56,7 @@ defmodule Heimchen.Item do
 	end
 
 	def longname(item) do
-		Repo.preload(item, :itemtype)
+		item = Repo.preload(item, :itemtype)
 		"#{item.itemtype.name}: #{item.name}"
 	end
 	

@@ -45,7 +45,7 @@
             - for k <- Enum.filter(@item.keywords, fn(k) -> k.category == c end) do
               %li
                 = k.name
-                %a{href="#{item_path(@conn, :delete_keyword, k.id)}"}
+                %a{href="#{item_path(@conn, :delete_keyword, @item.id, k.id)}"}
                   %i.fa.fa-remove
 
 .card-columns

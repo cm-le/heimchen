@@ -69,7 +69,7 @@ defmodule Heimchen.Router do
 		get  "/item/show/:id", ItemController, :show
 		get  "/item/edit/:id", ItemController, :edit
 		get  "/item/add_keyword/:id", ItemController, :add_keyword # sorry for making this "get"
-		get  "/item/delete_keyword/:id", ItemController, :delete_keyword # ~
+		get  "/item/delete_keyword/:item_id/:keyword_id", ItemController, :delete_keyword # ~
 		post "/item/create", ItemController, :create
 		put  "/item/update/:id", ItemController, :update
 

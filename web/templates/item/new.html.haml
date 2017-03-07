@@ -1,0 +1,8 @@
+%h1.page-header Neuer Eintrag
+%row
+  = form_for @changeset, item_path(@conn, :create), fn f ->
+    =render("_item.html", f: f, changeset: @changeset, itemtypes: @itemtypes, people: @people, rooms: @rooms)
+    .form-group.row
+      .offset-sm-2.col-sm-10
+        =submit("Neuen Eintrag anlegen", class: "btn btn-primary")
+  - end 

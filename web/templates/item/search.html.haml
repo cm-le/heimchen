@@ -1,0 +1,18 @@
+- if length(@items) > 0 do
+  %table.table.table-hover
+    %thead
+      %tr
+        %th Bezeichnung
+        %th Kategorie
+        %th Stichwörter
+    %tbody
+      = for item <- @items do
+        %tr
+          %td= link(item.name, to: item_path(@conn, :show, item.id))
+          %td= item.itemtype.name
+          %td= Enum.join(Enum.map(item.keywords, fn(k) -> k.category <> ": " <> k.name end), ", ")
+      - end
+- else
+  .row.page-header
+    .col-xs-12
+      %i Keine Einträge

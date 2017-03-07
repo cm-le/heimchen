@@ -15,6 +15,7 @@ defmodule Heimchen.Person do
 
 		has_many   :people_keywords, Heimchen.PersonKeyword
 		has_many   :imagetags, Heimchen.Imagetag
+		has_many   :items, Heimchen.Item, foreign_key: :received_by_id
 		
 		belongs_to :user, Heimchen.User
 		timestamps
@@ -63,6 +64,11 @@ defmodule Heimchen.Person do
 		"#{p.firstname} #{p.lastname}"
 	end
 
+	def eman(p) do
+		"#{p.lastname}, #{p.firstname}"
+	end
+
+	
 	def keywords(person) do
 		Repo.all from pk in Heimchen.PersonKeyword,
 			where: pk.person_id==^person.id,

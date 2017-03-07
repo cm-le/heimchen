@@ -1,0 +1,39 @@
+.form-group.row
+  %label.col-form-label.col-sm-2(for="item_itemtype_id") Art
+  .col-sm-10
+    =select @f, :itemtype_id, Enum.map(@itemtypes, fn(itt) -> {itt.name, itt.id} end), class: "form-control"
+.form-group.row
+  %label.col-form-label.col-sm-2 Bezeichnung
+  .col-sm-10
+    =text_input @f, :name, placeholder: "Bezeichnung", class: "form-control"
+    =error_tag @f, :name
+.form-group.row
+  %label.col-form-label.col-sm-2 Kommentar
+  .col-sm-10
+    =textarea @f, :comment, class: "form-control"
+    =error_tag @f, :comment
+.form-group.row
+  %label.col-form-label.col-sm-2 Datum
+  .col-sm-3
+    =heimchen_date_precision @f, :date_precision, class: "form-control"
+  =heimchen_date_select @f, :date_on, class: "form-control col-sm-2"
+.form-group.row
+  %label.col-form-label.col-sm-2 Erhalten von
+  .col-sm-10
+    =select @f, :received_by_id, [{"--", nil}] ++  Enum.map(@people, fn(p) -> {Heimchen.Person.eman(p), p.id} end), class: "form-control"
+.form-group.row
+  %label.col-form-label.col-sm-2 Kommentar zum Erhalt
+  .col-sm-10
+    =textarea @f, :received_comment, class: "form-control"
+.form-group.row
+  %label.col-form-label.col-sm-2 Standort
+  .col-sm-3
+    =text_input @f, :inventory, placeholder: "Inventar-Nr", class: "form-control"
+  .col-sm-3
+    =text_input @f, :filenr, placeholder: "Archiv-Nr", class: "form-control"
+  .col-sm-3
+    =select @f, :room_id, [{"--", nil}] ++  Enum.map(@rooms, fn(r) -> {r.name, r.id} end), class: "form-control"
+.form-group.row
+  %label.col-form-label.col-sm-2 Kommentar zur Archivierung
+  .col-sm-10
+    =textarea @f, :file_comment, class: "form-control"

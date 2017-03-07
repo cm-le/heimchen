@@ -1,0 +1,9 @@
+%h1.page-header Eintrag ändern
+%row
+  = form_for @changeset, item_path(@conn, :update, @id), fn f ->
+    =render("_item.html", f: f, changeset: @changeset, itemtypes: @itemtypes, people: @people, rooms: @rooms)
+    .form-group.row
+      .offset-sm-2.col-sm-10
+        =submit("Speichern", class: "btn btn-primary")
+        %a.btn.btn-secondary(href="#{item_path(@conn, :show, @id)}") Abbrechen
+  - end 

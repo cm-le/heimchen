@@ -64,6 +64,17 @@ defmodule Heimchen.Router do
 		get  "/image/del_imagetag/:id", ImageController, :del_imagetag
 		get  "/image/edit_imagetag/:id", ImageController, :edit_imagetag
 		post "/image/update_imagetag/:id", ImageController, :update_imagetag
+
+		get  "/item/new", ItemController, :new
+		post "/item/create", ItemController, :create
+		get  "/item/show/:id", ItemController, :show
+		get  "/item/edit/:id", ItemController, :edit
+		get  "/item/add_keyword/:id", ItemController, :add_keyword # sorry for making this "get"
+		get  "/item/delete_keyword/:id", ItemController, :delete_keyword # ~
+		post "/item/create", ItemController, :create
+		put  "/item/update/:id", ItemController, :update
+
+		
   end
 
   # Other scopes may use custom stacks.

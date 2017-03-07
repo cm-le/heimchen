@@ -1,10 +1,10 @@
-%script(src='#{static_path(@conn, "/js/typeahead.bundle.min.js")}')  
+%script(src='#{static_path(@conn, "/js/typeahead.bundle.min.js")}')
 
 .row.page-header
   .col-xs-6
-    %h1 Person anzeigen
+    %h1 Eintrag anzeigen
   .float-xs-right.col-xs-3
-    %form(action="#{person_path(@conn, :add_keyword, @id)}", method="get")
+    %form(action="#{item_path(@conn, :add_keyword, @id)}", method="get")
       #prefetch-keywords
         .input-group
           %input.typeahead.form-control(type="text", name="keyword", placeholder="Stichwort")
@@ -13,42 +13,43 @@
               %i.fa.fa-plus
     %script
       var bloodHound = new Bloodhound({ datumTokenizer: Bloodhound.tokenizers.whitespace,
-      queryTokenizer: Bloodhound.tokenizers.whitespace, prefetch: '../../keyword/keywords?for=person'});
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      =raw("prefetch: '../../keyword/keywords?for=#{@item.itemtype.sid}'});")
       $('#prefetch-keywords .typeahead').typeahead(null, {name: 'keyword', source: bloodHound });
       bloodHound.clearPrefetchCache(); bloodHound.initialize();
   .float-xs-right
-    %a.btn.btn-outline-primary(href="#{person_path(@conn, :edit, @id)}")
+    %a.btn.btn-outline-primary(href="#{item_path(@conn, :edit, @id)}")
       %i.fa.fa-edit
       Bearbeiten
-
 .row
   .col-xs-12.col-sm-6
-    %h4 
-      = @person.firstname
-      = @person.lastname
-    %p
-      geboren:
-      = heimchen_show_date(@person.born_precision, @person.born_on)
-      - if @person.died_precision > 0 do
-        , gestorben
-        = heimchen_show_date(@person.died_precision, @person.died_on)
-    - if @person.comment do
-      .blockquote=@person.comment
+    %h4="#{@item.name} (#{@item.itemtype.name})"
+    %p=@item.comment
+    %dl
+      - if @item.received_by do
+        %dt Erhalten von
+        %dd
+          =link(Heimchen.Person.name(@item.received_by), to: person_path(@conn, :show, @item.received_by.id))
+          %i=@item.received_comment
+      - if @item.inventory do
+        %dt Inventarnummer
+        %dd= @item.inventory
+
   .col-xs-12.col-sm-6
     %h4 Stichwörter  
     %ul
-      - for c <- Enum.uniq(Enum.map(@keywords, &(&1.category))) do
+      - for c <- Enum.uniq(Enum.map(@item.keywords, fn(k) -> k.category end)) do
         %li
           %b=c
           %ul
-            - for k <- Enum.filter(@keywords, &(&1.category == c)) do
+            - for k <- Enum.filter(@item.keywords, fn(k) -> k.category == c end) do
               %li
                 = k.name
-                %a{href="#{person_path(@conn, :delete_keyword, k.id)}"}
+                %a{href="#{item_path(@conn, :delete_keyword, k.id)}"}
                   %i.fa.fa-remove
 
 .card-columns
-  -for it <- @person.imagetags do
+  -for it <- @item.imagetags do
     .card(style="width: 160px;margin:5px;")
       %a(href="#{image_path(@conn, :show, it.image_id)}")
         .canvas-container(id="#{it.id}_cc")
@@ -65,17 +66,11 @@
         %small.text-muted.float-xs-right
           %a(href="#{image_path(@conn, :del_imagetag, it.id)}")
             %i.fa.fa-remove
-- if length(@person.items)>0 do
-  %h4 Für die Sammlung gestiftet
-  %ul
-    - for it <- @person.items do
-      %li
-        =link(it.name, to: item_path(@conn, :show, it.id))
-        %i
-          =it.received_comment
+
+
 .float-xs-right.footer
   %i.small
     Zuletzt bearbeitet am
-    =show_timestamp(@person.updated_at)
+    =show_timestamp(@item.updated_at)
     von
-    =Heimchen.User.name(@person.user)
+    =Heimchen.User.name(@item.user)

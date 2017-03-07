@@ -1,1 +1,22 @@
-%h1.page-header Suche
+.row.page-header
+  .col-xs-12
+    %h1 Sammlung
+      .float-xs-right
+        =link("Neuer Eintrag", to: item_path(@conn, :new), class: "btn btn-outline-primary")
+
+.input-group    
+  %input.form-control#search_field(autocomplete="off", placeholder="Name, Kommentar, oder #Stichwort")
+  %span.input-group-btn
+    %button.btn.btn-secondary(type="button")
+      %i.fa.fa-search
+%script
+  $(function(){$('#search_field').observe_field(0.5, 
+  function(){if (this.value){$("#result2").show(); $("#result1").hide(); $.get('/item/search/' + encodeURIComponent(this.value), function(html){$('#result3').html(html)})} else{$("#result1").show(); $("#result2").hide();  }});
+  $(function() { $('#search_field').focus()});});
+#result1
+  %h3(style="margin-top: 12px") Kürzlich bearbeit
+  =render(@view_module, "search.html", items: @items, conn: @conn)
+#result2(style="display:none")
+  %h3(style="margin-top: 12px") Suchergebnis
+  #result3
+%script(src='#{static_path(@conn, "/js/jquery.observe_field.js")}')

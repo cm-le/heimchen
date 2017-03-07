@@ -152,3 +152,8 @@ function imagetag_init_draw(container_id) {
 				imagetag_canvas.addEventListener(e, imagetag_canvas_event, false);
 		});
 }
+
+
+// depending on #
+function toggle_inventory() {
+}

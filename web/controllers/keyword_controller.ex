@@ -40,8 +40,13 @@ defmodule Heimchen.KeywordController do
 	end
 
 
-	def keywords(conn, %{"for" => which_keywords}, _) do
-		json conn, ((from k in Keyword, where: k.for_person, # FIXME
+	def keywords(conn, %{"for" => f}, _) do
+		json conn, ((from k in Keyword,
+			where: ((^f == "person" and k.for_person) or
+			        (^f=="THING" and k.for_thing_item) or
+			        (^f=="EVENT" and k.for_event_item) or
+			        (^f=="FILM" and k.for_film_item) or
+			        (^f=="PHOTO" and k.for_photo_item)), 
 			select: %{c: k.category, n: k.name}, order_by: [k.category, k.name])
 			|> Repo.all |> Enum.map(&(&1.c <> ": " <> &1.n)))
 	end

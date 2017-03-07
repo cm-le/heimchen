@@ -20,7 +20,7 @@
     .row
       .col-sm-3 Dateiname:
       .col-sm-9
-        %tt=link(@changeset.data.original_filename, to: image_path(@conn, :image, @id, 4), target: "_blank")
+        %tt=link(@changeset.data.original_filename, to: image_path(@conn, :image, @id, 4))
     .row
       .col-sm-3 Auflösung:
       .col-sm-9

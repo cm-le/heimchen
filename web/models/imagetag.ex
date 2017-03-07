@@ -1,11 +1,13 @@
 require IEx
 defmodule Heimchen.Imagetag do
 	use Heimchen.Web, :model
+	alias Heimchen.Repo
 	
 	schema "imagetags" do
 		belongs_to :image, Heimchen.Image
 		belongs_to :person, Heimchen.Person
-
+		belongs_to :item, Heimchen.Item
+		
 		field :marks, :map
 		field :comment, :string
 		belongs_to :user, Heimchen.User
@@ -13,21 +15,21 @@ defmodule Heimchen.Imagetag do
 	end
 
 	def marklist() do
-		(from p in Heimchen.Person, 
-			select: {p.id, p.firstname, p.lastname}, order_by: [p.lastname, p.firstname])
-		|> Heimchen.Repo.all()
-		|> Enum.map(fn({_id, firstname, lastname}) -> "Person: #{lastname}, #{firstname}" end)
+		(Repo.all(from p in Heimchen.Person, order_by: [p.lastname, p.firstname])
+			|> Enum.map(fn(p) -> "Person: #{p.lastname}, #{p.firstname} [#{p.id}]" end)) ++
+		(Repo.all(from i in Heimchen.Item, preload: [:itemtype], order_by: [:itemtype_id, :name])
+			|> Enum.map(fn(i) -> "#{i.itemtype.name}: #{i.name} [#{i.id}]" end))
 	end
 
 	def find_mark(mark) do
 		m = Regex.named_captures(~r/Person: (?<lastname>[^,]+), (?<firstname>.+)/, mark)
-		person = Heimchen.Repo.get_by(Heimchen.Person, lastname: m["lastname"], firstname: m["firstname"])
+		person = Repo.get_by(Heimchen.Person, lastname: m["lastname"], firstname: m["firstname"])
 		%{:person_id => person.id}
 	end
 
 	def add_person_mark(person_id, image_id, user) do
-		if Heimchen.Repo.get_by(Heimchen.Imagetag, person_id: person_id, image_id: image_id) do 0 else
-			Heimchen.Repo.insert(%Heimchen.Imagetag{image_id: image_id, person_id: person_id, user_id: user.id})
+		if Repo.get_by(Heimchen.Imagetag, person_id: person_id, image_id: image_id) do 0 else
+			Repo.insert(%Heimchen.Imagetag{image_id: image_id, person_id: person_id, user_id: user.id})
 			1
 		end
 	end
@@ -41,7 +43,7 @@ defmodule Heimchen.Imagetag do
 
 	def name(it) do
 		if it.person_id do
-			it = Heimchen.Repo.preload(it, :person)
+			it = Repo.preload(it, :person)
 			Heimchen.Person.name(it.person)
 		else
 			""

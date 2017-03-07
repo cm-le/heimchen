@@ -22,7 +22,7 @@
         - if @current_user do
           %ul.nav.navbar-nav
             %li.nav-item
-              %a.nav-link(href="") Sammlung
+              %a.nav-link(href="#{item_path(@conn, :index)}") Sammlung
             %li.nav-item
               %a.nav-link(href="#{person_path(@conn, :index)}") Personen
             %li.nav-item

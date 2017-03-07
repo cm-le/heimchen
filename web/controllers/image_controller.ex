@@ -38,8 +38,11 @@ defmodule Heimchen.ImageController do
 	def image(conn, %{"id" => id, "size" => size}, _user) do
 		case Repo.get(Heimchen.Image, id) do
 			nil -> resp(conn, 404, "Not found")
-			image -> 
-				send_file(conn, 200, Heimchen.Image.delayed_dir(image) <> "/" <>
+			image ->
+				conn
+				|> put_resp_content_type("application/octet-stream", nil)
+				|> put_resp_header("content-disposition", ~s[attachment; filename="#{image.original_filename}"])
+				|> send_file(200, Heimchen.Image.delayed_dir(image) <> "/" <>
 					%{"1" => "thumb.jpg",
         		"2" => "medium.jpg",
         		"3" => "large.jpg",
@@ -115,7 +118,7 @@ defmodule Heimchen.ImageController do
 		conn
 		|> render("clipboard.html",
 			[images: Heimchen.Repo.all(from i in Heimchen.Image,
-					where: fragment("id = any(?)", ^ids),preload: [imagetags: :person])])
+					where: fragment("id = any(?)", ^ids),preload: [imagetags: [:person, :item]])])
 	end
 
 

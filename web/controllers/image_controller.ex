@@ -31,8 +31,15 @@ defmodule Heimchen.ImageController do
 																clipboard: get_session(conn, :image_clipboard)])
 	end
 
-	def new(conn, _params, _user) do
-		render(conn, "new.html", [])
+	def new(conn, params, _user) do
+		if (params["item_id"] && String.length(params["item_id"]) > 0) do
+			item = Repo.get(Heimchen.Item, params["item_id"])
+		end
+		if (params["person_id"]&& String.length(params["person_id"]) > 0) do
+			person = Repo.get(Heimchen.Person, params["person_id"])
+		end
+		render(conn, "new.html", item: item, person: person,
+			item_id: params["item_id"], person_id: params["person_id"])
 	end
 
 	def image(conn, %{"id" => id, "size" => size}, _user) do
@@ -52,11 +59,22 @@ defmodule Heimchen.ImageController do
 	
 	def create(conn, %{"upload" => upload_params}, user) do
 		images = Heimchen.Image.create(upload_params, user)
-		conn
-		|> put_session(:image_clipboard,
-			Map.merge(get_session(conn, :image_clipboard), Map.new(images, fn i -> {i.id, true} end)))
-		|> put_flash(:success, "#{length(images)} Bild(er) wurde hochgeladen")
-		|> redirect(to: image_path(conn, :index))
+		cond do
+			upload_params["item_id"] && String.length(upload_params["item_id"])>0  ->
+				conn
+				|> put_flash(:success, "#{length(images)} Bild(er) wurde hochgeladen")
+				|> redirect(to: item_path(conn, :show, upload_params["item_id"]))
+		  upload_params["person_id"] && String.length(upload_params["person_id"])>0 ->
+				conn
+				|> put_flash(:success, "#{length(images)} Bild(er) wurde hochgeladen")
+				|> redirect(to: person_path(conn, :show, upload_params["person_id"]))
+			true ->
+				conn
+				|> put_session(:image_clipboard,
+					Map.merge(get_session(conn, :image_clipboard), Map.new(images, fn i -> {i.id, true} end)))
+				|> put_flash(:success, "#{length(images)} Bild(er) wurde hochgeladen")
+				|> redirect(to: image_path(conn, :index))
+		end
 	end
 
 	def show(conn, %{"id" => id}, user) do

@@ -20,12 +20,20 @@
     %a.btn.btn-outline-primary(href="#{person_path(@conn, :edit, @id)}")
       %i.fa.fa-edit
       Bearbeiten
+  .float-xs-right.col-xs-1
+    %a.btn.btn-outline-primary(href="#{image_path(@conn, :new, person_id: @id)}")
+      %i.fa.fa-upload
 
+      
 .row
   .col-xs-12.col-sm-6
     %h4 
       = @person.firstname
       = @person.lastname
+      - if @person.gender == "m" do
+        %i.fa.fa-male
+      - else
+        %i.fa.fa-female
     %p
       geboren:
       = heimchen_show_date(@person.born_precision, @person.born_on)

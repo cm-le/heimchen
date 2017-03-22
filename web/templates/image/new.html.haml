@@ -4,6 +4,8 @@
     .form-group.row
       %label.col-form-label.col-sm-2(for="upload_file") Datei
       .col-sm-10
+        =hidden_input f, :item_id, value: @item_id
+        =hidden_input f, :person_id, value: @person_id
         =file_input f, :file, class: "form-control"
         %p.form-text.text-muted
           Einzelne Bild-Datei in einem Standard-Format (JPEG, PNG) oder eine ZIP-Datei mit solchen Dateien
@@ -15,3 +17,13 @@
       .col-sm-10.offset-sm-2
         %button.btn.btn-primary(type="submit") Hochladen
   - end
+.row
+  .col-sm-10.offset-sm-2
+    - if @item_id do
+      Alle Bilddateien werden direkt
+      =link("#{@item.name}", to: item_path(@conn, :show, @item.id))
+      zugeordnet
+    - if @person_id do
+      Alle Bilddateien werden direkt
+      =link("#{@person.firstname} #{@person.lastname}", to: person_path(@conn, :show, @person.id))
+      zugeordnet

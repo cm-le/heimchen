@@ -3,6 +3,7 @@ defmodule Heimchen.Image do
 	use Heimchen.Web, :model
 	alias Heimchen.Person
 	alias Heimchen.Repo
+	alias Heimchen.Imagetag
 
 	@base_path  Application.app_dir(:heimchen, "uploads")
 	@image_extensions [".jpg", ".jpeg", ".png", ".gif"]
@@ -34,10 +35,18 @@ defmodule Heimchen.Image do
 		resolution(zoom)
 	end
 	
-	def create_one(file_path,original_filename, comment, user) do
+	def create_one(file_path,original_filename, comment, item_id, person_id, user) do
 		{:ok, image} = Repo.insert(changeset(%Heimchen.Image{},
 					%{:comment => comment,
 						:original_filename => original_filename}, user))
+		case Integer.parse(item_id) do
+			{i, _} -> Imagetag.add_item_mark(i, image.id, user)
+			_ -> :error
+		end
+		case Integer.parse(person_id) do
+			{i, _} -> Imagetag.add_person_mark(i, image.id, user)
+			_ -> :error
+		end
 		spawn fn -> amend(image, file_path) end
 		image
 	end
@@ -99,7 +108,8 @@ defmodule Heimchen.Image do
 		end
 	end
 	
-	def create(%{"file" => file, "comment" => comment}, user) do
+	def create(%{"file" => file, "comment" => comment,
+							 "item_id" => item_id, "person_id" => person_id}, user) do
 		{dirname, basename, extension} =
 		  {Path.dirname(file.path), Path.basename(file.path), Path.extname(file.filename)}
 		if String.downcase(extension) == ".zip" do
@@ -107,11 +117,12 @@ defmodule Heimchen.Image do
 			{output2, _} = System.cmd("unzip", ["-o", basename], cd: dirname)
 			String.split(output, "\n", trim: true)
 			|> Enum.filter(fn(filename) ->
-				Enum.member?(@image_extensions, String.downcase(Path.extname(filename))) end)
+				!String.starts_with?(filename, ".") &&
+					Enum.member?(@image_extensions, String.downcase(Path.extname(filename))) end)
 			|> Enum.map(fn(filename) ->
-				create_one(dirname <> "/" <> filename, Path.basename(filename), comment, user) end)
+				create_one(dirname <> "/" <> filename, Path.basename(filename), comment, item_id, person_id, user) end)
 		else
-			create_one(file.path, file.filename, comment, user)
+			[create_one(file.path, file.filename, comment, item_id, person_id, user)]
 		end
 	end
 		

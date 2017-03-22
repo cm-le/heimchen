@@ -21,6 +21,10 @@
     %a.btn.btn-outline-primary(href="#{item_path(@conn, :edit, @id)}")
       %i.fa.fa-edit
       Bearbeiten
+  .float-xs-right.col-xs-1
+    %a.btn.btn-outline-primary(href="#{image_path(@conn, :new, item_id: @id)}")
+      %i.fa.fa-upload
+
 .row
   .col-xs-12.col-sm-6
     %h4="#{@item.name} (#{@item.itemtype.name})"

@@ -23,7 +23,7 @@ defmodule Heimchen.Person do
 	
 	def changeset(model, params, user) do
 		model
-		|> cast(params, ~w(lastname firstname born_on born_precision died_on died_precision comment))
+		|> cast(params, ~w(lastname firstname born_on born_precision died_on died_precision gender comment))
 		|> put_change(:user_id,  user.id)
 		|> validate_required([:lastname], message: "Darf nicht leer sein")
 	end

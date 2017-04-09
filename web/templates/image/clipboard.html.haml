@@ -34,10 +34,10 @@
               - for it <- image.imagetags do
                 - if it.person_id do
                   %a(href="#{person_path(@conn, :show, it.person_id)}")
-                    ="#{it.person.firstname} #{it.person.lastname}"
+                    ="#{it.person.firstname}"
+                    ="#{it.person.lastname}"
                 - if it.item_id do
                   %a(href="#{item_path(@conn, :show, it.item_id)}")
                     =Heimchen.Item.longname(it.item)
       .card-footer
         %i.fa.fa-ban.spanlink(onclick="image_cp_remove(#{image.id})", id="image_cp_#{image.id}")
-        

@@ -18,6 +18,10 @@ defmodule Heimchen.Keyword do
 		field :for_thing_item, :boolean
 		
 		belongs_to :user, Heimchen.User
+
+		many_to_many :people, Heimchen.Person, join_through: "people_keywords"
+		many_to_many :items,  Heimchen.Item,   join_through: "item_keywords"
+
 		timestamps
 	end
 	

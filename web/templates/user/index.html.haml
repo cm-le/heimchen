@@ -11,7 +11,7 @@
       %th Aktiv
       %th Admin
   %tbody
-    = for user <- @users do
+    - for user <- @users do
       %tr
         %td= link(User.name(user), to: user_path(@conn, :show, user.id))
         %td= user.username
@@ -25,6 +25,3 @@
             %i.fa.fa-check
           - else
             %i.fa.fa-ban
-
-    - end
-

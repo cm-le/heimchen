@@ -32,7 +32,7 @@ defmodule Heimchen.Person do
 	def  with_keywords(q) do
 		q |>
 			select([p], {p,
-									(fragment("(select string_agg( k.category || ':' || k.name, ', ') from people_keywords pk, keywords k where pk.keyword_id=k.id and pk.person_id=p0.id)"))})
+										(fragment("(select string_agg( k.category || ':' || k.name, ', ') from people_keywords pk, keywords k where pk.keyword_id=k.id and pk.person_id=p0.id)"))})
 		|> order_by([:lastname, :firstname])
 		|> limit(100)
 	end

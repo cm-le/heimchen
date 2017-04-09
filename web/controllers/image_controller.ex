@@ -110,18 +110,18 @@ defmodule Heimchen.ImageController do
 		conn
 		|> put_session(:image_clipboard,
 			Map.merge(get_session(conn, :image_clipboard), %{String.to_integer(id) => true}))
-		|> json "ok"
+		|> json("ok")
 	end
 
 	def mark(conn, %{"what" => "rm", "id" => id}, user) do
 		conn
 		|> put_session(:image_clipboard,
 			Map.delete(get_session(conn, :image_clipboard), String.to_integer(id)))
-		|> json "ok"
+		|> json("ok")
 	end
 
 	def marklist(conn, _, _user) do
-		conn |> json Heimchen.Imagetag.marklist()
+		conn |> json(Heimchen.Imagetag.marklist())
 	end
 
 	def add_and_show_clipboard(conn, %{"id" => id}, _user) do

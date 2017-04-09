@@ -4,16 +4,16 @@
       .float-xs-right
         =link("Datei hochladen", to: image_path(@conn, :new), class: "btn btn-outline-primary")
       .float-xs-right(style="padding-right: 8px")
-        %a(href="#{image_path(@conn, :clipboard)}", class: "btn btn-outline-primary")
+        %a{href: "#{image_path(@conn, :clipboard)}", class: "btn btn-outline-primary"}
           Zwischenablage (
           %span#clipboard-count
             =length(Map.keys(@clipboard))
           =")"
 .card-columns        
   - for %{image: i, hours: hours, days: days, minutes: minutes} <- @images do
-    .card(style="width: 160px;margin:5px;")
-      %a(href="#{image_path(@conn, :show, i.id)}")
-        %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, i.id, 1)}",title="#{i.original_filename}")
+    .card{style: "width: 160px;margin:5px;"}
+      %a{href: "#{image_path(@conn, :show, i.id)}"}
+        %img.card-img-top.img-fluid{src: "#{image_path(@conn, :image, i.id, 1)}", title: "#{i.original_filename}"}
         .card-block  
           %p.card-subtitle
             %small.text-muted
@@ -21,25 +21,27 @@
                 ="#{i.original_filename}"
               - else 
                 - for it <- i.imagetags do
-                  %a(href="#{if it.person_id do person_path(@conn, :show, it.person_id) else item_path(@conn, :show, it.item_id) end}")
-                    =Heimchen.Imagetag.name(it)
+                  - if it.person_id do
+                    =link(Heimchen.Imagetag.name(it), person_path(@conn, :show, it.person_id))
+                  - if it.item_id do
+                    =link(Heimchen.Imagetag.name(it), item_path(@conn, :show, it.item_id))
       .card-footer
         - if @clipboard[i.id] do
-          %i.fa.fa-check.spanlink(onclick="image_cp_toggle(#{i.id})", id="image_cp_#{i.id}")
+          %i.fa.fa-check.spanlink{onclick: "image_cp_toggle(#{i.id})", id="image_cp_#{i.id}"}
         - else
-          %i.fa.fa-shopping-cart.spanlink(onclick="image_cp_toggle(#{i.id})", id="image_cp_#{i.id}")
+          %i.fa.fa-shopping-cart.spanlink{onclick: "image_cp_toggle(#{i.id})", id="image_cp_#{i.id}"}
         %small.text-muted.float-xs-right
           - if days == 0 do
             - if hours == 0 do
               - if minutes < 3 do
-                = " gerade eben"
+                =" gerade eben"
               - else
                 = " vor #{minutes} min "
             - else
-              = " vor #{hours} St. #{minutes} min"
+              = " vor #{hours} St."
+              = " #{minutes} min"
           - else
             - if days == 1 do
               = "vorgestern"
             - else
               = "vor #{days+1} Tagen"
-      

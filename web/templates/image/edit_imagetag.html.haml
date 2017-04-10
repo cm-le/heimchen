@@ -25,6 +25,10 @@
         =textarea f, :comment, class: "form-control", value: @imagetag.comment || ""
         =hidden_input f, :marks
       .row.form-group
+        %label.form-check-label
+          =checkbox f, :is-primary, class: "form-check-input", value: @imagetag.is_primary
+          Bevorzuges Bild
+      .row.form-group
         =submit "Markierung speichern", class: "btn btn-primary"
       
 - end 

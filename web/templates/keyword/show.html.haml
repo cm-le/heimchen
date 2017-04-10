@@ -1,8 +1,29 @@
-%h1.page-header Stichwort bearbeiten
-%row
-  = form_for @changeset, keyword_path(@conn, :update, @id), fn f ->
-    =render("_keyword.html", f: f, categories: @categories, changeset: @changeset)
-    .form-group.row
-      .offset-sm-2.col-sm-10
-        =submit("Änderungen speichern", class: "btn btn-primary")
-  - end 
+.row.page-header
+  .col-xs-6
+    %h1 Stichwort anzeigen
+  .float-xs-right
+    %a.btn.btn-outline-primary(href="#{keyword_path(@conn, :edit, @id)}")
+      %i.fa.fa-edit
+      Bearbeiten
+.row
+
+%h4 
+  = @keyword.category
+  = ": "
+  = @keyword.name
+
+- if @keyword.comment do
+  .blockquote=@keyword.comment
+
+- if len(@keyword.people) > 0 do
+  %h5 Personen
+  - for p <- @keyword.people do
+    = link("#{p.firstname} #{p.lastname}", to: person_path(@conn, :show, p.id))
+    = p.comment	     
+
+- if len(@keyword.items) > 0 do
+  %h5 Sammlung
+  - for i <- @keyword.items do
+    = link(i.name, to: item_path(@conn, :show, i.id))
+    = i.comment	     
+	     

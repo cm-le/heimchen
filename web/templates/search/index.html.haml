@@ -1,0 +1,27 @@
+%h2 Suchergebnisse
+
+- if @results == [] do
+  %i keine Ergebnisse
+- else
+  %table.table.table-striped
+    %thead
+      %tr
+        %th Kategorie
+        %th Name
+        %th Kommentar
+        %th Bild
+    %tbody
+      - for r <- @results do
+        %tr
+          %td=@catnames[r.what]
+          %td=r.comment
+          %td
+            - if r.what == "person" do
+              =link(r.name, to: person_path(@conn, "show", r.id))
+            - if r.what == "item" do
+              =link(r.name, to: item_path(@conn, "show", r.id))
+            - if r.what == "image" do
+              =link(r.name, to: image_path(@conn, "show", r.id))
+          %td
+            - if r.image_id do
+              %img(src="#{image_path(@conn, :image, r.image_id, 1)}")

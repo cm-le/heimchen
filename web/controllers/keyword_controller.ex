@@ -51,10 +51,18 @@ defmodule Heimchen.KeywordController do
 			|> Repo.all |> Enum.map(&(&1.c <> ": " <> &1.n)))
 	end
 	
-	def show(conn, %{"id" => id}, user) do
+	def edit(conn, %{"id" => id}, user) do
 		render(conn, "show.html", changeset: Keyword.changeset(Repo.get(Keyword,id), :invalid, user),
 			id: id)
 	end
+
+
+	def show(conn, %{"id" => id}, user) do
+		render(conn, "show.html",
+			  				 keyword: Repo.get(Keyword,id) |> Repo.preload([:people, :items, :user]),
+								 id: id)
+	end
+
 
 	def new(conn, _params, user) do
 		render(conn, "new.html", changeset: Keyword.changeset(%Keyword{}, :invalid, user))

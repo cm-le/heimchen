@@ -35,6 +35,7 @@ defmodule Heimchen.Router do
 		get  "/keyword/keywords", KeywordController, :keywords
 		get  "/keyword/show/:id", KeywordController, :show
 		get  "/keyword/new", KeywordController, :new
+		get  "/keyword/edit/:id", KeywordController, :edit
 		post "/keyword/create", KeywordController, :create
 		put  "/keyword/update/:id", KeywordController, :update
 

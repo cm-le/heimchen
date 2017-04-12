@@ -38,13 +38,13 @@ Repo.insert!(%Heimchen.Itemtype{
 
 
 Repo.insert!(%Heimchen.Room{
-			name: "Archiv",
+			name: "Archiv"
 })
 
 Repo.insert!(%Heimchen.Room{
-			name: "Keller",
+			name: "Keller"
 })
 
 Repo.insert!(%Heimchen.Room{
-			name: "Ausstellungsraum",
+			name: "Ausstellungsraum"
 })

@@ -15,15 +15,14 @@
 - if @keyword.comment do
   .blockquote=@keyword.comment
 
-- if len(@keyword.people) > 0 do
+- if !Enum.empty?(@keyword.people)  do
   %h5 Personen
   - for p <- @keyword.people do
     = link("#{p.firstname} #{p.lastname}", to: person_path(@conn, :show, p.id))
     = p.comment	     
 
-- if len(@keyword.items) > 0 do
+- if !Enum.empty?(@keyword.items)  do
   %h5 Sammlung
   - for i <- @keyword.items do
     = link(i.name, to: item_path(@conn, :show, i.id))
-    = i.comment	     
-	     
+    = i.comment     

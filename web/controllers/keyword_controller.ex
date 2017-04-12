@@ -52,7 +52,7 @@ defmodule Heimchen.KeywordController do
 	end
 	
 	def edit(conn, %{"id" => id}, user) do
-		render(conn, "show.html", changeset: Keyword.changeset(Repo.get(Keyword,id), :invalid, user),
+		render(conn, "edit.html", changeset: Keyword.changeset(Repo.get(Keyword,id), :invalid, user),
 			id: id)
 	end
 

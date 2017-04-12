@@ -20,14 +20,14 @@
               - if i.imagetags == [] do
                 ="#{i.original_filename}"
               - else 
-                - for it <- i.imagetags do
+                - for it <- Enum.take(i.imagetags,3) do
                   - if it.person_id do
-                    =link(Heimchen.Imagetag.name(it), person_path(@conn, :show, it.person_id))
+                    =link(Heimchen.Imagetag.name(it), to: person_path(@conn, :show, it.person_id))
                   - if it.item_id do
-                    =link(Heimchen.Imagetag.name(it), item_path(@conn, :show, it.item_id))
+                    =link(Heimchen.Imagetag.name(it), to: item_path(@conn, :show, it.item_id))
       .card-footer
         - if @clipboard[i.id] do
-          %i.fa.fa-check.spanlink{onclick: "image_cp_toggle(#{i.id})", id="image_cp_#{i.id}"}
+          %i.fa.fa-check.spanlink{onclick: "image_cp_toggle(#{i.id})", id: "image_cp_#{i.id}"}
         - else
           %i.fa.fa-shopping-cart.spanlink{onclick: "image_cp_toggle(#{i.id})", id="image_cp_#{i.id}"}
         %small.text-muted.float-xs-right

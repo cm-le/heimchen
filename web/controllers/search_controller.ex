@@ -16,7 +16,12 @@ defmodule Heimchen.SearchController do
 
 
 	def index(conn, %{"search" => search}) do
-    # render the search result based in db function search_all
+		case Ecto.Adapters.SQL.query(Heimchen.Repo, "select * from search_all($1)", [search]) do
+			{:ok, %{rows: results, num_rows: _}} ->
+				render(conn, "index.html", layout: {Heimchen.LayoutView, "empty.html"}, results: results)
+			_ ->
+				render(conn, "index.html", layout: {Heimchen.LayoutView, "empty.html"}, results: [])
+		end
   end		
 
 

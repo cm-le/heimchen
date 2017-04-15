@@ -3,16 +3,29 @@
     %thead
       %tr
         %th Name
-        %th Geburtsdatum
-        %th Sterbedatum
+        %th Lebensdaten
+        %th Bild
         %th Stichwörter
+        %th
     %tbody
       = for {person, keywords} <- @people do
         %tr
           %td= link(Person.name(person), to: person_path(@conn, :show, person.id))
-          %td= heimchen_show_date(person.born_precision, person.born_on)
-          %td= heimchen_show_date(person.died_precision, person.died_on)
+          %td
+            - if (person.born_precision && person.born_precision > 0) do
+              •
+              = heimchen_show_date(person.born_precision, person.born_on)
+            - if (person.died_precision && person.died_precision > 0) do
+              †
+              = heimchen_show_date(person.died_precision, person.died_on)
+          %td
+            - if !Enum.empty?(person.imagetags) do
+              %img(src= "#{image_path(@conn, :image, List.first(person.imagetags).image_id, 1)}")
           %td= keywords
+          %td
+            %a{href: "#{person_path(@conn, :edit, person.id)}"}
+              %i.fa.fa-edit
+
       - end
 - else
   .row.page-header

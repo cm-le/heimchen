@@ -45,7 +45,7 @@ defmodule Heimchen.Item do
 
 	def recently_updated() do
 		Repo.all from i in Heimchen.Item,
-			preload: [:itemtype, :keywords],
+			preload: [:itemtype, :keywords, :imagetags],
 			order_by: [desc: i.updated_at], limit: 100
 	end
 	

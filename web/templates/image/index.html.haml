@@ -29,7 +29,7 @@
         - if @clipboard[i.id] do
           %i.fa.fa-check.spanlink{onclick: "image_cp_toggle(#{i.id})", id: "image_cp_#{i.id}"}
         - else
-          %i.fa.fa-shopping-cart.spanlink{onclick: "image_cp_toggle(#{i.id})", id="image_cp_#{i.id}"}
+          %i.fa.fa-shopping-cart.spanlink{onclick: "image_cp_toggle(#{i.id})", id: "image_cp_#{i.id}"}
         %small.text-muted.float-xs-right
           - if days == 0 do
             - if hours == 0 do

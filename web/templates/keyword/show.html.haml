@@ -19,10 +19,12 @@
   %h5 Personen
   - for p <- @keyword.people do
     = link("#{p.firstname} #{p.lastname}", to: person_path(@conn, :show, p.id))
-    = p.comment	     
+    = p.comment
+    %br
 
 - if !Enum.empty?(@keyword.items)  do
   %h5 Sammlung
   - for i <- @keyword.items do
     = link(i.name, to: item_path(@conn, :show, i.id))
     = i.comment     
+    %br

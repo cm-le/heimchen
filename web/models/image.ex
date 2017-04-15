@@ -128,7 +128,7 @@ defmodule Heimchen.Image do
 		
 	def changeset(model, params, user) do
 		changeset(model, params)
-		|> put_assoc(:user, user)
+		|> put_change(:user_id,  user.id)
 	end
 
 

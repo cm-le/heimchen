@@ -11,6 +11,7 @@ defmodule Heimchen.Imagetag do
 		
 		field :marks, :map
 		field :comment, :string
+		field :is_primary, :boolean
 		belongs_to :user, Heimchen.User
 		timestamps
 	end
@@ -75,9 +76,7 @@ defmodule Heimchen.Imagetag do
 
 	def changeset(model, params \\ :invalid) do
 		model
-		|> cast(params, ~w(comment))
+		|> cast(params, ~w(comment is_primary))
 	end
-
-
 	
 end

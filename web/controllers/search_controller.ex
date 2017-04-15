@@ -1,3 +1,4 @@
+require IEx
 defmodule Heimchen.SearchController do
 	use Heimchen.Web, :controller
 
@@ -15,7 +16,10 @@ defmodule Heimchen.SearchController do
 	end
 
 
-	def index(conn, %{"search" => search}) do
+	def index(conn, %{"id" => search, "complete" => complete}) do
+		if !(complete == "1") do
+			search = Regex.replace(~r/(\w+)/, search, "\\1:* ")
+		end
 		case Ecto.Adapters.SQL.query(Heimchen.Repo, "select * from search_all($1)", [search]) do
 			{:ok, %{rows: results, num_rows: _}} ->
 				render(conn, "index.html", layout: {Heimchen.LayoutView, "empty.html"}, results: results)

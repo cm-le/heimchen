@@ -37,7 +37,14 @@
             - else
               %li.nav-item
                 %a.nav-link(href="#{user_path(@conn, :show,  @current_user.id)}") Profil
-              
+            %li.nav-item
+              .input-group
+                %span.input-group-addon{title: "Nur vollständige Wörter"}
+                  %input#search-prefix{type: "checkbox"}
+                %input.form-control#searchbox{type: "text", placeholder: "Suche", onkeyup: "mainsearch()"}
+                %span.input-group-btn
+                  %button.btn.btn-secondary{type: "button"}
+                    %i.fa.fa-search
         %ul.nav.navbar-nav.float-xs-right
           %li.nav-item
             - if @current_user do
@@ -57,9 +64,9 @@
           =get_flash(@conn, :success)
           %script window.setTimeout(function(){$(".alert-success").remove()},5000)
 
-      %row
-        %main(role="main")
-          = render @view_module, @view_template, assigns
+      %row#searchresult
+      %row#maincontent
+        = render @view_module, @view_template, assigns
 
     %script(src='#{static_path(@conn, "/js/tether.min.js")}')
     %script(src='#{static_path(@conn, "/js/bootstrap.min.js")}')  

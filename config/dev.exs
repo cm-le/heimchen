@@ -32,6 +32,8 @@ config :logger, :console, format: "[$level] $message\n"
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
 
+config :heimchen, :googleapikey, "AIzaSyD-tpgkm4HNAQ-YOZTwIb_ZKe_lEq3P5bU"
+
 # Configure your database
 config :heimchen, Heimchen.Repo,
   adapter: Ecto.Adapters.Postgres,

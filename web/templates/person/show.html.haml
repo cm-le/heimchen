@@ -51,7 +51,7 @@
           %ul
             - for k <- Enum.filter(@keywords, &(&1.category == c)) do
               %li
-                = k.name
+                = link(k.name, to: keyword_path(@conn, :show, k.keyword_id))
                 %a{href="#{person_path(@conn, :delete_keyword, k.id)}"}
                   %i.fa.fa-remove
 

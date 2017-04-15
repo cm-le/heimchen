@@ -73,7 +73,7 @@ defmodule Heimchen.Person do
 		Repo.all from pk in Heimchen.PersonKeyword,
 			where: pk.person_id==^person.id,
 			join: k in assoc(pk, :keyword),
-			select: %{id: pk.id, name: k.name, category: k.category},
+			select: %{id: pk.id, name: k.name, category: k.category, keyword_id: k.id},
 			order_by: [k.category, k.name]
 	end
 	

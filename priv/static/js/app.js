@@ -153,7 +153,23 @@ function imagetag_init_draw(container_id) {
 		});
 }
 
-
-// depending on #
-function toggle_inventory() {
+function mainsearch() {
+		var s = $("#searchbox").val();
+		if (s.length < 2) {
+				$("#searchresult").hide();
+				$("#maincontent").show();
+		} else {
+				// after 100ms show a spinner
+				var showWaiting=window.setTimeout(function() {
+						$("#searchresult").html('<center><i class="fa fa-spinner fa-spin" style="font-size:150px"></i></center>')},
+																					100);
+				$("#searchresult").show();
+				$("#maincontent").hide();
+				$.get("/search/index/" + encodeURIComponent(s) +
+							"?complete=" + ($("#search-prefix").is(':checked') ? '1' : '0'),
+							function(fragment) {
+									window.clearTimeout(showWaiting);
+									$("#searchresult").html(fragment);
+							});
+		}
 }

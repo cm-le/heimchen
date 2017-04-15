@@ -74,7 +74,7 @@ defmodule Heimchen.Router do
 		post "/item/create", ItemController, :create
 		put  "/item/update/:id", ItemController, :update
 
-		
+		get  "/search/index/:id", SearchController, :index
   end
 
   # Other scopes may use custom stacks.

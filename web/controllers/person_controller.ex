@@ -56,7 +56,8 @@ defmodule Heimchen.PersonController do
 					redirect(to: person_path(conn, :index))
 			pk ->
 				Repo.delete(pk)
-				conn |> put_flash(:success, "Stichwort gelöscht") |> redirect(to: person_path(conn, :show, pk.person_id))
+				conn |> put_flash(:success, "Stichwort gelöscht") |>
+					redirect(to: person_path(conn, :show, pk.person_id))
 		end
 	end
 

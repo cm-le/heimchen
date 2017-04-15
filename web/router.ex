@@ -78,6 +78,7 @@ defmodule Heimchen.Router do
 		get  "/image/marklist", ImageController, :marklist
 		get  "/image/del_imagetag/:id", ImageController, :del_imagetag
 		get  "/image/edit_imagetag/:id", ImageController, :edit_imagetag
+		get  "/image/rotate/:id", ImageController, :rotate
 		get  "/image/delete_all", ImageController, :delete_all
 		post "/image/update_imagetag/:id", ImageController, :update_imagetag
 

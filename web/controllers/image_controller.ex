@@ -103,6 +103,17 @@ defmodule Heimchen.ImageController do
 	end	
 
 
+	def rotate(conn, %{"id" => id}, _user) do
+		case Repo.get(Heimchen.Image, id) do
+			image ->
+				Heimchen.Image.rotate(image)
+				conn
+				|> render("show.html",
+					[id: id, clipboard_n: length(Map.keys(get_session(conn, :image_clipboard))),
+					 changeset: Heimchen.Image.changeset(image |> Repo.preload(imagetags: :person), :invalid)])
+		end
+	end
+	
 	def update(conn, %{"id" => id, "image" => image_params}, user) do
 		changeset = Heimchen.Image.changeset(Repo.get(Heimchen.Image, id), image_params, user)
 		case Repo.update(changeset) do

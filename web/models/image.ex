@@ -85,6 +85,16 @@ defmodule Heimchen.Image do
 	def orig_name(image) do
 		"orig" <> String.downcase(Path.extname(image.original_filename))
 	end
+
+	def rotate(image) do
+		for file <- ["thumb.jpg", "medium.jpg", "large.jpg", orig_name(image)] do
+				System.cmd("gm",["convert", file, "-rotate", "90", "rotated_" <> file],
+					cd: dir(image))
+				File.cd(dir(image))
+				File.rename("rotated_" <> file, file)
+		end
+		Repo.update(changeset(image, %{orig_w: image.orig_h, orig_h: image.orig_w})) 
+	end
 	
 	def amend(image, file_path) do 
 		target_path = dir(image)

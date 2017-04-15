@@ -13,8 +13,11 @@
         .col-sm-9
           =textarea f, :comment, class: "form-control"
       .form-group.row
-        .col-sm-10.offset-sm-3
+        .col-sm-5.offset-sm-3
           %button.btn.btn-primary(type="submit") Speichern
+        .col-sm-4
+          %a.btn.btn-outline-primary(href="#{image_path(@conn, :rotate, @id)}", title="Bild rotieren")
+            %i.fa.fa-refresh
     - end
   .col-sm-8
     .row

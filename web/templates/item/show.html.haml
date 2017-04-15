@@ -28,6 +28,8 @@
 .row
   .col-xs-12.col-sm-6
     %h4="#{@item.name} (#{@item.itemtype.name})"
+    - if @item.date_precision  && @item.date_precision > 0 do
+      %i= heimchen_show_date(@item.date_precision, @item.date_on)
     %p=@item.comment
     %dl
       - if @item.received_by do

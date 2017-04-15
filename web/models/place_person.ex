@@ -3,6 +3,7 @@ defmodule Heimchen.PlacePerson do
 
 	schema "places_people" do
 		field      :start_on, Ecto.Date
+		field      :start_precision, :integer
 		field      :comment, :string
 		belongs_to :place, Heimchen.Place
 		belongs_to :person, Heimchen.Person
@@ -13,9 +14,9 @@ defmodule Heimchen.PlacePerson do
 
 	def changeset(model, params, user) do
 		model
-		|> cast(params, ~w(person_id place_id comment start_on))
+		|> cast(params, ~w(person_id place_id comment start_on start_precision))
 		|> assoc_constraint(:place, message: "Ort existiert nicht")
-		|> assoc_constraint(:item, message: "Nicht in der Sammlung gefunden")
+		|> assoc_constraint(:person, message: "Person existiert nicht")
 		|> put_change(:user_id,  user.id)
 	end
 	

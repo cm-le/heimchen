@@ -21,9 +21,8 @@
       %i.fa.fa-edit
       Bearbeiten
   .float-xs-right.col-xs-1
-    %a.btn.btn-outline-primary(href="#{image_path(@conn, :new, person_id: @id)}")
+    %a.btn.btn-outline-primary(href="#{image_path(@conn, :new, person_id: @id)}", title="Bilder hochladen")
       %i.fa.fa-upload
-
       
 .row
   .col-xs-12.col-sm-6
@@ -43,18 +42,31 @@
     - if @person.comment do
       .blockquote=@person.comment
   .col-xs-12.col-sm-6
-    %h4 Stichwörter  
-    %ul
-      - for c <- Enum.uniq(Enum.map(@keywords, &(&1.category))) do
-        %li
-          %b=c
-          %ul
-            - for k <- Enum.filter(@keywords, &(&1.category == c)) do
-              %li
-                = link(k.name, to: keyword_path(@conn, :show, k.keyword_id))
-                %a{href="#{person_path(@conn, :delete_keyword, k.id)}"}
-                  %i.fa.fa-remove
+    - if !Enum.empty?(@keywords) do
+      %h4 Stichwörter  
+      %ul
+        - for c <- Enum.uniq(Enum.map(@keywords, &(&1.category))) do
+          %li
+            %b=c
+            %ul
+              - for k <- Enum.filter(@keywords, &(&1.category == c)) do
+                %li
+                  = link(k.name, to: keyword_path(@conn, :show, k.keyword_id))
+                  %a{href="#{person_path(@conn, :delete_keyword, k.id)}"}
+                    %i.fa.fa-remove
+    - if !Enum.empty?(@person.places_people) do
+      %h4 Orte
+      %ul
+        - for pp <- @person.places_people do
+          %li
+            Datum:
+            =heimchen_show_date(pp.start_precision, pp.start_on)
+            =link(pp.place.city <> " " <> pp.place.address, to: place_path(@conn, :show, pp.place_id))
+            =pp.comment
+            %a{href="#{person_path(@conn, :delete_place, pp.id)}"}
+              %i.fa.fa-remove
 
+    
 .card-columns
   -for it <- @person.imagetags do
     .card(style="width: 160px;margin:5px;")

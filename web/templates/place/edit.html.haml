@@ -1,0 +1,9 @@
+%h1.page-header Ort ändern
+%row
+  = form_for @changeset, place_path(@conn, :update, @id), fn f ->
+    =render("_place.html", f: f, changeset: @changeset, conn: @conn)
+    .form-group.row
+      .offset-sm-2.col-sm-10
+        =submit("Speichern", class: "btn btn-primary")
+        %a.btn.btn-secondary(href="#{place_path(@conn, :show, @id)}") Abbrechen
+  - end 

@@ -31,7 +31,7 @@
         %script
           imagetag_colorindex=0
         - Enum.map @changeset.data.imagetags, fn(it) ->
-          %a{href: "#{if it.person_id do person_path(@conn, :show, it.person_id) else item_path(@conn, :show, it.item_id) end}",id="itlink_#{it.id}"}
+          %a{href: "#{imagetag_backlink(@conn, it)}",id="itlink_#{it.id}"}
             %i.fa.fa-link(id="connection_#{it.id}")
               %script
                 =raw("$('#connection_#{it.id}').css('color', imagetag_colors[imagetag_colorindex]);")

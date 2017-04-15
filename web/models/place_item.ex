@@ -3,6 +3,7 @@ defmodule Heimchen.PlaceItem do
 
 	schema "places_items" do
 		field      :start_on, Ecto.Date
+		field      :start_precision, :integer
 		field      :comment, :string
 		belongs_to :place, Heimchen.Place
 		belongs_to :item, Heimchen.Item

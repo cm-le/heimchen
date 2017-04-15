@@ -20,6 +20,8 @@ defmodule Heimchen.Imagetag do
 	def marklist() do
 		(Repo.all(from p in Heimchen.Person, order_by: [p.lastname, p.firstname])
 			|> Enum.map(fn(p) -> "Person: #{p.lastname}, #{p.firstname} [#{p.id}]" end)) ++
+		(Repo.all(from p in Heimchen.Place, order_by: [p.city, p.address])
+			|> Enum.map(fn(p) -> "Ort: #{p.city} #{p.address} [#{p.id}]" end)) ++
 		(Repo.all(from i in Heimchen.Item, preload: [:itemtype], order_by: [:itemtype_id, :name])
 			|> Enum.map(fn(i) -> "#{i.itemtype.name}: #{i.name} [#{i.id}]" end))
 	end
@@ -27,6 +29,7 @@ defmodule Heimchen.Imagetag do
 	def find_mark(mark) do
 		case Regex.run(~r{([^:]+).*\[(\d+)\]$}, mark) do
 			[_, "Person", id] -> {:person, String.to_integer(id)}
+			[_, "Ort", id] -> {:place, String.to_integer(id)}
 			[_, _, id] -> {:item, String.to_integer(id)}
 			_ -> {:error}
 		end
@@ -61,6 +64,7 @@ defmodule Heimchen.Imagetag do
 			case mark do
 				{:person, id} -> add_person_mark(id, image_id, user)
 				{:item, id} ->   add_item_mark(id, image_id, user)
+				{:place, id} ->  add_place_mark(id, image_id, user)
 			end
 		end) |> Enum.sum()
 	end
@@ -69,6 +73,7 @@ defmodule Heimchen.Imagetag do
 		cond do
 			it.person_id -> Heimchen.Person.name(Repo.preload(it, :person).person)
 			it.item_id   -> Heimchen.Item.longname(Repo.preload(it, :item).item)
+			it.place_id  -> Heimchen.Place.longname(Repo.preload(it, :place).place)
 			true -> ""
 		end
 	end

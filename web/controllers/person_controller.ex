@@ -4,6 +4,7 @@ defmodule Heimchen.PersonController do
 
 	alias Heimchen.Person
 	alias Heimchen.PersonKeyword
+	alias Heimchen.PlacePerson
 	
 	plug :authenticate
 
@@ -61,8 +62,23 @@ defmodule Heimchen.PersonController do
 		end
 	end
 
+
+	def delete_place(conn, %{"id" => id}, _) do
+		case Repo.get(Heimchen.PlacePerson, id) do
+			nil ->
+				conn |> put_flash(:error, "Ort nicht gefunden") |>
+					redirect(to: person_path(conn, :index))
+			pp ->
+				Repo.delete(pp)
+				conn |> put_flash(:success, "Ort-Verknüpfung gelöscht") |>
+					redirect(to: person_path(conn, :show, pp.person_id))
+		end
+	end
+
+
+	
 	def show(conn, %{"id" => id}, _user) do
-		case Repo.get(Person,id) |> Repo.preload([:user, imagetags: :image, items: :itemtype]) do
+		case Repo.get(Person,id) |> Repo.preload([:user, imagetags: :image, items: :itemtype, places_people: :place]) do
 			nil -> conn |> put_flash(:error, "Person nicht gefunden") |> redirect(to: person_path(conn, :index))
 			person -> conn |> render("show.html", person: person, id: id, keywords: Person.keywords(person))
 		end
@@ -91,6 +107,20 @@ defmodule Heimchen.PersonController do
 		end
 	end
 
+	def add_place(conn, %{"pp" => pp}, user) do
+		changeset = PlacePerson.changeset(%PlacePerson{}, pp, user)
+		case Repo.insert(changeset) do
+			{:ok, pp} ->
+				conn
+				|> put_flash(:success, "Verknüpfung angelegt")
+				|> redirect(to: person_path(conn, :show, pp.person_id))
+			_ ->
+				conn
+				|> put_flash(:error, "Verknüpfung konnte nicht angelegt werden")
+				|> redirect(to: person_path(conn, :show, pp.person_id))
+		end
+	end
+	
 	def update(conn, %{"id" => id, "person" => person_params}, user) do
 		changeset = Person.changeset(Repo.get(Person, id), person_params, user)
 		case Repo.update(changeset) do

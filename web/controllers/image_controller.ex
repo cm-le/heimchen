@@ -196,9 +196,13 @@ defmodule Heimchen.ImageController do
 						conn
 						|> put_flash(:success, "Markierung gespeichert")
 						|> redirect(to: item_path(conn, :show, imagetag.item_id))
+					imagetag.place_id ->
+						conn
+						|> put_flash(:success, "Markierung gespeichert")
+						|> redirect(to: place_path(conn, :show, imagetag.place_id))
 					true -> # FIXME place
 						conn
-						|> put_flash(:error, "Markierung nur für personen und Sammlungsstücke implementiert")
+						|> put_flash(:error, "Markierung nur für Personen, Sammlungsstücke und Orte implementiert")
 						|> redirect(to: person_path(conn, :index))
 				end
 			{:error, what} ->

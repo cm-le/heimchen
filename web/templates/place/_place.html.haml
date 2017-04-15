@@ -1,0 +1,21 @@
+.form-group.row
+  %label.col-form-label.col-sm-2 Stadt
+  .col-sm-10
+    =text_input @f, :city, placeholder: "Bitte ausfüllen", class: "form-control"
+    =error_tag @f, :city
+.form-group.row
+  %label.col-form-label.col-sm-2 Adresse
+  .col-sm-10
+    =textarea @f, :address, class: "form-control"
+    =error_tag @f, :address
+.form-group.row
+  %label.col-form-label.col-sm-2 Kommentar
+  .col-sm-10
+    =textarea @f, :comment, class: "form-control"
+    =error_tag @f, :comment
+.form-group.row
+  %label.col-form-label.col-sm-2 Länge/Breite
+  .col-sm-3
+    =text_input @f, :lat, placeholder: "Länge", class: "form-control"
+  .col-sm-3
+    =text_input @f, :long, placeholder: "Breite", class: "form-control"

@@ -1,0 +1,8 @@
+%h1.page-header Neuer Ort
+%row
+  = form_for @changeset, place_path(@conn, :create), fn f ->
+    =render("_place.html", f: f, changeset: @changeset)
+    .form-group.row
+      .offset-sm-2.col-sm-10
+        =submit("Neuen Ort anlegen", class: "btn btn-primary")
+  - end 

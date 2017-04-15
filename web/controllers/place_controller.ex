@@ -60,6 +60,12 @@ defmodule Heimchen.PlaceController do
 		end
 	end
 
+	def getlatlong(conn, %{"id" => id}, _) do
+		p = Repo.get(Place, id) 
+		Place.getlatlong(p)
+		conn |> put_flash(:info, "Länge/Breite abgefragt") |> redirect(to: place_path(conn, :show, id))
+	end
+	
 	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Place,id)
 		|> Repo.preload([:user, :keywords,
@@ -67,7 +73,7 @@ defmodule Heimchen.PlaceController do
 										 places_items: [item: :itemtype],
 										 places_people: :person]) do
 			nil -> conn |> put_flash(:error, "Ort nicht gefunden") |> redirect(to: place_path(conn, :index))
-			place -> conn |> render("show.html", place: place, id: id)
+			place -> conn |> render("show.html", place: place, id: id, nearby: Place.nearby(place))
 		end
 	end
 

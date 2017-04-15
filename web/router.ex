@@ -48,6 +48,8 @@ defmodule Heimchen.Router do
 		get  "/person/add_keyword/:id", PersonController, :add_keyword # sorry for making this "get"
 		get  "/person/delete_keyword/:id", PersonController, :delete_keyword
 		get  "/person/search/:name", PersonController, :search
+		post "/person/add_place", PersonController, :add_place
+		get  "/person/delete_place/:id", PersonController, :delete_place
 
 
 		get  "/place", PlaceController, :index
@@ -56,6 +58,7 @@ defmodule Heimchen.Router do
 		get  "/place/edit/:id", PlaceController, :edit
 		post "/place/create", PlaceController, :create
 		put  "/place/update/:id", PlaceController, :update
+		get  "/place/getlatlong/:id", PlaceController, :getlatlong
 		get  "/place/add_keyword/:id", PlaceController, :add_keyword # sorry for making this "get"
 		get  "/place/delete_keyword/:id/:keyword_id", PlaceController, :delete_keyword
 		get  "/place/search/:name", PlaceController, :search
@@ -85,6 +88,9 @@ defmodule Heimchen.Router do
 		get  "/item/delete_keyword/:item_id/:keyword_id", ItemController, :delete_keyword # ~
 		post "/item/create", ItemController, :create
 		put  "/item/update/:id", ItemController, :update
+		post "/item/add_place", ItemController, :add_place
+		get  "/item/delete_place/:id", ItemController, :delete_place
+
 
 		get  "/search/index/:id", SearchController, :index
   end

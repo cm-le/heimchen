@@ -50,8 +50,28 @@ defmodule Heimchen.Place do
 	def nearby(place) do
 		# make this all use spacial datatypes ind indices in the far future...
 		Repo.all from p in Heimchen.Place,
-			order_by:  fragment("sqrt((p.lat - ?)^2 + (p.long - ?)^2)", ^place.lat, ^place.long),
+			preload: [:user, :keywords,
+								imagetags: :image,
+								places_items: [item: :itemtype],
+								places_people: :person],# around 50km
+		where: fragment("? != ? and sqrt((? - ?)^2 + (? - ?)^2)< 0.5",
+			p.id, ^place.id, p.lat, ^place.lat, p.long, ^place.long),
+			order_by:  fragment("sqrt((? - ?)^2 + (? - ?)^2)",
+				p.lat, ^place.lat, p.long, ^place.long),
 			limit: 100
+	end
+
+	def longname(place) do
+		"#{place.city} #{place.address}"
+	end
+
+	def for_select() do
+		(Repo.all from p in Heimchen.Place,
+			order_by: [fragment("updated_at = (select max(updated_at) from places)"),
+								 p.city,
+								 p.address],
+			select: [p.city, p.address, p.id])
+		|> Enum.map(fn ([city, address, id]) -> {city <> " " <> address, id} end)
 	end
 	
 end

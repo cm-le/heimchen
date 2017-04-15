@@ -9,7 +9,7 @@ defmodule Heimchen.DateHelpers do
 	
 	def heimchen_date_select(form, field, opts \\ []) do
 		builder = fn b ->
-			[content_tag(:div, b.(:day, opts), class: "col-sm-1"),
+			[content_tag(:div, b.(:day, opts), class: "col-sm-2"),
 			 content_tag(:div, b.(:month, opts ++ [{:options, @monthnames}]),
 				 class: "col-sm-2"),
 			 content_tag(:div, b.(:year, opts ++ [{:options, 2020..1500}] ), class: "col-sm-2")] 
@@ -33,6 +33,7 @@ defmodule Heimchen.DateHelpers do
 				2 -> "#{m}/#{y}" 
 				3 ->  "#{y}" 
         4 ->  "ca. #{y}"
+				_ -> "unbekannt"			
 			end
 		end
 	end

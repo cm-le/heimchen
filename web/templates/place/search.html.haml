@@ -20,7 +20,7 @@
             - for pp <- place.places_people do
               = link("#{pp.person.firstname} #{pp.person.lastname}", to: person_path(@conn, :show, pp.person.id))
             - for pi <- place.places_items do
-              = link(pi.name, to: item_path(@conn, :show, pi.item.id))
+              = link(pi.item.name, to: item_path(@conn, :show, pi.item.id))
       - end
 - else
   .row.page-header

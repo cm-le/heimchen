@@ -7,3 +7,24 @@
         =submit("Speichern", class: "btn btn-primary")
         %a.btn.btn-secondary(href="#{person_path(@conn, :show, @id)}") Abbrechen
   - end 
+%row
+%h2 Verknüpfung mit einem Ort anlegen  
+= form_for @conn, person_path(@conn, :add_place), [as: :pp], fn f ->
+  =hidden_input f, :person_id, value: @id
+  .form-group.row
+    %label.col-form-label.col-sm-2 Ort
+    .col-sm-10
+      =select f, :place_id, Heimchen.Place.for_select(), class: "form-control"
+  .form-group.row
+    %label.col-form-label.col-sm-2 (seit) Datum
+    .col-sm-3
+      =heimchen_date_precision f, :start_precision, class: "form-control"
+    =heimchen_date_select f, :start_on, class: "form-control col-sm-2"
+  .form-group.row
+    %label.col-form-label.col-sm-2 Kommentar
+    .col-sm-10
+      =textarea f, :comment, class: "form-control"
+  .form-group.row
+    .offset-sm-2.col-sm-10
+      =submit("Speichern", class: "btn btn-primary")
+- end  

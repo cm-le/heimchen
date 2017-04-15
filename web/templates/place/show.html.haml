@@ -1,7 +1,7 @@
 %script(src='#{static_path(@conn, "/js/typeahead.bundle.min.js")}')  
 
 .row.page-header
-  .col-xs-6
+  .col-xs-4
     %h1 Ort anzeigen
   .float-xs-right.col-xs-3
     %form(action="#{place_path(@conn, :add_keyword, @id)}", method="get")
@@ -21,8 +21,13 @@
       %i.fa.fa-edit
       Bearbeiten
   .float-xs-right.col-xs-1
-    %a.btn.btn-outline-primary(href="#{image_path(@conn, :new, place_id: @id)}")
+    %a.btn.btn-outline-primary(href="#{image_path(@conn, :new, place_id: @id)}", title="Bilder hochladen")
       %i.fa.fa-upload
+  - if !(@place.lat && @place.long) do
+    .float-xs-right.col-xs-1
+      %a{href="#{place_path(@conn, :getlatlong, @place.id)}",class="btn btn-outline-primary",title="Länge/breite bei Google abfragen"}
+        %i.fa.fa-globe
+
 
       
 .row
@@ -44,6 +49,8 @@
                 = link(k.name, to: keyword_path(@conn, :show, k.id))
                 %a{href="#{place_path(@conn, :delete_keyword, @place.id, k.id)}"}
                   %i.fa.fa-remove
+    - if @place.lat && @place.long do
+      GOOGLE MAP here
 
 .card-columns
   -for it <- @place.imagetags do
@@ -81,6 +88,10 @@
         =link("#{pp.person.firstname} #{pp.person.lastname}", to: person_path(@conn, :show, pp.person_id))
         %i
           =pp.comment
+
+- if !Enum.empty?(@nearby) do
+  %h4 Orte in der Nähe
+  =render("search.html", places: @nearby, conn: @conn)
 
 .float-xs-right.footer
   %i.small

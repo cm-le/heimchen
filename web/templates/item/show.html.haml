@@ -40,17 +40,30 @@
         %dd= @item.inventory
 
   .col-xs-12.col-sm-6
-    %h4 Stichwörter  
-    %ul
-      - for c <- Enum.uniq(Enum.map(@item.keywords, fn(k) -> k.category end)) do
-        %li
-          %b=c
-          %ul
-            - for k <- Enum.filter(@item.keywords, fn(k) -> k.category == c end) do
-              %li
-                = k.name
-                %a{href="#{item_path(@conn, :delete_keyword, @item.id, k.id)}"}
-                  %i.fa.fa-remove
+    - if !Enum.empty?(@item.keywords) do
+      %h4 Stichwörter  
+      %ul
+        - for c <- Enum.uniq(Enum.map(@item.keywords, fn(k) -> k.category end)) do
+          %li
+            %b=c
+            %ul
+              - for k <- Enum.filter(@item.keywords, fn(k) -> k.category == c end) do
+                %li
+                  = k.name
+                  %a{href="#{item_path(@conn, :delete_keyword, @item.id, k.id)}"}
+                    %i.fa.fa-remove
+    - if !Enum.empty?(@item.places_items) do
+      %h4 Orte
+      %ul
+        - for pi <- @item.places_items do
+          %li
+            Datum:
+            =heimchen_show_date(pi.start_precision, pi.start_on)
+            =link(pi.place.city <> " " <> pi.place.address, to: place_path(@conn, :show, pi.place_id))
+            =pi.comment
+            %a{href="#{item_path(@conn, :delete_place, pi.id)}"}
+              %i.fa.fa-remove
+
 
 .card-columns
   -for it <- @item.imagetags do

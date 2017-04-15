@@ -3,6 +3,7 @@ defmodule Heimchen.ItemController do
 
 	alias Heimchen.Item
 	alias Heimchen.ItemKeyword
+	alias Heimchen.PlaceItem
 	
 	plug :authenticate
 
@@ -33,7 +34,8 @@ defmodule Heimchen.ItemController do
 	end
 
 	def show(conn, %{"id" => id}, _user) do
-		case Repo.get(Item,id) |> Repo.preload([:user, :itemtype, :received_by, :room, :keywords, imagetags: :image]) do
+		case Repo.get(Item,id)
+		|> Repo.preload([:user, :itemtype, :received_by, :room, :keywords, imagetags: :image, places_items: :place]) do
 			nil -> conn |> put_flash(:error, "Eintrag nicht gefunden") |> redirect(to: item_path(conn, :index))
 			item -> conn |> render("show.html", item: item, id: id)
 		end
@@ -118,5 +120,30 @@ defmodule Heimchen.ItemController do
 		end
 	end
 
+	def add_place(conn, %{"pi" => pi}, user) do
+		changeset = PlaceItem.changeset(%PlaceItem{}, pi, user)
+		case Repo.insert(changeset) do
+			{:ok, pi} ->
+				conn
+				|> put_flash(:success, "Verknüpfung angelegt")
+				|> redirect(to: item_path(conn, :show, pi.item_id))
+			_ ->
+				conn
+				|> put_flash(:error, "Verknüpfung konnte nicht angelegt werden")
+				|> redirect(to: item_path(conn, :show, pi.item_id))
+		end
+	end
+
+	def delete_place(conn, %{"id" => id}, _) do
+		case Repo.get(Heimchen.PlaceItem, id) do
+			nil ->
+				conn |> put_flash(:error, "Ort nicht gefunden") |>
+					redirect(to: person_path(conn, :index))
+			pi ->
+				Repo.delete(pi)
+				conn |> put_flash(:success, "Ort-Verknüpfung gelöscht") |>
+					redirect(to: item_path(conn, :show, pi.item_id))
+		end
+	end
 	
 end

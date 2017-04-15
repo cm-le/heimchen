@@ -1,16 +1,66 @@
 begin;
 
 alter table people add column tsearch tsvector;
-create function people_update_tsearch() returns trigger as $$
+create or replace function people_update_tsearch() returns trigger as $$
 begin
    new.tsearch :=  setweight(to_tsvector('german', coalesce(new.lastname,'')), 'A') ||
                   setweight(to_tsvector('german', coalesce(new.firstname,'')), 'B') ||
-                  setweight(to_tsvector('german', coalesce(new.comment,'')), 'C');
+                  setweight(to_tsvector('german', coalesce(new.comment,'')), 'C') ||
+						      setweight(to_tsvector('german', 
+		         			  coalesce((select string_agg(comment, ' ') from places_people where person_id=new.id),'')), 'B');
+
    return new;
 end;
 $$ language plpgsql;
 create trigger people_update_tsearch before insert or update on people 
        for each row execute procedure people_update_tsearch();
+
+
+create or replace function del_places_people_update_tsearch() returns trigger as $$
+begin
+    update people set id=id where id=old.person_id;
+		return old;
+end;
+$$ language plpgsql;
+
+create or replace function places_people_update_tsearch() returns trigger as $$
+begin
+    update people set id=id where id=new.person_id;
+		return new;
+end;
+$$ language plpgsql;
+
+
+create trigger people_places_update_tsearch after insert or update on places_people
+       for each row execute procedure places_people_update_tsearch();
+
+create trigger people_places_update_tsearch after delete on places_people
+       for each row execute procedure del_people_places_update_tsearch();
+
+
+-- places_items
+
+create or replace function del_places_items_update_tsearch() returns trigger as $$
+begin
+    update items set id=id where id=old.item_id;
+		return old;
+end;
+$$ language plpgsql;
+
+create or replace function places_items_update_tsearch() returns trigger as $$
+begin
+    update items set id=id where id=new.item_id;
+		return new;
+end;
+$$ language plpgsql;
+
+
+create trigger people_places_update_tsearch after insert or update on places_items
+       for each row execute procedure places_items_update_tsearch();
+
+create trigger people_places_update_tsearch after delete on places_items
+       for each row execute procedure del_places_items_update_tsearch();
+
 
 
 -- places
@@ -57,6 +107,7 @@ $$ language plpgsql;
 create trigger images_update_tsearch before insert or update on images 
        for each row execute procedure images_update_tsearch();
 --  this is just to trigger the update on images.tsearch
+
 create or replace function imagetags_update_tsearch() returns trigger as $$
 begin
     update images set id=id where id=new.image_id;
@@ -69,13 +120,18 @@ alter table items add column tsearch tsvector;
 create or replace function items_update_tsearch() returns trigger as $$
 begin
        new.tsearch :=  setweight(to_tsvector('german', coalesce(new.name,'')), 'A') ||
-                      setweight(to_tsvector('german', coalesce(new.comment,'')), 'B');
+                      setweight(to_tsvector('german', coalesce(new.comment,'')), 'B') ||
+											setweight(to_tsvector('german', coalesce(new.inventory,'')), 'A') ||
+											setweight(to_tsvector('german', coalesce(new.filenr,'')), 'A') ||
+											setweight(to_tsvector('german', coalesce(new.filecomment,'')), 'C') ||
+  							      setweight(to_tsvector('german', 
+		         			  coalesce((select string_agg(comment, ' ') from places_items where item_id=new.id),'')), 'B');
  				return new;							
 end;
 $$ language plpgsql;
+
 create trigger items_update_tsearch before insert or update on items
      for each row execute procedure items_update_tsearch();
-
 
 
 create or replace function search_all(text, int)

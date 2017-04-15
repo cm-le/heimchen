@@ -134,7 +134,7 @@ create trigger items_update_tsearch before insert or update on items
 
 create or replace function search_all(text, int)
 			 returns table(what varchar, id int, name text, comment text, image_id int) as $$
-with query as (select to_tsquery($1) as query)
+with query as (select to_tsquery('german', $1) as query)
 (select 'person'::varchar, 
        p.id, 
        concat_ws(' ', p.firstname, p.lastname), 

@@ -34,8 +34,8 @@ $$ language plpgsql;
 create trigger people_places_update_tsearch after insert or update on places_people
        for each row execute procedure places_people_update_tsearch();
 
-create trigger people_places_update_tsearch after delete on places_people
-       for each row execute procedure del_people_places_update_tsearch();
+create trigger del_people_places_update_tsearch after delete on places_people
+       for each row execute procedure del_places_people_update_tsearch();
 
 
 -- places_items
@@ -58,7 +58,7 @@ $$ language plpgsql;
 create trigger places_items_update_tsearch after insert or update on places_items
        for each row execute procedure places_items_update_tsearch();
 
-create trigger places_items_update_tsearch after delete on places_items
+create trigger del_places_items_update_tsearch after delete on places_items
        for each row execute procedure del_places_items_update_tsearch();
 
 -- places
@@ -220,4 +220,4 @@ create index places_tsearch on places using gist(tsearch);
 -- drop function search_all(text);
 
 
- commit;
+--  commit;

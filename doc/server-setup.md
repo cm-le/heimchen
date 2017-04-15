@@ -7,6 +7,7 @@ apt-get update
 apt-get install postgresql-9.4 postgresql-client-9.4 # database
 apt-get install emacs24-nox tmux git # general development environment
 apt-get install build-essential
+apt-get install graphicsmagick
 ```
 
 ## basic security

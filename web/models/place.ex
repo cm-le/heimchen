@@ -80,7 +80,7 @@ defmodule Heimchen.Place do
 								 p.city,
 								 p.address],
 			select: [p.city, p.address, p.id])
-		|> Enum.map(fn ([city, address, id]) -> {city <> " " <> address, id} end)
+		|> Enum.map(fn ([city, address, id]) -> {Enum.join([city, address], " "), id} end)
 	end
 	
 end

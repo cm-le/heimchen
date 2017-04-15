@@ -17,7 +17,7 @@ defmodule Heimchen.SearchController do
 
 
 	def index(conn, %{"id" => search, "complete" => complete}) do
-		searchterm = if complete == "1" do search else Regex.replace(~r/(\w+)/, search, "\\1:* ") end
+		searchterm = if complete == "1" do search else Regex.replace(~r/(\w+)/u, search, "\\1:* ") end
 		case Ecto.Adapters.SQL.query(Heimchen.Repo, "select * from search_all($1, 20)", [searchterm]) do
 			{:ok, %{rows: results, num_rows: _}} ->
 				render(conn, "index.html", layout: {Heimchen.LayoutView, "empty.html"}, results: results)

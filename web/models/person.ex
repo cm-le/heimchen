@@ -14,6 +14,7 @@ defmodule Heimchen.Person do
 		field :comment, :string
 
 		has_many   :people_keywords, Heimchen.PersonKeyword
+		has_many   :places_people, Heimchen.PlacePerson
 		has_many   :imagetags, Heimchen.Imagetag
 		has_many   :items, Heimchen.Item, foreign_key: :received_by_id
 		

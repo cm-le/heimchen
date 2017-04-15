@@ -5,9 +5,9 @@ defmodule Heimchen.ImageController do
 	plug :authenticate
 
 	defp authenticate(conn, _opts) do
-		if !get_session(conn, :image_clipboard) do
-			conn = conn |> put_session(:image_clipboard, %{})
-		end
+		conn = if !get_session(conn, :image_clipboard) do
+			conn |> put_session(:image_clipboard, %{})
+		else conn	end
 		if conn.assigns.current_user do
 			conn
 		else
@@ -32,14 +32,17 @@ defmodule Heimchen.ImageController do
 	end
 
 	def new(conn, params, _user) do
-		if (params["item_id"] && String.length(params["item_id"]) > 0) do
-			item = Repo.get(Heimchen.Item, params["item_id"])
-		end
-		if (params["person_id"]&& String.length(params["person_id"]) > 0) do
-			person = Repo.get(Heimchen.Person, params["person_id"])
-		end
-		render(conn, "new.html", item: item, person: person,
-			item_id: params["item_id"], person_id: params["person_id"])
+		item = if (params["item_id"] && String.length(params["item_id"]) > 0) do
+			Repo.get(Heimchen.Item, params["item_id"])
+		else nil end 
+		person = if (params["person_id"]&& String.length(params["person_id"]) > 0) do
+			Repo.get(Heimchen.Person, params["person_id"])
+		else nil end
+		place = if (params["place_id"]&& String.length(params["place_id"]) > 0) do
+			Repo.get(Heimchen.Place, params["place_id"])
+		else nil end
+		render(conn, "new.html", item: item, person: person, place: place,
+			item_id: params["item_id"], person_id: params["person_id"], place_id: params["place_id"])
 	end
 
 	def image(conn, %{"id" => id, "size" => size}, _user) do
@@ -68,6 +71,10 @@ defmodule Heimchen.ImageController do
 				conn
 				|> put_flash(:success, "#{length(images)} Bild(er) wurde hochgeladen")
 				|> redirect(to: person_path(conn, :show, upload_params["person_id"]))
+			upload_params["place_id"] && String.length(upload_params["place_id"])>0 ->
+				conn
+				|> put_flash(:success, "#{length(images)} Bild(er) wurde hochgeladen")
+				|> redirect(to: place_path(conn, :show, upload_params["place_id"]))
 			true ->
 				conn
 				|> put_session(:image_clipboard,
@@ -77,7 +84,7 @@ defmodule Heimchen.ImageController do
 		end
 	end
 
-	def show(conn, %{"id" => id}, user) do
+	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Heimchen.Image, id) do
 			nil ->
 				conn
@@ -106,14 +113,14 @@ defmodule Heimchen.ImageController do
 		end
 	end
 
-	def mark(conn, %{"what" => "add", "id" => id}, user) do
+	def mark(conn, %{"what" => "add", "id" => id}, _user) do
 		conn
 		|> put_session(:image_clipboard,
 			Map.merge(get_session(conn, :image_clipboard), %{String.to_integer(id) => true}))
 		|> json("ok")
 	end
 
-	def mark(conn, %{"what" => "rm", "id" => id}, user) do
+	def mark(conn, %{"what" => "rm", "id" => id}, _user) do
 		conn
 		|> put_session(:image_clipboard,
 			Map.delete(get_session(conn, :image_clipboard), String.to_integer(id)))
@@ -155,11 +162,14 @@ defmodule Heimchen.ImageController do
 		|> redirect(to: image_path(conn, :index))
 	end
 	
-	def del_imagetag(conn, %{"id" => id}, user) do
+	def del_imagetag(conn, %{"id" => id}, _user) do
 		it = Heimchen.Repo.get(Heimchen.Imagetag,id)
 		Heimchen.Repo.delete(it)
-		conn
-		|> redirect(to: person_path(conn, :show, it.person_id))
+		cond do 
+			it.person_id -> conn|> redirect(to: person_path(conn, :show, it.person_id))
+			it.item_id   -> conn|> redirect(to: item_path(conn, :show, it.item_id))
+			# FIXME place
+		end
 	end 
 
 	def edit_imagetag(conn, %{"id" => id}, user) do
@@ -186,7 +196,7 @@ defmodule Heimchen.ImageController do
 						conn
 						|> put_flash(:success, "Markierung gespeichert")
 						|> redirect(to: item_path(conn, :show, imagetag.item_id))
-					true ->
+					true -> # FIXME place
 						conn
 						|> put_flash(:error, "Markierung nur für personen und Sammlungsstücke implementiert")
 						|> redirect(to: person_path(conn, :index))

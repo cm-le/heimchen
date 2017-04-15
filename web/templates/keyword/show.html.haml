@@ -28,3 +28,10 @@
     = link(i.name, to: item_path(@conn, :show, i.id))
     = i.comment     
     %br
+
+- if !Enum.empty?(@keyword.places)  do
+  %h5 Orte
+  - for p <- @keyword.places do
+    = link("#{p.city} #{p.address}", to: place_path(@conn, :show, p.id))
+    = p.comment     
+    %br

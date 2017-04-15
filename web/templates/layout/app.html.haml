@@ -26,7 +26,7 @@
             %li.nav-item
               %a.nav-link(href="#{person_path(@conn, :index)}") Personen
             %li.nav-item
-              %a.nav-link(href="") Orte
+              %a.nav-link(href="#{place_path(@conn, :index)}") Orte
             %li.nav-item
               %a.nav-link(href="#{image_path(@conn, :index)}") Dateien
             - if @current_user.admin do

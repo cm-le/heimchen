@@ -21,6 +21,7 @@ defmodule Heimchen.Keyword do
 
 		many_to_many :people, Heimchen.Person, join_through: "people_keywords"
 		many_to_many :items,  Heimchen.Item,   join_through: "item_keywords"
+		many_to_many :places, Heimchen.Place,   join_through: "places_keywords"
 
 		timestamps
 	end

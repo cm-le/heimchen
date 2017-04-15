@@ -19,6 +19,7 @@ defmodule Heimchen.Item do
 		belongs_to :itemtype, Heimchen.Itemtype
 		belongs_to :user, Heimchen.User
 		many_to_many :keywords, Heimchen.Keyword, join_through: "item_keywords"
+		has_many   :places_items, Heimchen.PlaceItem
 		has_many   :imagetags, Heimchen.Imagetag
 		timestamps
 	end

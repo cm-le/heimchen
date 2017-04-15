@@ -8,6 +8,7 @@ defmodule Heimchen.Imagetag do
 		belongs_to :image, Heimchen.Image
 		belongs_to :person, Heimchen.Person
 		belongs_to :item, Heimchen.Item
+		belongs_to :place, Heimchen.Place
 		
 		field :marks, :map
 		field :comment, :string
@@ -37,6 +38,14 @@ defmodule Heimchen.Imagetag do
 			1
 		end
 	end
+
+	def add_place_mark(place_id, image_id, user) do
+		if Repo.get_by(Imagetag, place_id: place_id, image_id: image_id) do 0 else
+			Repo.insert(%Imagetag{image_id: image_id, place_id: place_id, user_id: user.id})
+			1
+		end
+	end
+
 
 	def add_item_mark(item_id, image_id, user) do
 		if Repo.get_by(Imagetag, item_id: item_id, image_id: image_id) do 0 else

@@ -1,8 +1,8 @@
-defmodule Heimchen.ItemKeyword do
+defmodule Heimchen.PlaceKeyword do
 	use Heimchen.Web, :model
-	
-	schema "item_keywords" do
-		belongs_to :item, Heimchen.Item
+
+	schema "places_keywords" do
+		belongs_to :place, Heimchen.Place
 		belongs_to :keyword, Heimchen.Keyword
 		belongs_to :user, Heimchen.User
 
@@ -11,14 +11,12 @@ defmodule Heimchen.ItemKeyword do
 
 	def changeset(model, params, user) do
 		model
-		|> cast(params, ~w(keyword_id item_id))
-		|> assoc_constraint(:item, message: "Person existiert nicht")
+		|> cast(params, ~w(keyword_id place_id))
+		|> assoc_constraint(:place, message: "Ort existiert nicht")
 		|> assoc_constraint(:keyword, message: "Stichwort existiert nicht")
  		|> unique_constraint(:dummy, name: :people_keywords_person_id_keyword_id_index,
-			message: "Diese Person hat bereits dieses Stichwort")
-
+			message: "Dieser Ort hat bereits dieses Stichwort")
 		|> put_change(:user_id,  user.id)
 	end
-
 	
 end

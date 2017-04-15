@@ -1,11 +1,10 @@
 require IEx
 defmodule Heimchen.Image do
 	use Heimchen.Web, :model
-	alias Heimchen.Person
 	alias Heimchen.Repo
 	alias Heimchen.Imagetag
 
-	@base_path  Application.app_dir(:heimchen, "uploads")
+	@base_path  Application.app_dir(:heimchen, "../../../../uploads")
 	@image_extensions [".jpg", ".jpeg", ".png", ".gif"]
 	
 	schema "images" do
@@ -30,17 +29,21 @@ defmodule Heimchen.Image do
 		end
 	end
 
-	def real_resolution(image, zoom) do
+	def real_resolution(_image, zoom) do
 		# XXX FIXME depending on orig_w and orig_h of image
 		resolution(zoom)
 	end
 	
-	def create_one(file_path,original_filename, comment, item_id, person_id, user) do
+	def create_one(file_path,original_filename, comment, item_id, person_id, place_id, user) do
 		{:ok, image} = Repo.insert(changeset(%Heimchen.Image{},
 					%{:comment => comment,
 						:original_filename => original_filename}, user))
 		case Integer.parse(item_id) do
 			{i, _} -> Imagetag.add_item_mark(i, image.id, user)
+			_ -> :error
+		end
+		case Integer.parse(place_id) do
+			{i, _} -> Imagetag.add_place_mark(i, image.id, user)
 			_ -> :error
 		end
 		case Integer.parse(person_id) do
@@ -109,20 +112,22 @@ defmodule Heimchen.Image do
 	end
 	
 	def create(%{"file" => file, "comment" => comment,
-							 "item_id" => item_id, "person_id" => person_id}, user) do
+							 "item_id" => item_id, "person_id" => person_id, "place_id" => place_id}, user) do
 		{dirname, basename, extension} =
 		  {Path.dirname(file.path), Path.basename(file.path), Path.extname(file.filename)}
 		if String.downcase(extension) == ".zip" do
 			{output, _} = System.cmd("unzip", ["-Z", "-1", basename], cd: dirname)
-			{output2, _} = System.cmd("unzip", ["-o", basename], cd: dirname)
+			{_output, _} = System.cmd("unzip", ["-o", basename], cd: dirname)
 			String.split(output, "\n", trim: true)
 			|> Enum.filter(fn(filename) ->
 				!String.starts_with?(filename, ".") &&
 					Enum.member?(@image_extensions, String.downcase(Path.extname(filename))) end)
 			|> Enum.map(fn(filename) ->
-				create_one(dirname <> "/" <> filename, Path.basename(filename), comment, item_id, person_id, user) end)
+				create_one(dirname <> "/" <> filename, Path.basename(filename),
+					comment, item_id, person_id, place_id, user) end)
 		else
-			[create_one(file.path, file.filename, comment, item_id, person_id, user)]
+			[create_one(file.path, file.filename,
+					comment, item_id, person_id, place_id, user)]
 		end
 	end
 		

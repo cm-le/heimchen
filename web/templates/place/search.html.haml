@@ -1,0 +1,28 @@
+- if length(@places) > 0 do
+  %table.table.table-hover
+    %thead
+      %tr
+        %th Stadt
+        %th Adresse
+        %th Bild
+        %th Kommentar
+        %th An diesem Ort
+    %tbody
+      = for place <- @places do
+        %tr
+          %td= link(place.city, to: place_path(@conn, :show, place.id))
+          %td= place.address
+          %td
+            - if !Enum.empty?(place.imagetags) do
+              %img(src= "#{image_path(@conn, :image, List.first(place.imagetags).image_id, 1)}")
+          %td= place.comment  
+          %td
+            - for pp <- place.places_people do
+              = link("#{pp.person.firstname} #{pp.person.lastname}", to: person_path(@conn, :show, pp.person.id))
+            - for pi <- place.places_items do
+              = link(pi.name, to: item_path(@conn, :show, pi.item.id))
+      - end
+- else
+  .row.page-header
+    .col-xs-12
+      %i Keine Orte gefunden

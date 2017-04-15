@@ -43,6 +43,7 @@ defmodule Heimchen.KeywordController do
 	def keywords(conn, %{"for" => f}, _) do
 		json conn, ((from k in Keyword,
 			where: ((^f == "person" and k.for_person) or
+				      (^f == "place" and k.for_place) or
 			        (^f=="THING" and k.for_thing_item) or
 			        (^f=="EVENT" and k.for_event_item) or
 			        (^f=="FILM" and k.for_film_item) or
@@ -57,9 +58,9 @@ defmodule Heimchen.KeywordController do
 	end
 
 
-	def show(conn, %{"id" => id}, user) do
+	def show(conn, %{"id" => id}, _user) do
 		render(conn, "show.html",
-			  				 keyword: Repo.get(Keyword,id) |> Repo.preload([:people, :items, :user]),
+			  				 keyword: Repo.get(Keyword,id) |> Repo.preload([:people, :items, :places, :user]),
 								 id: id)
 	end
 

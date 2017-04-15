@@ -13,6 +13,23 @@ create trigger people_update_tsearch before insert or update on people
        for each row execute procedure people_update_tsearch();
 
 
+-- places
+
+alter table places add column tsearch tsvector;
+create function places_update_tsearch() returns trigger as $$
+begin
+   new.tsearch :=  setweight(to_tsvector('german', coalesce(new.city,'')), 'A') ||
+                  setweight(to_tsvector('german', coalesce(new.address,'')), 'A') ||
+                  setweight(to_tsvector('german', coalesce(new.comment,'')), 'B');
+   return new;
+end;
+$$ language plpgsql;
+create trigger places_update_tsearch before insert or update on places
+       for each row execute procedure places_update_tsearch();
+
+-- end places
+
+
 
 alter table keywords add column tsearch tsvector;
 create function keywords_update_tsearch() returns trigger as $$
@@ -116,6 +133,16 @@ union all
 						 					ik.item_id=it.item_id order by is_primary desc limit 1))
 from keywords k, query  q where q.query @@ k.tsearch
      order by ts_rank_cd(k.tsearch, q.query) desc limit $2)
+union all
+
+
+(select 'place'::varchar, 
+       p.id,
+			 concat_ws(' ', p.city, p.address),
+			 p.comment,
+			 (select image_id from imagetags where place_id=p.id order by is_primary desc limit 1)
+from places p, query  q where q.query @@ p.tsearch
+     order by ts_rank_cd(p.tsearch, q.query) desc limit $2)
 
 $$ language sql;
 
@@ -123,6 +150,8 @@ create index people_tsearch on people using gist(tsearch);
 create index items_tsearch on items using gist(tsearch);
 create index keywords_tsearch on keywords using gist(tsearch);
 create index images_tsearch on images using gist(tsearch);
+
+create index places_tsearch on places using gist(tsearch);
 
 -- 
 -- 

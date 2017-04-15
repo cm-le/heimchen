@@ -1,0 +1,90 @@
+%script(src='#{static_path(@conn, "/js/typeahead.bundle.min.js")}')  
+
+.row.page-header
+  .col-xs-6
+    %h1 Ort anzeigen
+  .float-xs-right.col-xs-3
+    %form(action="#{place_path(@conn, :add_keyword, @id)}", method="get")
+      #prefetch-keywords
+        .input-group
+          %input.typeahead.form-control(type="text", name="keyword", placeholder="Stichwort")
+          %span.input-group-btn
+            %button.btn.btn-outline-primary(type="submit")
+              %i.fa.fa-plus
+    %script
+      var bloodHound = new Bloodhound({ datumTokenizer: Bloodhound.tokenizers.whitespace,
+      queryTokenizer: Bloodhound.tokenizers.whitespace, prefetch: '../../keyword/keywords?for=place'});
+      $('#prefetch-keywords .typeahead').typeahead(null, {name: 'keyword', source: bloodHound });
+      bloodHound.clearPrefetchCache(); bloodHound.initialize();
+  .float-xs-right
+    %a.btn.btn-outline-primary(href="#{place_path(@conn, :edit, @id)}")
+      %i.fa.fa-edit
+      Bearbeiten
+  .float-xs-right.col-xs-1
+    %a.btn.btn-outline-primary(href="#{image_path(@conn, :new, place_id: @id)}")
+      %i.fa.fa-upload
+
+      
+.row
+  .col-xs-12.col-sm-6
+    %h4 
+      = @place.city
+      = @place.address
+    - if @place.comment do
+      .blockquote=@place.comment
+  .col-xs-12.col-sm-6
+    %h4 Stichwörter  
+    %ul
+      - for c <- Enum.uniq(Enum.map(@place.keywords, &(&1.category))) do
+        %li
+          %b=c
+          %ul
+            - for k <- Enum.filter(@place.keywords, &(&1.category == c)) do
+              %li
+                = link(k.name, to: keyword_path(@conn, :show, k.id))
+                %a{href="#{place_path(@conn, :delete_keyword, @place.id, k.id)}"}
+                  %i.fa.fa-remove
+
+.card-columns
+  -for it <- @place.imagetags do
+    .card(style="width: 160px;margin:5px;")
+      %a(href="#{image_path(@conn, :show, it.image_id)}")
+        .canvas-container(id="#{it.id}_cc")
+          %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, it.image_id, 1)}",id="#{it.id}_img", onload="attach_canvas('#{it.id}_cc',#{elem(Poison.encode(it.marks),1)}, '#ff0000');")
+      .card-block
+        %p.card-subtitle
+          %small.text-muted
+            =it.comment
+      .card-footer
+        %small.text-muted
+          %a(href="#{image_path(@conn, :edit_imagetag, it.id)}")
+            %i.fa.fa-edit
+            Edit
+        %small.text-muted.float-xs-right
+          %a(href="#{image_path(@conn, :del_imagetag, it.id)}")
+            %i.fa.fa-remove
+
+- if !Enum.empty?(@place.places_items) do
+  %h4 Sammlungs-Stücke mit Bezug zu diesem Ort
+  %ul
+    - for pi <- @place.places_items do
+      %li
+        =link(pi.item.name, to: item_path(@conn, :show, pi.item_id))
+        %i
+          =pi.comment
+
+- if !Enum.empty?(@place.places_people) do
+  %h4 Personen mit Bezug zu diesem Ort
+  %ul
+    - for pp <- @place.places_people do
+      %li
+        =link("#{pp.person.firstname} #{pp.person.lastname}", to: person_path(@conn, :show, pp.person_id))
+        %i
+          =pp.comment
+
+.float-xs-right.footer
+  %i.small
+    Zuletzt bearbeitet am
+    =show_timestamp(@place.updated_at)
+    von
+    =Heimchen.User.name(@place.user)

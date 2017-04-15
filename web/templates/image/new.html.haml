@@ -6,6 +6,7 @@
       .col-sm-10
         =hidden_input f, :item_id, value: @item_id
         =hidden_input f, :person_id, value: @person_id
+        =hidden_input f, :place_id, value: @place_id
         =file_input f, :file, class: "form-control"
         %p.form-text.text-muted
           Einzelne Bild-Datei in einem Standard-Format (JPEG, PNG) oder eine ZIP-Datei mit solchen Dateien
@@ -19,11 +20,12 @@
   - end
 .row
   .col-sm-10.offset-sm-2
-    - if @item_id do
+    - if (@item_id || @place_id || @person_id) do
       Alle Bilddateien werden direkt
-      =link("#{@item.name}", to: item_path(@conn, :show, @item.id))
-      zugeordnet
-    - if @person_id do
-      Alle Bilddateien werden direkt
-      =link("#{@person.firstname} #{@person.lastname}", to: person_path(@conn, :show, @person.id))
+      - if @item_id do
+        =link("#{@item.name}", to: item_path(@conn, :show, @item.id))
+      - if @place_id do
+        =link("#{@place.city} #{@place.address}", to: place_path(@conn, :show, @place.id))
+      - if @person_id do
+        =link("#{@person.firstname} #{@person.lastname}", to: person_path(@conn, :show, @person.id))
       zugeordnet

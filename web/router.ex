@@ -49,6 +49,18 @@ defmodule Heimchen.Router do
 		get  "/person/delete_keyword/:id", PersonController, :delete_keyword
 		get  "/person/search/:name", PersonController, :search
 
+
+		get  "/place", PlaceController, :index
+		get  "/place/show/:id", PlaceController, :show
+		get  "/place/new", PlaceController, :new
+		get  "/place/edit/:id", PlaceController, :edit
+		post "/place/create", PlaceController, :create
+		put  "/place/update/:id", PlaceController, :update
+		get  "/place/add_keyword/:id", PlaceController, :add_keyword # sorry for making this "get"
+		get  "/place/delete_keyword/:id/:keyword_id", PlaceController, :delete_keyword
+		get  "/place/search/:name", PlaceController, :search
+
+		
 		get  "/image", ImageController, :index
 		get  "/image/new", ImageController, :new
 		post "/image/create", ImageController, :create

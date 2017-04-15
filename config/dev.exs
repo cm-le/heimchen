@@ -34,6 +34,8 @@ config :phoenix, :stacktrace_depth, 20
 
 config :heimchen, :googleapikey, "AIzaSyD-tpgkm4HNAQ-YOZTwIb_ZKe_lEq3P5bU"
 
+config :heimchen, :uploads, "/home/cl/heimchen/uploads"
+
 # Configure your database
 config :heimchen, Heimchen.Repo,
   adapter: Ecto.Adapters.Postgres,

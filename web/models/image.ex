@@ -4,7 +4,7 @@ defmodule Heimchen.Image do
 	alias Heimchen.Repo
 	alias Heimchen.Imagetag
 
-	@base_path  Application.app_dir(:heimchen, "../../../../uploads")
+	@base_path  Application.get_env(:heimchen, :uploads)
 	@image_extensions [".jpg", ".jpeg", ".png", ".gif"]
 	
 	schema "images" do

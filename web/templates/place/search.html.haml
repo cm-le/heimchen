@@ -7,6 +7,7 @@
         %th Bild
         %th Kommentar
         %th An diesem Ort
+        %th
     %tbody
       = for place <- @places do
         %tr
@@ -21,6 +22,10 @@
               = link("#{pp.person.firstname} #{pp.person.lastname}", to: person_path(@conn, :show, pp.person.id))
             - for pi <- place.places_items do
               = link(pi.item.name, to: item_path(@conn, :show, pi.item.id))
+          %td
+            %a{href: "#{place_path(@conn, :edit, place.id)}"}
+              %i.fa.fa-edit
+
       - end
 - else
   .row.page-header

@@ -39,7 +39,8 @@ defmodule Heimchen.Person do
 	end
 
 	def recently_updated() do
-		(from p in Heimchen.Person, order_by: [desc: p.updated_at], limit: 100)
+		(from p in Heimchen.Person, preload: [imagetags: :image],
+			order_by: [desc: p.updated_at], limit: 100)
 		|> with_keywords()
 		|> Repo.all
 	end

@@ -50,7 +50,7 @@ defmodule Heimchen.Place do
 	def recently_updated() do
 		Repo.all from p in Heimchen.Place,
 			preload: [:user, :keywords,
-								imagetags: :image,
+								:imagetags,
 								places_items: [item: :itemtype],
 								places_people: :person],
 			order_by: [desc: p.updated_at], limit: 100

@@ -220,4 +220,4 @@ create index places_tsearch on places using gist(tsearch);
 -- drop function search_all(text);
 
 
---  commit;
+  commit;

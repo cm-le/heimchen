@@ -27,8 +27,6 @@
     .float-xs-right.col-xs-1
       %a{href="#{place_path(@conn, :getlatlong, @place.id)}",class="btn btn-outline-primary",title="Länge/breite bei Google abfragen"}
         %i.fa.fa-globe
-
-
       
 .row
   .col-xs-12.col-sm-6
@@ -38,17 +36,18 @@
     - if @place.comment do
       .blockquote=@place.comment
   .col-xs-12.col-sm-6
-    %h4 Stichwörter  
-    %ul
-      - for c <- Enum.uniq(Enum.map(@place.keywords, &(&1.category))) do
-        %li
-          %b=c
-          %ul
-            - for k <- Enum.filter(@place.keywords, &(&1.category == c)) do
-              %li
-                = link(k.name, to: keyword_path(@conn, :show, k.id))
-                %a{href="#{place_path(@conn, :delete_keyword, @place.id, k.id)}"}
-                  %i.fa.fa-remove
+    - if !Enum.empty?(@place.keywords) do
+      %h4 Stichwörter  
+      %ul
+        - for c <- Enum.uniq(Enum.map(@place.keywords, &(&1.category))) do
+          %li
+            %b=c
+            %ul
+              - for k <- Enum.filter(@place.keywords, &(&1.category == c)) do
+                %li
+                  = link(k.name, to: keyword_path(@conn, :show, k.id))
+                  %a{href="#{place_path(@conn, :delete_keyword, @place.id, k.id)}"}
+                    %i.fa.fa-remove
     - if @place.lat && @place.long do
       GOOGLE MAP here
 

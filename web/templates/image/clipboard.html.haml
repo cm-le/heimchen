@@ -4,7 +4,7 @@
   .col-xs-12
     %h1 Zwischenablage Bilddateien
       .float-xs-right(style="padding-right: 8px")
-        =link("Alle löschen", to: image_path(@conn, :new), class: "btn btn-outline-danger")
+        =link("Alle löschen", to: image_path(@conn, :delete_all), class: "btn btn-outline-danger")
       .float-xs-right(style="padding-right: 8px")
         =link("Leeren", to: image_path(@conn, :clipboard_empty), class: "btn btn-outline-primary")
       .float-xs-right.col-xs-3(style="padding-right: 8px;margin-top: 7px;")

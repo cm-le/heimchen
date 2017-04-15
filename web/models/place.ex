@@ -18,9 +18,18 @@ defmodule Heimchen.Place do
 		timestamps
 	end
 
-	def setLatLong() do
+	def setLatLong(place) do
 		key = Application.get_env(:heimchen, :googleapikey)
-		# HTTPotion
+		case HTTPotion.get("https://maps.googleapis.com/maps/api/geocode/json?address=" <>
+			"#{place.city},+#{place.address}" <>
+					"&key=#{key}") do
+			%HTTPotion.Response{body: body} ->
+				case Poison.decode!(body) do
+					%{} -> "hallo"
+				end
+			_ -> {:error}
+		end
+		
 	end
 
 	def touch!(place,user) do

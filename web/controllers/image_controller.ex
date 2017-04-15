@@ -45,6 +45,10 @@ defmodule Heimchen.ImageController do
 			item_id: params["item_id"], person_id: params["person_id"], place_id: params["place_id"])
 	end
 
+	def delete_all(conn, _user) do
+		
+	end
+	
 	def image(conn, %{"id" => id, "size" => size}, _user) do
 		case Repo.get(Heimchen.Image, id) do
 			nil -> resp(conn, 404, "Not found")

@@ -55,13 +55,11 @@ end;
 $$ language plpgsql;
 
 
-create trigger people_places_update_tsearch after insert or update on places_items
+create trigger places_items_update_tsearch after insert or update on places_items
        for each row execute procedure places_items_update_tsearch();
 
-create trigger people_places_update_tsearch after delete on places_items
+create trigger places_items_update_tsearch after delete on places_items
        for each row execute procedure del_places_items_update_tsearch();
-
-
 
 -- places
 

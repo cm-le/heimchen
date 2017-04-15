@@ -37,7 +37,7 @@
             - else
               %li.nav-item
                 %a.nav-link(href="#{user_path(@conn, :show,  @current_user.id)}") Profil
-            %li.nav-item
+            %li.nav-item{style="width: 32ex"}
               .input-group
                 %span.input-group-addon{title: "Nur vollständige Wörter"}
                   %input#search-prefix{type: "checkbox"}

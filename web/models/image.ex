@@ -87,13 +87,20 @@ defmodule Heimchen.Image do
 	end
 
 	def rotate(image) do
+		{_, olddir} = File.cwd()
+		File.cd(dir(image))
 		for file <- ["thumb.jpg", "medium.jpg", "large.jpg", orig_name(image)] do
 				System.cmd("gm",["convert", file, "-rotate", "90", "rotated_" <> file],
 					cd: dir(image))
-				File.cd(dir(image))
 				File.rename("rotated_" <> file, file)
 		end
-		Repo.update(changeset(image, %{orig_w: image.orig_h, orig_h: image.orig_w})) 
+		File.cd(olddir)
+		Repo.update(changeset(image, %{orig_w: image.orig_h, orig_h: image.orig_w}))
+		for it <- Repo.all(Heimchen.Imagetag, image_id: image.id) do
+				{x,y} = {it.marks["x"], it.marks["y"]}
+				m2 = %{"x": Enum.map(y, fn(y) ->  1-y end), "y": x}
+				Repo.update(it |> Heimchen.Imagetag.changeset(%{}) |> put_change(:marks,  m2))
+		end
 	end
 	
 	def amend(image, file_path) do 

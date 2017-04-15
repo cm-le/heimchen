@@ -108,9 +108,7 @@ defmodule Heimchen.ImageController do
 			image ->
 				Heimchen.Image.rotate(image)
 				conn
-				|> render("show.html",
-					[id: id, clipboard_n: length(Map.keys(get_session(conn, :image_clipboard))),
-					 changeset: Heimchen.Image.changeset(image |> Repo.preload(imagetags: :person), :invalid)])
+				|> redirect(to: image_path(conn, :show, id))
 		end
 	end
 	

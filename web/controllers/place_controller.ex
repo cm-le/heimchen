@@ -73,7 +73,9 @@ defmodule Heimchen.PlaceController do
 										 places_items: [item: :itemtype],
 										 places_people: :person]) do
 			nil -> conn |> put_flash(:error, "Ort nicht gefunden") |> redirect(to: place_path(conn, :index))
-			place -> conn |> render("show.html", place: place, id: id, nearby: Place.nearby(place))
+			place -> conn |> render("show.html", place: place, id: id,
+			                        nearby: Place.nearby(place),
+			                        googleapikey: Application.get_env(:heimchen, :googleapikey) )
 		end
 	end
 

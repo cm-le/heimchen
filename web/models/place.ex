@@ -21,7 +21,7 @@ defmodule Heimchen.Place do
 	def setLatLong(place) do
 		key = Application.get_env(:heimchen, :googleapikey)
 		case HTTPotion.get("https://maps.googleapis.com/maps/api/geocode/json?address=" <>
-			"#{place.city},+#{place.address}" <>
+					URI.encode("#{place.city},+#{place.address}") <>
 					"&key=#{key}") do
 			%HTTPotion.Response{body: body} ->
 				case Poison.decode!(body) do

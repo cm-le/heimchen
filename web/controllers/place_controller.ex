@@ -61,9 +61,15 @@ defmodule Heimchen.PlaceController do
 	end
 
 	def getlatlong(conn, %{"id" => id}, _) do
-		p = Repo.get(Place, id) 
-		Place.getlatlong(p)
-		conn |> put_flash(:info, "Länge/Breite abgefragt") |> redirect(to: place_path(conn, :show, id))
+		p = Repo.get(Place, id)
+		case Place.setLatLong(p) do
+			{:error} -> conn
+				|> put_flash(:error, "Länge/Breite konnte nicht abgefragt werden")
+				|> redirect(to: place_path(conn, :show, id))
+				_ -> conn
+					|> put_flash(:info, "Länge/Breite abgefragt")
+					|> redirect(to: place_path(conn, :show, id))
+		end
 	end
 	
 	def show(conn, %{"id" => id}, _user) do

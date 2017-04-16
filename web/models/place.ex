@@ -20,16 +20,17 @@ defmodule Heimchen.Place do
 
 	def setLatLong(place) do
 		key = Application.get_env(:heimchen, :googleapikey)
-		case HTTPotion.get("https://maps.googleapis.com/maps/api/geocode/json?address=" <>
+		case HTTPoison.get("https://maps.googleapis.com/maps/api/geocode/json?address=" <>
 					URI.encode("#{place.city},+#{place.address}") <>
 					"&key=#{key}") do
-			%HTTPotion.Response{body: body} ->
+			{:ok, %HTTPoison.Response{body: body}} ->
 				case Poison.decode!(body) do
-					%{} -> "hallo"
+					%{"results" => [%{"geometry" => %{"location" => %{"lat" => latitude, "lng" => longitude}}} |_]}
+						-> Repo.update(change(place, %{:lat => latitude, :long => longitude}))
+					_ -> {:error}
 				end
 			_ -> {:error}
 		end
-		
 	end
 
 	def touch!(place,user) do

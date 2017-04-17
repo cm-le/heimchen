@@ -35,7 +35,8 @@ defmodule Heimchen.ItemController do
 
 	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Item,id)
-		|> Repo.preload([:user, :itemtype, :received_by, :room, :keywords, imagetags: :image, places_items: :place]) do
+		|> Repo.preload([:user, :itemtype, :received_by, :room, :keywords,
+										 imagetags: [image: :imagetags], places_items: :place]) do
 			nil -> conn |> put_flash(:error, "Eintrag nicht gefunden") |> redirect(to: item_path(conn, :index))
 			item -> conn |> render("show.html", item: item, id: id)
 		end

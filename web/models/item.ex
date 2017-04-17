@@ -43,10 +43,24 @@ defmodule Heimchen.Item do
 		|> validate_required([:name], message: "Darf nicht leer sein")
 	end
 
+	def to_result(item) do
+		%{what: "item",
+			id: item.id,
+			name: item.name,
+			comment: item.comment,
+			keywords: item.keywords,
+			image_id: case item.imagetags do
+									[] -> nil
+									[it |_] -> it.image_id
+								end
+			}
+	end
+	
 	def recently_updated() do
-		Repo.all from i in Heimchen.Item,
+		(Repo.all from i in Heimchen.Item,
 			preload: [:itemtype, :keywords, :imagetags],
-			order_by: [desc: i.updated_at], limit: 100
+			order_by: [desc: i.updated_at], limit: 100)
+		|> Enum.map(fn x -> to_result(x) end)
 	end
 	
 	def search(s) do

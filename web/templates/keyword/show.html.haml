@@ -5,33 +5,11 @@
     %a.btn.btn-outline-primary(href="#{keyword_path(@conn, :edit, @id)}")
       %i.fa.fa-edit
       Bearbeiten
+
 .row
-
-%h4 
-  = @keyword.category
-  = ": "
-  = @keyword.name
-
-- if @keyword.comment do
-  .blockquote=@keyword.comment
-
-- if !Enum.empty?(@keyword.people)  do
-  %h5 Personen
-  - for p <- @keyword.people do
-    = link("#{p.firstname} #{p.lastname}", to: person_path(@conn, :show, p.id))
-    = p.comment
-    %br
-
-- if !Enum.empty?(@keyword.items)  do
-  %h5 Sammlung
-  - for i <- @keyword.items do
-    = link(i.name, to: item_path(@conn, :show, i.id))
-    = i.comment     
-    %br
-
-- if !Enum.empty?(@keyword.places)  do
-  %h5 Orte
-  - for p <- @keyword.places do
-    = link("#{p.city} #{p.address}", to: place_path(@conn, :show, p.id))
-    = p.comment     
-    %br
+%h2
+  ="#{@keyword.category}: #{@keyword.name}"
+%blockquote
+  =@keyword.comment
+  
+=render(Heimchen.SearchView, "index.html", results: @related, headline: "Mit diesem Stichwort verknüpft", conn: @conn)  

@@ -96,7 +96,7 @@ defmodule Heimchen.Image do
 		end
 		File.cd(olddir)
 		Repo.update(changeset(image, %{orig_w: image.orig_h, orig_h: image.orig_w}))
-		for it <- Repo.all(Heimchen.Imagetag, image_id: image.id) do
+		for it <- Repo.preload(image, :imagetags).imagetags do
 				if it.marks && it.marks["x"] do
 					{x,y} = {it.marks["x"], it.marks["y"]}
 					m2 = %{"x": Enum.map(y, fn(y) ->  1-y end), "y": x}

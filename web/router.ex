@@ -46,7 +46,7 @@ defmodule Heimchen.Router do
 		post "/person/create", PersonController, :create
 		put  "/person/update/:id", PersonController, :update
 		get  "/person/add_keyword/:id", PersonController, :add_keyword # sorry for making this "get"
-		get  "/person/delete_keyword/:id", PersonController, :delete_keyword
+		get  "/person/delete_keyword/:person_id/:keyword_id", PersonController, :delete_keyword
 		get  "/person/search/:name", PersonController, :search
 		post "/person/add_place", PersonController, :add_place
 		get  "/person/delete_place/:id", PersonController, :delete_place
@@ -60,7 +60,7 @@ defmodule Heimchen.Router do
 		put  "/place/update/:id", PlaceController, :update
 		get  "/place/getlatlong/:id", PlaceController, :getlatlong
 		get  "/place/add_keyword/:id", PlaceController, :add_keyword # sorry for making this "get"
-		get  "/place/delete_keyword/:id/:keyword_id", PlaceController, :delete_keyword
+		get  "/place/delete_keyword/:place_id/:keyword_id", PlaceController, :delete_keyword
 		get  "/place/search/:name", PlaceController, :search
 
 		

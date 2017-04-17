@@ -1,0 +1,34 @@
+- for i <- Enum.uniq(Enum.map(@tagged.imagetags, fn it -> it.image end)) do
+  .row(style="margin-top: 15px")
+    .col-sm-8
+      .canvas-container(id="#{i.id}_cc")
+        %img.rounded.d-block(id="#{i.id}_img", src="#{image_path(@conn, :image, i.id, 2)}")
+    .col-sm-4
+      = i.comment
+      %br
+      %tt= link(i.original_filename, to: image_path(@conn, :image, i.id, 4))
+      ="(#{i.orig_w}x#{i.orig_h})"
+      %script
+        imagetag_colorindex=0 // start new for each image
+      %ul
+        - Enum.map i.imagetags, fn(it) ->
+          %li
+            %a{href: "#{imagetag_backlink(@conn, it)}",id="itlink_#{it.id}"}
+              %i.fa.fa-link(id="connection_#{it.id}")
+                %script
+                  =raw("$('#connection_#{it.id}').css('color', imagetag_colors[imagetag_colorindex]);")
+                  imagetag_colorindex++
+              =Heimchen.Imagetag.name(it)
+            &nbsp;
+            %a{href: "#{image_path(@conn, :edit_imagetag, it.id)}"}
+              %i.fa.fa-edit
+            &nbsp;  
+            %a{href: "#{image_path(@conn, :del_imagetag, it.id)}", onclick: "return confirm('Verknüpfung wirklich entfernen?')"}
+              %i.fa.fa-remove
+            - if it.comment && String.length(it.comment) > 0 do
+              %br
+              = it.comment
+          %script
+            =raw("$(window).one('load', function(){attach_canvas('#{i.id}_cc',#{elem(Poison.encode(it.marks||'{}'),1)}, imagetag_colors[imagetag_colorindex]);imagetag_colorindex++});")
+        %script
+          imagetag_colorindex=0

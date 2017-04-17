@@ -4,6 +4,4 @@
       .float-xs-right
         =link("Neuer Ort", to: place_path(@conn, :new), class: "btn btn-outline-primary")
 
-#result1
-  %h3(style="margin-top: 12px") Kürzlich bearbeit
-  =render(@view_module, "search.html", places: @places, conn: @conn)
+=render(Heimchen.SearchView, "index.html", results: @places, headline: "Kürzlich bearbeitet", conn: @conn)

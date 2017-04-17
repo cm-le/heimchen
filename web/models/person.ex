@@ -13,7 +13,7 @@ defmodule Heimchen.Person do
 		field :died_precision, :integer
 		field :comment, :string
 
-		has_many   :people_keywords, Heimchen.PersonKeyword
+		many_to_many :keywords, Heimchen.Keyword, join_through: "people_keywords"
 		has_many   :places_people, Heimchen.PlacePerson
 		has_many   :imagetags, Heimchen.Imagetag
 		has_many   :items, Heimchen.Item, foreign_key: :received_by_id
@@ -29,39 +29,28 @@ defmodule Heimchen.Person do
 		|> validate_required([:lastname], message: "Darf nicht leer sein")
 	end
 
+	
 
-	def  with_keywords(q) do
-		q |>
-			select([p], {p,
-										(fragment("(select string_agg( k.category || ':' || k.name, ', ') from people_keywords pk, keywords k where pk.keyword_id=k.id and pk.person_id=p0.id)"))})
-		|> order_by([:lastname, :firstname])
-		|> limit(100)
+	def to_result(person) do
+		%{what: "person",
+			id: person.id,
+			name: Person.name(person),
+			comment: person.comment,
+			keywords: person.keywords,
+			image_id: case person.imagetags do
+									[] -> nil
+									[it |_] -> it.image_id
+								end
+			}
 	end
 
 	def recently_updated() do
-		(from p in Heimchen.Person, preload: [imagetags: :image],
+		(Repo.all from p in Heimchen.Person, preload: [:imagetags, :keywords],
 			order_by: [desc: p.updated_at], limit: 100)
-		|> with_keywords()
-		|> Repo.all
+		|> Enum.map(fn x -> to_result(x) end)
 	end
 
 	
-	def search(s) do
-		case String.split(s, ~r{\s*,\s*}, parts: 2) do
-			[<<"#"::utf8, keyword::binary>> | _]  ->
-				from p in Person, join: pk in assoc(p, :people_keywords),
-					join: k in assoc(pk, :keyword), where: fragment("length(?) > 0 and ? ~* ?", ^keyword, k.name, ^keyword),
-				  distinct: p.id
-			[lastname] ->
-				from p in Person, where: fragment("? ~* ?", p.lastname, ^lastname)
-			[lastname, firstname] ->
-					from p in Person, where: fragment("? ~* ?", p.lastname, ^lastname),
-					where: fragment("? ~* ?", p.firstname, ^firstname)
-			_ -> from p in Person, where: p.id == -1
-		end
-		|> with_keywords() |> Repo.all
-	end
-
 	def name(p) do
 		"#{p.firstname} #{p.lastname}"
 	end

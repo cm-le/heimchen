@@ -49,13 +49,28 @@ defmodule Heimchen.Place do
 		|> validate_required([:city], message: "Darf nicht leer sein")
 	end
 
+	def to_result(place) do
+		%{what: "place",
+			id: place.id,
+			name: longname(place),
+			comment: place.comment,
+			keywords: place.keywords,
+			image_id: case place.imagetags do
+									[] -> nil
+									[it |_] -> it.image_id
+								end
+			}
+	end
+
+	
 	def recently_updated() do
-		Repo.all from p in Heimchen.Place,
+		(Repo.all from p in Heimchen.Place,
 			preload: [:user, :keywords,
 								:imagetags,
 								places_items: [item: :itemtype],
 								places_people: :person],
-			order_by: [desc: p.updated_at], limit: 100
+			order_by: [desc: p.updated_at], limit: 100)
+		|> Enum.map(fn x -> to_result(x) end)
 	end
 
 	def nearby(place) do
@@ -73,7 +88,7 @@ defmodule Heimchen.Place do
 	end
 
 	def longname(place) do
-		"#{place.city} #{place.address}"
+		"#{place.city}: #{place.address}"
 	end
 
 	def for_select() do

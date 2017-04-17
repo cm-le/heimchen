@@ -3,22 +3,38 @@ defmodule Heimchen.SearchView do
 
 
 	def catname(what) do
-		names = %{"person" => "Person",
+		names = %{"person" => "fa-male",
 							"keyword" => "Stichwort",
-							"image" => "Datei",
-							"item" => "Sammlung",
-							"place" => "Ort" }
-		names[what]
+							"image" => "fa-file",
+							"item" => "fa-photo",
+							"place" => "fa-globe" }
+		content_tag(:i, class: "fa #{names[what]}") do end
 	end 
 
 	def resultlink(conn, what, name, id) do
-		case what do
-			"person"  -> link(name, to: person_path(conn, :show, id))
-			"item"    -> link(name, to: item_path(conn, :show, id))
-			"image"   -> link(name, to: image_path(conn, :show, id))
-			"keyword" -> link(name, to: keyword_path(conn, :show, id))
-			"place"   -> link(name, to: place_path(conn, :show, id))
-		end
+		link(name, to:
+			case what do
+				"person"  -> person_path(conn, :show, id)
+				"item"    -> item_path(conn, :show, id)
+				"image"   -> image_path(conn, :show, id)
+				"keyword" -> keyword_path(conn, :show, id)
+				"place"   -> place_path(conn, :show, id)
+			end
+			)
 	end
 	
+	def editlink(conn, what, id) do
+		content_tag(:a, href:
+			case what do
+				"person"  -> person_path(conn, :edit, id)
+				"item"    -> item_path(conn, :edit, id)
+				"image"   -> image_path(conn, :edit, id)
+				"keyword" -> keyword_path(conn, :edit, id)
+				"place"   -> place_path(conn, :edit, id)
+			end) do
+			content_tag(:i, class: "fa fa-edit") do
+			end
+		end
+	end
+
 end

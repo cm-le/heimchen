@@ -48,8 +48,8 @@ defmodule Heimchen.PlaceController do
 	end
 
 
-	def delete_keyword(conn, %{"id" => id, "keyword_id" => keyword_id}, _) do
-		case Repo.get_by(PlaceKeyword, place_id: id, keyword_id: keyword_id) do
+	def delete_keyword(conn, %{"place_id" => place_id, "keyword_id" => keyword_id}, _) do
+		case Repo.get_by(PlaceKeyword, place_id: place_id, keyword_id: keyword_id) do
 			nil ->
 				conn |> put_flash(:error, "Stichwort nicht gefunden") |>
 					redirect(to: place_path(conn, :index))
@@ -75,7 +75,7 @@ defmodule Heimchen.PlaceController do
 	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Place,id)
 		|> Repo.preload([:user, :keywords,
-										 imagetags: :image,
+										 imagetags: [image: :imagetags],
 										 places_items: [item: :itemtype],
 										 places_people: :person]) do
 			nil -> conn |> put_flash(:error, "Ort nicht gefunden") |> redirect(to: place_path(conn, :index))

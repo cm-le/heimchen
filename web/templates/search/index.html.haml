@@ -1,22 +1,27 @@
-%h2{style: "margin-top: 10px"} Suchergebnisse
-
+%h2{style: "margin-top: 10px"}=@headline
 - if @results == [] do
   %i keine Ergebnisse
 - else
   %table.table.table-striped
     %thead
       %tr
-        %th Kategorie
         %th Name
         %th Kommentar
         %th Bild
+        %td
     %tbody
-      - for [what, id, name, comment, image_id] <- @results do
+      - for r <- @results do
         %tr
-          %td=catname(what)
-          %td=resultlink(@conn, what, name, id)
-          %td=comment
           %td
-            - if image_id do
-              %img(src="#{image_path(@conn, :image, image_id, 1)}")
-              %i.fa.fa-shopping-cart.spanlink{onclick: "image_cp_toggle(#{image_id})", id: "image_cp_#{image_id}"}
+            =catname(r.what)
+            =resultlink(@conn, r.what, r.name, r.id)
+          %td
+            =r.comment
+            - for k <- r.keywords do
+              %i.fa.fa-key
+              =link("#{k.category}: #{k.name}", to: keyword_path(@conn, :show, k.id))
+          %td
+            - if r.image_id do
+              %img(src="#{image_path(@conn, :image, r.image_id, 1)}")
+              %i.fa.fa-shopping-cart.spanlink{onclick: "image_cp_toggle(#{r.image_id})", id: "image_cp_#{r.image_id}"}
+          %td=editlink(@conn, r.what, r.id)

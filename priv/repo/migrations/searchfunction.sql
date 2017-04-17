@@ -133,14 +133,15 @@ create trigger items_update_tsearch before insert or update on items
 
 
 create or replace function search_all(text, int)
-			 returns table(what varchar, id int, name text, comment text, image_id int) as $$
+			 returns table(what varchar, id int, name text, comment text, keywords json, image_id int) as $$
 with query as (select to_tsquery('german', $1) as query)
 (select 'person'::varchar, 
        p.id, 
        concat_ws(' ', p.firstname, p.lastname), 
-       p.comment || ' ' || coalesce((select string_agg(k.category || ': ' || k.name, ' / ') from 
-                            keywords k, people_keywords pk where pk.person_id=p.id and 
-                            pk.keyword_id=k.id), ''),
+       p.comment,
+       (select jsonb_agg((select kk from (select k.id, k.category, k.name) kk)) from keywords k,
+			 				 people_keywords pk where pk.person_id=p.id and 
+                            pk.keyword_id=k.id),
        (select image_id from imagetags where person_id=p.id order by is_primary desc limit 1)
 from people p, query  q where q.query @@ p.tsearch
      order by ts_rank_cd(p.tsearch, q.query) desc limit $2)
@@ -150,9 +151,10 @@ union all
 (select 'item'::varchar, 
        i.id,
        i.name,
-       concat(i.comment, ' ', (select string_agg(k.category || ': ' || k.name, ' / ') from 
-                            keywords k, item_keywords ik where ik.item_id=i.id and 
-                            ik.keyword_id=k.id)),
+       i.comment,
+       (select jsonb_agg((select kk from (select k.id, k.category, k.name) kk)) from keywords k,
+			 				 item_keywords ik where ik.item_id=i.id and 
+                            ik.keyword_id=k.id),
        (select image_id from imagetags where item_id=i.id order by is_primary desc limit 1)
 from items i, query  q where q.query @@ i.tsearch
      order by ts_rank_cd(i.tsearch, q.query) desc limit $2)
@@ -166,6 +168,7 @@ union all
                             from imagetags it, people p where it.image_id=i.id and it.person_id=p.id),
 							' ', (select string_agg(items.name, ', ') 
                             from imagetags it, items where items.id=it.item_id and it.image_id=i.id)),
+				'[]'::jsonb,
        i.id
 from images i, query  q where q.query @@ i.tsearch
      order by ts_rank_cd(i.tsearch, q.query) desc limit $2)
@@ -181,6 +184,7 @@ union all
 								   (select it.name || ': ' ||  count(*) as s from
 									    item_keywords ik, items i, itemtypes it where ik.item_id=i.id and
 											i.itemtype_id=it.id and ik.keyword_id=k.id group by it.name) strings)),
+			'[]'::jsonb,								
 			coalesce((select it.image_id from imagetags it, people_keywords pk where pk.keyword_id=k.id and
 						 					pk.person_id=it.person_id order by is_primary desc limit 1),
 											(select it.image_id from imagetags it, item_keywords ik where ik.keyword_id=k.id and
@@ -194,6 +198,9 @@ union all
        p.id,
 			 concat_ws(' ', p.city, p.address),
 			 p.comment,
+       (select jsonb_agg((select kk from (select k.id, k.category, k.name) kk)) from keywords k,
+			 				 place_keywords pk where pk.plcae_id=p.id and 
+                            pk.keyword_id=k.id),
 			 (select image_id from imagetags where place_id=p.id order by is_primary desc limit 1)
 from places p, query  q where q.query @@ p.tsearch
      order by ts_rank_cd(p.tsearch, q.query) desc limit $2)

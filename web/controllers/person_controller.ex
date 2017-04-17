@@ -50,15 +50,15 @@ defmodule Heimchen.PersonController do
 	end
 
 
-	def delete_keyword(conn, %{"id" => id}, _) do
-		case Repo.get(Heimchen.PersonKeyword, id) do
+	def delete_keyword(conn, %{"person_id" => person_id, "keyword_id" => keyword_id}, _) do
+		case Repo.get_by(Heimchen.PersonKeyword, person_id: person_id, keyword_id: keyword_id) do
 			nil ->
 				conn |> put_flash(:error, "Stichwort nicht gefunden") |>
 					redirect(to: person_path(conn, :index))
 			pk ->
 				Repo.delete(pk)
 				conn |> put_flash(:success, "Stichwort gelöscht") |>
-					redirect(to: person_path(conn, :show, pk.person_id))
+					redirect(to: person_path(conn, :show, person_id))
 		end
 	end
 
@@ -78,7 +78,8 @@ defmodule Heimchen.PersonController do
 
 	
 	def show(conn, %{"id" => id}, _user) do
-		case Repo.get(Person,id) |> Repo.preload([:user, imagetags: :image, items: :itemtype, places_people: :place]) do
+		case Repo.get(Person,id)
+		     |> Repo.preload([:user, :keywords, imagetags: :image, items: :itemtype, places_people: :place]) do
 			nil -> conn |> put_flash(:error, "Person nicht gefunden") |> redirect(to: person_path(conn, :index))
 			person -> conn |> render("show.html", person: person, id: id, keywords: Person.keywords(person))
 		end

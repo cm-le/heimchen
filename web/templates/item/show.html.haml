@@ -42,18 +42,7 @@
         %dd= @item.inventory
 
   .col-xs-12.col-sm-6
-    - if !Enum.empty?(@item.keywords) do
-      %h4 Stichwörter  
-      %ul
-        - for c <- Enum.uniq(Enum.map(@item.keywords, fn(k) -> k.category end)) do
-          %li
-            %b=c
-            %ul
-              - for k <- Enum.filter(@item.keywords, fn(k) -> k.category == c end) do
-                %li
-                  = k.name
-                  %a{href="#{item_path(@conn, :delete_keyword, @item.id, k.id)}"}
-                    %i.fa.fa-remove
+    =render(Heimchen.KeywordView, "_keywordlist.html",conn: @conn,id: @item.id,keywords: @item.keywords,what: "item")
     - if !Enum.empty?(@item.places_items) do
       %h4 Orte
       %ul
@@ -61,31 +50,11 @@
           %li
             Datum:
             =heimchen_show_date(pi.start_precision, pi.start_on)
-            =link(pi.place.city <> " " <> pi.place.address, to: place_path(@conn, :show, pi.place_id))
+            =link(Heimchen.Place.longname(pi.place), to: place_path(@conn, :show, pi.place_id))
             =pi.comment
-            %a{href="#{item_path(@conn, :delete_place, pi.id)}"}
+            %a{href="#{item_path(@conn, :delete_place, pi.id)}", onclick="return confirm('Verknüpfung wirklich entfernen?')"}
               %i.fa.fa-remove
-
-
-.card-columns
-  -for it <- @item.imagetags do
-    .card(style="width: 160px;margin:5px;")
-      %a(href="#{image_path(@conn, :show, it.image_id)}")
-        .canvas-container(id="#{it.id}_cc")
-          %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, it.image_id, 1)}",id="#{it.id}_img", onload="attach_canvas('#{it.id}_cc',#{elem(Poison.encode(it.marks),1)}, '#ff0000');")
-      .card-block
-        %p.card-subtitle
-          %small.text-muted
-            =it.comment
-      .card-footer
-        %small.text-muted
-          %a(href="#{image_path(@conn, :edit_imagetag, it.id)}")
-            %i.fa.fa-edit
-            Edit
-        %small.text-muted.float-xs-right
-          %a(href="#{image_path(@conn, :del_imagetag, it.id)}")
-            %i.fa.fa-remove
-
+=render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @item)              
 
 .float-xs-right.footer
   %i.small

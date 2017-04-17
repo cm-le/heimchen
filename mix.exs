@@ -42,6 +42,7 @@ defmodule Heimchen.Mixfile do
 		 {:phoenix_haml, "~> 0.2"},
 		 {:kerosene, "~> 0.5.0"},
 		 {:httpoison, "~> 0.10.0"},
+		 {:excellent, "~> 0.0.1" },
 		 {:exrm, "~> 0.14.2" } ]
   end
 

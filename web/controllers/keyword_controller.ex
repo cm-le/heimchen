@@ -59,9 +59,17 @@ defmodule Heimchen.KeywordController do
 
 
 	def show(conn, %{"id" => id}, _user) do
+		keyword = Repo.get(Keyword,id)
+		|> Repo.preload([:user,people: [:imagetags, :keywords],
+										 items: [:imagetags, :keywords],
+										 places: [:imagetags, :keywords]])
+		related = Enum.map(keyword.items, fn i -> Heimchen.Item.to_result(i) end) ++
+		  Enum.map(keyword.places, fn p -> Heimchen.Place.to_result(p) end) ++
+		  Enum.map(keyword.people, fn p -> Heimchen.Person.to_result(p) end) 
 		render(conn, "show.html",
-			  				 keyword: Repo.get(Keyword,id) |> Repo.preload([:people, :items, :places, :user]),
-								 id: id)
+			keyword: keyword,
+			related: related,
+			id: id)
 	end
 
 

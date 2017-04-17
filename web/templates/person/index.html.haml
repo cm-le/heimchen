@@ -4,19 +4,4 @@
       .float-xs-right
         =link("Neue Person", to: person_path(@conn, :new), class: "btn btn-outline-primary")
 
-.input-group    
-  %input.form-control#search_field(autocomplete="off", placeholder="Nachname, Vorname oder #Stichwort")
-  %span.input-group-btn
-    %button.btn.btn-secondary(type="button")
-      %i.fa.fa-search
-%script
-  $(function(){$('#search_field').observe_field(0.5, 
-  function(){if (this.value){$("#result2").show(); $("#result1").hide(); $.get('/person/search/' + encodeURIComponent(this.value), function(html){$('#result3').html(html)})} else{$("#result1").show(); $("#result2").hide();  }});
-  $(function() { $('#search_field').focus()});});
-#result1
-  %h3(style="margin-top: 12px") Kürzlich bearbeit
-  =render(@view_module, "search.html", people: @people, conn: @conn)
-#result2(style="display:none")
-  %h3(style="margin-top: 12px") Suchergebnis
-  #result3
-%script(src='#{static_path(@conn, "/js/jquery.observe_field.js")}')
+=render(Heimchen.SearchView, "index.html", results: @people, headline: "Kürzlich bearbeitet", conn: @conn)

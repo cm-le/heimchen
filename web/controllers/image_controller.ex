@@ -46,7 +46,7 @@ defmodule Heimchen.ImageController do
 	end
 
 	def delete_all(conn, _user) do
-		
+		# FIXME
 	end
 	
 	def image(conn, %{"id" => id, "size" => size}, _user) do
@@ -185,7 +185,7 @@ defmodule Heimchen.ImageController do
 		end
 	end 
 
-	def edit_imagetag(conn, %{"id" => id}, user) do
+	def edit_imagetag(conn, %{"id" => id}, _user) do
 		{w,_} = Heimchen.Image.resolution(2)
 		case Repo.get(Heimchen.Imagetag, id) do
 			nil -> resp(conn, 404, "Not found")

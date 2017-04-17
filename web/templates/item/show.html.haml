@@ -56,9 +56,4 @@
               %i.fa.fa-remove
 =render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @item)              
 
-.float-xs-right.footer
-  %i.small
-    Zuletzt bearbeitet am
-    =show_timestamp(@item.updated_at)
-    von
-    =Heimchen.User.name(@item.user)
+=render(Heimchen.LayoutView, "_footer.html", at: @item.updated_at, user: @item.user)

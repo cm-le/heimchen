@@ -79,7 +79,8 @@ defmodule Heimchen.PersonController do
 	
 	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Person,id)
-		     |> Repo.preload([:user, :keywords, imagetags: :image, items: :itemtype, places_people: :place]) do
+		|> Repo.preload([:user, :keywords, imagetags: [image: :imagetags],
+										 items: :itemtype, places_people: :place]) do
 			nil -> conn |> put_flash(:error, "Person nicht gefunden") |> redirect(to: person_path(conn, :index))
 			person -> conn |> render("show.html", person: person, id: id, keywords: Person.keywords(person))
 		end

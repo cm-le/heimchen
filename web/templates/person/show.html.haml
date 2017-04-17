@@ -55,36 +55,6 @@
             %a{href="#{person_path(@conn, :delete_place, pp.id)}"}
               %i.fa.fa-remove
 
-    
-.card-columns
-  -for it <- @person.imagetags do
-    .card(style="width: 160px;margin:5px;")
-      %a(href="#{image_path(@conn, :show, it.image_id)}")
-        .canvas-container(id="#{it.id}_cc")
-          %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, it.image_id, 1)}",id="#{it.id}_img", onload="attach_canvas('#{it.id}_cc',#{elem(Poison.encode(it.marks),1)}, '#ff0000');")
-      .card-block
-        %p.card-subtitle
-          %small.text-muted
-            =it.comment
-      .card-footer
-        %small.text-muted
-          %a(href="#{image_path(@conn, :edit_imagetag, it.id)}")
-            %i.fa.fa-edit
-            Edit
-        %small.text-muted.float-xs-right
-          %a(href="#{image_path(@conn, :del_imagetag, it.id)}")
-            %i.fa.fa-remove
-- if length(@person.items)>0 do
-  %h4 Für die Sammlung gestiftet
-  %ul
-    - for it <- @person.items do
-      %li
-        =link(it.name, to: item_path(@conn, :show, it.id))
-        %i
-          =it.received_comment
-.float-xs-right.footer
-  %i.small
-    Zuletzt bearbeitet am
-    =show_timestamp(@person.updated_at)
-    von
-    =Heimchen.User.name(@person.user)
+=render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @person)                  
+
+=render(Heimchen.LayoutView, "_footer.html", at: @person.updated_at, user: @person.user)

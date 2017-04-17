@@ -27,7 +27,7 @@
     .float-xs-right.col-xs-1
       %a{href="#{place_path(@conn, :getlatlong, @place.id)}",class="btn btn-outline-primary",title="Länge/breite bei Google abfragen"}
         %i.fa.fa-globe
-      
+
 .row
   .col-xs-12.col-sm-6
     %h4 
@@ -47,25 +47,6 @@
         ="};"
       %script{src="https://maps.googleapis.com/maps/api/js?key=#{@googleapikey}&amp;callback=initMap", async , defer}
 
-.card-columns
-  -for it <- @place.imagetags do
-    .card(style="width: 160px;margin:5px;")
-      %a(href="#{image_path(@conn, :show, it.image_id)}")
-        .canvas-container(id="#{it.id}_cc")
-          %img.card-img-top.img-fluid(src="#{image_path(@conn, :image, it.image_id, 1)}",id="#{it.id}_img", onload="attach_canvas('#{it.id}_cc',#{elem(Poison.encode(it.marks),1)}, '#ff0000');")
-      .card-block
-        %p.card-subtitle
-          %small.text-muted
-            =it.comment
-      .card-footer
-        %small.text-muted
-          %a(href="#{image_path(@conn, :edit_imagetag, it.id)}")
-            %i.fa.fa-edit
-            Edit
-        %small.text-muted.float-xs-right
-          %a(href="#{image_path(@conn, :del_imagetag, it.id)}")
-            %i.fa.fa-remove
-
 - if !Enum.empty?(@place.places_items) do
   %h4 Sammlungs-Stücke mit Bezug zu diesem Ort
   %ul
@@ -84,13 +65,10 @@
         %i
           =pp.comment
 
+=render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @place)
+
 - if !Enum.empty?(@nearby) do
   %h4 Orte in der Nähe
   =render("search.html", places: @nearby, conn: @conn)
 
-.float-xs-right.footer
-  %i.small
-    Zuletzt bearbeitet am
-    =show_timestamp(@place.updated_at)
-    von
-    =Heimchen.User.name(@place.user)
+=render(Heimchen.LayoutView, "_footer.html", at: @place.updated_at, user: @place.user)  

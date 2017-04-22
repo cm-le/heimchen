@@ -174,3 +174,7 @@ function mainsearch() {
 		}
 }
 
+
+function call_rotate(i) {
+		$.get("/image/rotate/" + i, function() { location.reload()});
+}

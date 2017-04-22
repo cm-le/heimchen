@@ -1,0 +1,42 @@
+.modal.fade#addkeyword{tabindex="-1",role="dialog",aria-labelledby="addkeywordLabel",aria-hidden="true"}
+  .modal-dialog{role="document"}
+    .modal-content
+      %form(action="#{keyword_path(@conn, :add_keyword, @id, @what)}", method="get")
+        .modal-header
+          %h5.modal-title#addkeywordLabel Stichwort hinzufügen
+          %button.close{type="button", data-dismiss="modal", aria-label="Close"}
+            %span{aria-hidden="true"} &times;
+        .modal-body
+          #prefetch-keywords
+            %input.typeahead.form-control(type="text", name="keyword", placeholder="Stichwort")
+          %script
+            var bloodHound = new Bloodhound({ datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            =raw("prefetch: '../../keyword/keywords?for=#{@for}'});")
+            $('#prefetch-keywords .typeahead').typeahead(null, {name: 'keyword', source: bloodHound });
+            bloodHound.clearPrefetchCache(); bloodHound.initialize();
+        .modal-footer
+          %button.btn.btn-secondary{type="button", data-dismiss="modal"}
+            Abbrechen
+          %button.btn.btn-primary{type="submit"}
+            Speichern
+
+
+.modal.fade#addmark{tabindex="-1",role="dialog",aria-labelledby="addkeywordLabel",aria-hidden="true"}
+  .modal-dialog{role="document"}
+    .modal-content
+      %form(action="#{image_path(@conn, :create_imagetag, @id, @what)}", method="get")
+        %input#mark_image_id{type="hidden", name="image_id"}
+        .modal-body        
+          #prefetch-marklist
+            %input.typeahead.form-control(type="text", name="mark", placeholder="Markierung")
+          %script
+            var bloodHound = new Bloodhound({ datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace, prefetch: {url: '/image/marklist', ttl: 3000}});
+            $('#prefetch-marklist .typeahead').typeahead(null, {name: 'mark', source: bloodHound });
+            bloodHound.clearPrefetchCache(); bloodHound.initialize();
+        .modal-footer
+          %button.btn.btn-secondary{type="button", data-dismiss="modal"}
+            Abbrechen
+          %button.btn.btn-primary{type="submit"}
+            Speichern

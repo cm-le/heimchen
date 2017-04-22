@@ -1,21 +1,14 @@
 %script(src='#{static_path(@conn, "/js/typeahead.bundle.min.js")}')  
 
+= render(Heimchen.KeywordView, "_addkeyword.html", for: "person", what: "person", id: @id, conn: @conn)
+  
 .row.page-header
   .col-xs-6
     %h1 Person anzeigen
   .float-xs-right.col-xs-3
-    %form(action="#{person_path(@conn, :add_keyword, @id)}", method="get")
-      #prefetch-keywords
-        .input-group
-          %input.typeahead.form-control(type="text", name="keyword", placeholder="Stichwort")
-          %span.input-group-btn
-            %button.btn.btn-outline-primary(type="submit")
-              %i.fa.fa-plus
-    %script
-      var bloodHound = new Bloodhound({ datumTokenizer: Bloodhound.tokenizers.whitespace,
-      queryTokenizer: Bloodhound.tokenizers.whitespace, prefetch: '../../keyword/keywords?for=person'});
-      $('#prefetch-keywords .typeahead').typeahead(null, {name: 'keyword', source: bloodHound });
-      bloodHound.clearPrefetchCache(); bloodHound.initialize();
+    %button.btn.btn-outline-primary(type="button", data-toggle="modal", data-target="#addkeyword")
+      %i.fa.fa-plus
+      Stichwort
   .float-xs-right
     %a.btn.btn-outline-primary(href="#{person_path(@conn, :edit, @id)}")
       %i.fa.fa-edit
@@ -55,6 +48,13 @@
             %a{href="#{person_path(@conn, :delete_place, pp.id)}"}
               %i.fa.fa-remove
 
-=render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @person)                  
+    - if !Enum.empty?(@person.items) do
+      %h4 Von dieser Person erhalten
+      %ul
+        - for item <- @person.items do
+          %li
+            =link(item.name, to: item_path(@conn, :show, item.id))
+            =item.received_comment
 
+=render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @person, what: "person")                  
 =render(Heimchen.LayoutView, "_footer.html", at: @person.updated_at, user: @person.user)

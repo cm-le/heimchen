@@ -23,12 +23,9 @@ defmodule Heimchen.SearchController do
 				render(conn, "index.html", layout: {Heimchen.LayoutView, "empty.html"},
 					results: results |> Enum.map(fn [what, id, name, comment, keywords, image_id]  ->
 						%{what: what, id: id, name: name, comment: comment,
-							keywords: Enum.map(keywords,
-								fn k -> case k do
-													%{"category" => c, "id" => id, "name" => n} -> %{category: c, id: id, name: n}
-													_ ->  k
-												end
-								end),
+							keywords:  Enum.map(keywords || [],
+                fn %{"category" => c, "id" => id, "name" => n} ->
+									%{category: c, id: id, name: n} end),
 							image_id: image_id} end),
 					headline: "Suchergebnisse")
 			_ ->

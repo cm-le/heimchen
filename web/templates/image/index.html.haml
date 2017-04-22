@@ -9,39 +9,4 @@
           %span#clipboard-count
             =length(Map.keys(@clipboard))
           =")"
-.card-columns        
-  - for %{image: i, hours: hours, days: days, minutes: minutes} <- @images do
-    .card{style: "width: 160px;margin:5px;"}
-      %a{href: "#{image_path(@conn, :show, i.id)}"}
-        %img.card-img-top.img-fluid{src: "#{image_path(@conn, :image, i.id, 1)}", title: "#{i.original_filename}"}
-        .card-block  
-          %p.card-subtitle
-            %small.text-muted
-              - if i.imagetags == [] do
-                ="#{i.original_filename}"
-              - else 
-                - for it <- Enum.take(i.imagetags,3) do
-                  - if it.person_id do
-                    =link(Heimchen.Imagetag.name(it), to: person_path(@conn, :show, it.person_id))
-                  - if it.item_id do
-                    =link(Heimchen.Imagetag.name(it), to: item_path(@conn, :show, it.item_id))
-      .card-footer
-        - if @clipboard[i.id] do
-          %i.fa.fa-check.spanlink{onclick: "image_cp_toggle(#{i.id})", id: "image_cp_#{i.id}"}
-        - else
-          %i.fa.fa-shopping-cart.spanlink{onclick: "image_cp_toggle(#{i.id})", id: "image_cp_#{i.id}"}
-        %small.text-muted.float-xs-right
-          - if days == 0 do
-            - if hours == 0 do
-              - if minutes < 3 do
-                =" gerade eben"
-              - else
-                = " vor #{minutes} min "
-            - else
-              = " vor #{hours} St."
-              = " #{minutes} min"
-          - else
-            - if days == 1 do
-              = "vorgestern"
-            - else
-              = "vor #{days+1} Tagen"
+=render(Heimchen.SearchView, "index.html", results: @images, clipboard: @clipboard, headline: "Kürzlich bearbeitet", conn: @conn)      

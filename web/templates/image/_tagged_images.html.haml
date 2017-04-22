@@ -1,4 +1,6 @@
-- for i <- Enum.uniq(Enum.map(@tagged.imagetags, fn it -> it.image end)) do
+%h4 Bilder
+
+- for i <- (@tagged.imagetags |> Enum.sort(fn it1, it2 -> (it1.is_primary && !it2.is_primary) || false end) |> Enum.map(fn it -> it.image end) |> Enum.uniq()) do
   .row(style="margin-top: 15px")
     .col-sm-8
       .canvas-container(id="#{i.id}_cc")
@@ -6,21 +8,22 @@
     .col-sm-4
       = i.comment
       %br
-      %tt= link(i.original_filename, to: image_path(@conn, :image, i.id, 4))
+      %tt= link(i.original_filename, to: image_path(@conn, :show, i.id))
       ="(#{i.orig_w}x#{i.orig_h})"
-      %script
-        imagetag_colorindex=0 // start new for each image
       %ul
-        - Enum.map i.imagetags, fn(it) ->
+        - wi = Enum.with_index(i.imagetags)
+        - Enum.map wi, fn(tup) ->
+          - {it, index} = tup
+          %script
+            =raw("$(window).one('load', function(){attach_canvas('#{i.id}_cc',#{elem(Poison.encode(it.marks||'{}'),1)}, imagetag_colors[#{index}]);});")
           %li
             %a{href: "#{imagetag_backlink(@conn, it)}",id="itlink_#{it.id}"}
               %i.fa.fa-link(id="connection_#{it.id}")
                 %script
-                  =raw("$('#connection_#{it.id}').css('color', imagetag_colors[imagetag_colorindex]);")
-                  imagetag_colorindex++
+                  =raw("$('#connection_#{it.id}').css('color', imagetag_colors[#{index}]);")
               =Heimchen.Imagetag.name(it)
             &nbsp;
-            %a{href: "#{image_path(@conn, :edit_imagetag, it.id)}"}
+            %a{href: "#{image_path(@conn, :edit_imagetag, it.id, @what, @tagged.id)}"}
               %i.fa.fa-edit
             &nbsp;  
             %a{href: "#{image_path(@conn, :del_imagetag, it.id)}", onclick: "return confirm('Verknüpfung wirklich entfernen?')"}
@@ -28,11 +31,12 @@
             - if it.comment && String.length(it.comment) > 0 do
               %br
               = it.comment
-          %script
-            =raw("$(window).one('load', function(){attach_canvas('#{i.id}_cc',#{elem(Poison.encode(it.marks||'{}'),1)}, imagetag_colors[imagetag_colorindex]);imagetag_colorindex++});")
-        %script
-          imagetag_colorindex=0
-
       - if (!Enum.empty?(Enum.filter(i.imagetags, fn it -> it.marks && it.marks != {} end))) do
-        %button.btn.btn-outline-secondary{onmouseover="$('##{i.id}_cc canvas').hide();", onmouseout="$('##{i.id}_cc canvas').show();"}
+        %button.btn.btn-outline-secondary{onmouseover="$('##{i.id}_cc canvas').hide();", onmouseout="$('##{i.id}_cc canvas').show();", title="Markierungen ausblenden"}
           %i.fa.fa-object-ungroup
+      &nbsp;      
+      %button.btn.btn-outline-primary(onclick="call_rotate(#{i.id})", title="Bild rotieren")
+        %i.fa.fa-refresh
+      &nbsp;
+      %button.btn.btn-outline-primary(onclick="$('#mark_image_id').val(#{i.id});$('#addmark').modal();", title="Markierung hinzufügen")
+        %i.fa.fa-plus

@@ -94,22 +94,6 @@ defmodule Heimchen.ItemController do
 	end
 
 
-	def add_keyword(conn, %{"id" => id, "keyword" => keyword}, user) do
-		case Repo.insert(ItemKeyword.changeset(%ItemKeyword{},
-							%{"keyword_id" => Heimchen.Keyword.id_by_cat_name(keyword), "item_id" => id}, user)) do
-			{:ok, _} ->
-				Heimchen.Item.touch_id!(id, user)
-				conn
-				|> put_flash(:success, "Stichwort hinzugefügt")
-				|> redirect(to: item_path(conn, :show, id))
-			{:error, _ } ->
-				conn
-				|> put_flash(:error, "Stichwort konnte nicht hinzugefügt werden")
-				|> redirect(to: item_path(conn, :show, id))
-		end
-	end
-
-
 	def delete_keyword(conn, %{"item_id" => item_id, "keyword_id" => keyword_id}, _) do
 		case Repo.get_by(ItemKeyword, item_id: item_id, keyword_id: keyword_id) do
 			nil ->

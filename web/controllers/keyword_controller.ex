@@ -2,6 +2,9 @@ defmodule Heimchen.KeywordController do
 	use Heimchen.Web, :controller
 
 	alias Heimchen.Keyword
+	alias Heimchen.PersonKeyword
+	alias Heimchen.ItemKeyword
+	alias Heimchen.PlaceKeyword
 	
 	plug :authenticate_admin
 	plug :load_categories
@@ -73,6 +76,32 @@ defmodule Heimchen.KeywordController do
 	end
 
 
+	def add_keyword(conn, %{"id" => id, "what" => what, "keyword" => keyword}, user) do
+		keyword_id = Heimchen.Keyword.id_by_cat_name(keyword)
+		backlink = case what do
+								 "item" -> item_path(conn, :show, id)
+								 "person" -> person_path(conn, :show, id)
+								 "place" -> place_path(conn, :show, id)
+							 end
+		case Repo.insert(
+					case what do
+						"person" -> PersonKeyword.changeset(%PersonKeyword{}, %{"keyword_id" => keyword_id, "person_id" => id}, user)
+						"item" -> ItemKeyword.changeset(%ItemKeyword{},	%{"keyword_id" => keyword_id, "item_id" => id}, user)
+						"place" -> PlaceKeyword.changeset(%PlaceKeyword{},	%{"keyword_id" => keyword_id, "place_id" => id}, user)
+					end)
+			do
+			{:ok, _} ->
+				conn
+				|> put_flash(:success, "Stichwort hinzugefügt")
+				|> redirect(to: backlink)
+			{:error, _ } ->
+				conn
+				|> put_flash(:error, "Stichwort konnte nicht hinzugefügt werden")
+				|> redirect(to: backlink)
+		end
+	end
+
+
 	def new(conn, _params, user) do
 		render(conn, "new.html", changeset: Keyword.changeset(%Keyword{}, :invalid, user))
 	end
@@ -97,7 +126,7 @@ defmodule Heimchen.KeywordController do
 			{:ok, keyword} ->
 				conn
 				|> put_flash(:success, "Stichwort #{keyword.name} geändert")
-				|> redirect(to: keyword_path(conn, :index))
+				|> redirect(to: keyword_path(conn, :show, id))
 			{:error, changeset} ->
 				conn
 				|> put_flash(:error, "Stichwort konnte nicht geändert werden")

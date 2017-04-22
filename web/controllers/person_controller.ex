@@ -35,21 +35,6 @@ defmodule Heimchen.PersonController do
 	end
 
 
-	def add_keyword(conn, %{"id" => id, "keyword" => keyword}, user) do
-		case Repo.insert(PersonKeyword.changeset(%PersonKeyword{},
-							%{"keyword_id" => Heimchen.Keyword.id_by_cat_name(keyword), "person_id" => id}, user)) do
-			{:ok, _} ->
-				conn
-				|> put_flash(:success, "Stichwort hinzugefügt")
-				|> redirect(to: person_path(conn, :show, id))
-			{:error, _ } ->
-				conn
-				|> put_flash(:error, "Stichwort konnte nicht hinzugefügt werden")
-				|> redirect(to: person_path(conn, :show, id))
-		end
-	end
-
-
 	def delete_keyword(conn, %{"person_id" => person_id, "keyword_id" => keyword_id}, _) do
 		case Repo.get_by(Heimchen.PersonKeyword, person_id: person_id, keyword_id: keyword_id) do
 			nil ->

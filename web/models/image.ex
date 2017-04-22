@@ -54,14 +54,24 @@ defmodule Heimchen.Image do
 		image
 	end
 
+	
+	def to_result(image) do
+		%{what: "image",
+			id: image.id,
+			name: image.original_filename,
+			comment: image.comment,
+			imagetags: image.imagetags,
+			keywords: [],
+			image_id: image.id
+			}
+	end
+
+
 	def recently_uploaded() do
-		Repo.all from i in Heimchen.Image, select:
-		%{:image => i,
-			:minutes => fragment("extract(minute from current_timestamp - inserted_at)::int"),
-			:hours => fragment("extract(hour from current_timestamp - inserted_at)::int - 1"), # FIXME hard coded time zone
-			:days => fragment("extract(day from current_timestamp - inserted_at)::int")},
-			preload: [imagetags: :person],
-			order_by: [desc: i.inserted_at], limit: 500
+		(Repo.all from i in Heimchen.Image,
+			preload: [imagetags: [person: :keywords, item: :keywords, place: :keywords]],
+			order_by: [desc: i.inserted_at], limit: 500)
+		|> Enum.map(fn(i) -> to_result(i) end)
 	end
 	
 	def dir(image) do

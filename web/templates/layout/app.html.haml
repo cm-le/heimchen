@@ -27,6 +27,14 @@
               %a.nav-link(href="#{person_path(@conn, :index)}") Personen
             %li.nav-item
               %a.nav-link(href="#{place_path(@conn, :index)}") Orte
+            %li.nav-item{style="width: 32ex"}
+              .input-group
+                %span.input-group-addon{title: "Nur vollständige Wörter"}
+                  %input#search-prefix{type: "checkbox"}
+                %input.form-control#searchbox{type: "text", placeholder: "Suche", onkeyup: "mainsearch()"}
+                %span.input-group-btn
+                  %button.btn.btn-secondary{type: "button"}
+                    %i.fa.fa-search
             %li.nav-item
               %a.nav-link(href="#{image_path(@conn, :index)}") Dateien
             - if @current_user.admin do
@@ -37,14 +45,6 @@
             - else
               %li.nav-item
                 %a.nav-link(href="#{user_path(@conn, :show,  @current_user.id)}") Profil
-            %li.nav-item{style="width: 32ex"}
-              .input-group
-                %span.input-group-addon{title: "Nur vollständige Wörter"}
-                  %input#search-prefix{type: "checkbox"}
-                %input.form-control#searchbox{type: "text", placeholder: "Suche", onkeyup: "mainsearch()"}
-                %span.input-group-btn
-                  %button.btn.btn-secondary{type: "button"}
-                    %i.fa.fa-search
         %ul.nav.navbar-nav.float-xs-right
           %li.nav-item
             - if @current_user do

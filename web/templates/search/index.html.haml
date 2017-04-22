@@ -14,14 +14,17 @@
         %tr
           %td
             =catname(r.what)
-            =resultlink(@conn, r.what, r.name, r.id)
+            =link(r.name, to: result_path(@conn, r.what, r.id))
           %td
             =r.comment
             - for k <- r.keywords do
               %i.fa.fa-key
               =link("#{k.category}: #{k.name}", to: keyword_path(@conn, :show, k.id))
+            - for it <- (r[:imagetags] || []) do
+              %a{href: "#{imagetag_backlink(@conn, it)}"}
+                =Heimchen.Imagetag.name(it)
           %td
             - if r.image_id do
-              %img(src="#{image_path(@conn, :image, r.image_id, 1)}")
-              %i.fa.fa-shopping-cart.spanlink{onclick: "image_cp_toggle(#{r.image_id})", id: "image_cp_#{r.image_id}"}
+              %a{href="#{result_path(@conn, r.what, r.id)}"}
+                %img(src="#{image_path(@conn, :image, r.image_id, 1)}")
           %td=editlink(@conn, r.what, r.id)

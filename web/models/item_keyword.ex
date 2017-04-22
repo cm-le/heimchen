@@ -14,8 +14,8 @@ defmodule Heimchen.ItemKeyword do
 		|> cast(params, ~w(keyword_id item_id))
 		|> assoc_constraint(:item, message: "Person existiert nicht")
 		|> assoc_constraint(:keyword, message: "Stichwort existiert nicht")
- 		|> unique_constraint(:dummy, name: :people_keywords_person_id_keyword_id_index,
-			message: "Diese Person hat bereits dieses Stichwort")
+ 		|> unique_constraint(:dummy, name: :item_keywords_item_id_keyword_id_index,
+			message: "Dieses Stichwort wurde schon verknüpft")
 
 		|> put_change(:user_id,  user.id)
 	end

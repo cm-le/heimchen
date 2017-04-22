@@ -1,21 +1,14 @@
 %script(src='#{static_path(@conn, "/js/typeahead.bundle.min.js")}')  
 
+= render(Heimchen.KeywordView, "_addkeyword.html", for: "place", what: "place", id: @id, conn: @conn)
+  
 .row.page-header
   .col-xs-4
     %h1 Ort anzeigen
   .float-xs-right.col-xs-3
-    %form(action="#{place_path(@conn, :add_keyword, @id)}", method="get")
-      #prefetch-keywords
-        .input-group
-          %input.typeahead.form-control(type="text", name="keyword", placeholder="Stichwort")
-          %span.input-group-btn
-            %button.btn.btn-outline-primary(type="submit")
-              %i.fa.fa-plus
-    %script
-      var bloodHound = new Bloodhound({ datumTokenizer: Bloodhound.tokenizers.whitespace,
-      queryTokenizer: Bloodhound.tokenizers.whitespace, prefetch: '../../keyword/keywords?for=place'});
-      $('#prefetch-keywords .typeahead').typeahead(null, {name: 'keyword', source: bloodHound });
-      bloodHound.clearPrefetchCache(); bloodHound.initialize();
+    %button.btn.btn-outline-primary(type="button", data-toggle="modal", data-target="#addkeyword")
+      %i.fa.fa-plus
+      Stichwort
   .float-xs-right
     %a.btn.btn-outline-primary(href="#{place_path(@conn, :edit, @id)}")
       %i.fa.fa-edit
@@ -42,7 +35,7 @@
       %script
         ="var map;"
         ="var mappos={lat:#{@place.lat}, lng: #{@place.long}};"
-        =raw("function initMap(){map = new google.maps.Map(document.getElementById('map'),{center:mappos,zoom: 12});")
+        =raw("function initMap(){map = new google.maps.Map(document.getElementById('map'),{center:mappos,zoom: 14});")
         ="var marker = new google.maps.Marker({position:mappos, map: map});"
         ="};"
       %script{src="https://maps.googleapis.com/maps/api/js?key=#{@googleapikey}&amp;callback=initMap", async , defer}
@@ -65,7 +58,7 @@
         %i
           =pp.comment
 
-=render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @place)
+=render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @place, what: "place")
 
 - if !Enum.empty?(@nearby) do
   %h4 Orte in der Nähe

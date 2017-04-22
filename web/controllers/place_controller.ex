@@ -33,21 +33,6 @@ defmodule Heimchen.PlaceController do
 	end
 
 
-	def add_keyword(conn, %{"id" => id, "keyword" => keyword}, user) do
-		case Repo.insert(PlaceKeyword.changeset(%PlaceKeyword{},
-							%{"keyword_id" => Heimchen.Keyword.id_by_cat_name(keyword), "place_id" => id}, user)) do
-			{:ok, _} ->
-				conn
-				|> put_flash(:success, "Stichwort hinzugefügt")
-				|> redirect(to: place_path(conn, :show, id))
-			{:error, _ } ->
-				conn
-				|> put_flash(:error, "Stichwort konnte nicht hinzugefügt werden")
-				|> redirect(to: place_path(conn, :show, id))
-		end
-	end
-
-
 	def delete_keyword(conn, %{"place_id" => place_id, "keyword_id" => keyword_id}, _) do
 		case Repo.get_by(PlaceKeyword, place_id: place_id, keyword_id: keyword_id) do
 			nil ->

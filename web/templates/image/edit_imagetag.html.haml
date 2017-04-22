@@ -4,7 +4,9 @@
     =@name
   bearbeiten
 
-= form_for @conn, image_path(@conn, :update_imagetag, @id), [as: :imagetag], fn f ->  
+= form_for @conn, image_path(@conn, :update_imagetag, @id), [as: :imagetag], fn f ->
+  %input{type="hidden", name="what", value="#{@what}"}
+  %input{type="hidden", name="what_id", value="#{@what_id}"}
   .row
     .col-sm-9
       .canvas-container#img-cont
@@ -14,10 +16,6 @@
           =raw("attach_canvas('img-cont',#{elem(Poison.encode(@imagetag.marks||'{}'),1)}, imagetag_colors[0]);")
           });
     .col-sm-2
-      .row.form-group
-        %a.btn.btn-secondary(href="#{imagetag_backlink(@conn, @imagetag)}")
-          Zurück zu
-          =@name
       .row.form-group
         .btn.btn-outline-primary(onclick="imagetag_init_draw('img-cont')")
           Neue Markierung zeichnen

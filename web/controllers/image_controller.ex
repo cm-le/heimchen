@@ -108,7 +108,7 @@ defmodule Heimchen.ImageController do
 			image ->
 				Heimchen.Image.rotate(image)
 				conn
-				|> redirect(to: image_path(conn, :show, id))
+				|> json("ok")
 		end
 	end
 	
@@ -160,6 +160,17 @@ defmodule Heimchen.ImageController do
 	end
 
 
+	def create_imagetag(conn, %{"image_id" => image_id, "id" => id, "what" => what, "mark" => mark}, user) do
+		c = Heimchen.Imagetag.create_from_marklist([Integer.parse(image_id) |> elem(0)], mark, user)
+		conn
+		|> redirect(to: case what do
+											"item" -> item_path(conn, :show, id)
+											"person" -> person_path(conn, :show, id)
+											"place" -> place_path(conn, :show, id)
+										end)
+	end
+	
+	
 	def clipboard_mark(conn, %{"mark" => mark}, user) do
 		imageids = Map.keys(get_session(conn, :image_clipboard))
 		c = Heimchen.Imagetag.create_from_marklist(imageids, mark, user)
@@ -185,43 +196,34 @@ defmodule Heimchen.ImageController do
 		end
 	end 
 
-	def edit_imagetag(conn, %{"id" => id}, _user) do
+	def edit_imagetag(conn, %{"id" => id, "what" => what, "what_id" => what_id}, _user) do
 		{w,_} = Heimchen.Image.resolution(2)
 		case Repo.get(Heimchen.Imagetag, id) do
 			nil -> resp(conn, 404, "Not found")
 			it ->     it = Repo.preload(it, [:image, :person, [item: :itemtype]])
 			          render(conn, "edit_imagetag.html",
-                  [id: it.id, name: Heimchen.Imagetag.name(it),
+                  [id: it.id, name: Heimchen.Imagetag.name(it),what: what, what_id: what_id,
 									 w: w, imagetag: it ])
 		end
 	end
 
-	def update_imagetag(conn, %{"id" => id, "imagetag" => imagetag_params}, user) do
+	def update_imagetag(conn, %{"id" => id, "what" => what, "what_id" => what_id, "imagetag" => imagetag_params}, user) do
 		changeset = Heimchen.Imagetag.changeset(Repo.get(Heimchen.Imagetag, id), imagetag_params, user)
+		backlink = 		case what do
+										"item" -> item_path(conn, :show, what_id)
+										"person" -> person_path(conn, :show, what_id)
+										"place" -> place_path(conn, :show, what_id)
+									end
+
 		case Repo.update(changeset) do
 			{:ok, imagetag} ->
-				cond do
-					imagetag.person_id ->
-						conn
-						|> put_flash(:success, "Markierung gespeichert")
-						|> redirect(to: person_path(conn, :show, imagetag.person_id))
-					imagetag.item_id ->
-						conn
-						|> put_flash(:success, "Markierung gespeichert")
-						|> redirect(to: item_path(conn, :show, imagetag.item_id))
-					imagetag.place_id ->
-						conn
-						|> put_flash(:success, "Markierung gespeichert")
-						|> redirect(to: place_path(conn, :show, imagetag.place_id))
-					true -> # FIXME place
-						conn
-						|> put_flash(:error, "Markierung nur für Personen, Sammlungsstücke und Orte implementiert")
-						|> redirect(to: person_path(conn, :index))
-				end
-			{:error, what} ->
 				conn
-				|> put_flash(:error, "Markierung konnte nicht gespeichert werden: " <> what)
-				|> redirect(to: person_path(conn, :index))
+				|> put_flash(:success, "Markierung gespeichert")
+				|> redirect(to: backlink)
+			{:error, reason} ->
+				conn
+				|> put_flash(:error, "Markierung konnte nicht gespeichert werden: " <> reason)
+				|> redirect(to: backlink)
 		end
 	end
 

@@ -27,11 +27,6 @@ defmodule Heimchen.PlaceController do
 		render(conn, "index.html", [places: Heimchen.Place.recently_updated()])
 	end
 
-	def search(conn, %{"name" => name}, _user) do
-		places = Heimchen.Place.search(name)
-		render(conn, "search.html", layout: {Heimchen.LayoutView, "empty.html"}, places: places)
-	end
-
 
 	def delete_keyword(conn, %{"place_id" => place_id, "keyword_id" => keyword_id}, _) do
 		case Repo.get_by(PlaceKeyword, place_id: place_id, keyword_id: keyword_id) do

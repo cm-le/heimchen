@@ -511,7 +511,7 @@ foreach my $row (1 .. $sheet -> {MaxRow}) {
 $dbh->commit();
 
 open COPY, ">hkscopy.pl";
-print COPY "use File::Copy;\nuse File::Path;\n\$all=<<'__END__';\n";
+print COPY "use File::Copy;\nuse File::Path  qw(make_path);\n\$all=<<'__END__';\n";
 while(my ($real, $target)=each %tocopy) {
 	$target = "_target/$target";
 	my @elems = split /\//, $target;

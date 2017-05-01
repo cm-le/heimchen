@@ -1,15 +1,26 @@
 #!/usr/bin/perl
 
-use DBI;
 use utf8;
+use DBI;
 use File::Slurp;
 use Data::Dumper;
 use HTML::Entities;
+use Encode;
+use Text::Iconv;
 use Spreadsheet::XLSX; # DON't USE converter
+# thank goodness, this almost drove me crazy!
+# using converter on xlsx as described skipped (!) some strings, but using
+# no converter left the strings unmaked as utf8, so DBD::Pg decided they are probably
+## latin1 and re-encoded them to utf8, althey they were byte-for-byte correct utf8
+sub mark_utf8 { return decode("UTF-8", shift); }
+
 
 $dbh = DBI->connect("dbi:Pg:dbname=heimchen_dev;host=127.0.0.1", 
 										"heimchen", "heimchen", 
-										{PrintError => 1, AutoCommit => 0, pg_enable_utf8 => 1}) or die "no db";
+										{PrintError => 1, AutoCommit => 0, pg_enable_utf8 => -1}) or die "no db";
+$dbh->{pg_server_prepare} = 0;
+$dbh->do("SET client_encoding TO UTF8");
+$dbh->do("SET NAMES 'utf8'");
 
 $dbh->do("delete from imagetags") or die;
 $dbh->do("delete from images") or die;
@@ -21,6 +32,7 @@ $dbh->do("delete from places_items") or die;
 $dbh->do("delete from places_people") or die;
 $dbh->do("delete from people") or die;
 $dbh->do("delete from places") or die;
+$dbh->do("delete from keywords") or die;
 
 
 my %people=();
@@ -29,11 +41,12 @@ sub year {
 		$y = $y + 1900 if $y < 100;
 		return $y;
 }
+
 sub get_date {
 		my $s = shift;
 		if ($s =~ /^ *(\d+) *$/) {
 				my $y = year($1);
-				return 1, "$y-01-01";
+				return 3, "$y-01-01";
 		}
 		if ($s =~ /^ *(\d+) *\. *(\d+) *$/) {
 				my $y = year($2);
@@ -41,13 +54,43 @@ sub get_date {
 		}
 		if ($s =~ /^ *(\d+) *\. *(\d+) *\. *(\d+) *$/) {
 				my $y = year($3);
-				return 3, "$y-$2-$1";
+				return 1, "$y-$2-$1";
 		}
 		if ($s =~ /[^ ]/) {
 				print STDERR "WARNUNG: Datum $s wird als undefiniert interpretiert\n";
 		}
 		return 0, undef;
 }
+
+sub get_date2 {
+		my ($year, $month, $day, $comment) = @_;
+		if (!$year) {
+				return 0, undef;
+			}
+		if ($year < 100) {
+			$year += 1900;
+		}
+		my $p = 1;
+		if (!$day) {
+				$day = "01";
+				$p=2;
+		}
+		if (!$month) {
+				$month = "01";
+				$p=3;
+		}
+		if ($comment =~ /ca|um/) {
+				$p=4;
+		}
+		if ($comment =~ /nach/) {
+				$p=5;
+		}
+		if ($comment =~ /vor/) {
+				$p=6;
+		}
+		return $p, "$year-$month-$day";
+}
+				
 
 open L, "hkslist.txt";
 while (<L>) {
@@ -61,7 +104,7 @@ my $psheet =  (@{$pexcel -> {Worksheet}})[0];
 foreach my $row (1 .. $psheet -> {MaxRow}) {
 		my ($name, $gender, $comment, $born, $comment2, 
 				$a1, $a1comment, $a2, $a2comment, $a3, $a3comment) = 
-						map{ $psheet -> {Cells} [$row] [$_] -> {Val}} (0..10);
+						map{ mark_utf8($psheet -> {Cells} [$row] [$_] -> {Val})} (0..10);
 		next unless $name;
 		my $maidenname;
 		$name =~ s/^ +//;
@@ -98,20 +141,9 @@ my $sheet =  (@{$excel -> {Worksheet}})[0];
 # header ->  colnr
 my %colnr = ();
 foreach my $col ($sheet -> {MinCol} ..  $sheet -> {MaxCol}) {
-		$colnr{$col} = $sheet -> {Cells} [0] [$col] -> {Val};
+		$colnr{$col} = mark_utf8($sheet -> {Cells} [0] [$col] -> {Val});
 }
 # actual data
-
-sub keyword_id {
-		my $folder = shift;
-		if (!$keywords{$folder}) {
-				$keywords{$folder} = $dbh->selectrow_array
-						("insert into keywords(category, name, for_photo_item, user_id, inserted_at, updated_at) " .
-						 " values('Ordner', ?, true, 1, current_timestamp, current_timestamp) returning id", 
-						 undef, $folder);
-		}
-		$keywords{$folder}
-}
 
 sub get_file {
 		my ($pfolder, $pfile, $internal) = @_;
@@ -136,48 +168,66 @@ sub get_file {
 		$filename =~ s/Film +/Film/;
 		$filename =~ s/Bild +/Bild/;
 		$filename =~ s/Bi\. +/Bild/;
-		return keyword_id($folder), $filename, ($files{$real_file} ? $real_file : undef);
+		return $filename, ($files{$real_file} ? $real_file : undef);
 }
 
 sub create_place {
-		my ($image_id, $address, $building, $comment)= @_;
-		my $place_id = $ID{join ("::", "place", "address", "building")};
-		if ($id) {
-				if ($comment) {
-						$dbh->do("update places set comment=concat_ws(' ', ?, comment) where id=?", undef,
-										 $comment, $id);
-				}
-				return $id;
+	my ($image_id, $address, $building, $comment)= @_;
+	my $key = join ("::", "place", $address, $building);
+	my $place_id = $ID{$key};
+	if ($place_id) {
+		if ($comment =~ /[a-zA-Z]/) {
+			$dbh->do("update places set comment=concat_ws(' ', ?::text, comment) where id=?", undef,
+							 $comment, $place_id);
 		}
-		if (!$place_id) {
-				my $housenr;
-				$address =~ s/str\./strasse /;
-				if ($address =~ / +(\d+.*)/) {
-						$housenr = $1;
-						$address =~ s/ +(\d+.*)//;
-				}
-				$place_id = 
-						$dbh->selectrow_array
-						("insert into places(city, address, housenr, " . 
-						 " building, comment, user_id, inserted_at, updated_at) " . 
-						 " values('Seuzach', ?, ?, ?, 1, current_timestamp, current_timestamp) returning id",
-						 undef, $address, $housenr, $building, $comment);
+	}
+	if (!$place_id) {
+		my $housenr;
+		$address =~ s/str\./strasse /;
+		if ($address =~ / +(\d+.*)/) {
+			$housenr = $1;
+			$address =~ s/ +(\d+.*)//;
 		}
-		if (!$ID_PLACE{$image_id . "::" . $place_id}) {
-				$ID_PLACE{$image_id . "::" . $place_id} = 
-						$dbh->do("insert into imagetags(image_id, place_id, user_id, inserted_at, updated_at) " .
-										 " values(?,?,1, current_timestamp, current_timestamp)", undef,
-										 $image_id, $id);
-		}
+		$place_id = $ID{$key}=
+			$dbh->selectrow_array
+			("insert into places(city, address, housenr, " . 
+					 " building, comment, user_id, inserted_at, updated_at) " . 
+			 " values('Seuzach', ?, ?, ?, ?, 1, current_timestamp, current_timestamp) returning id",
+			 undef, $address, $housenr, $building, $comment);
+	}
+	if (!$ID_PLACE{$image_id . "::" . $place_id}) {
+		$ID_PLACE{$image_id . "::" . $place_id} = 
+			$dbh->do("insert into imagetags(image_id, place_id, user_id, inserted_at, updated_at) " .
+							 " values(?,?,1, current_timestamp, current_timestamp)", undef,
+							 $image_id, $place_id);
+	}
 }
 
 
+sub create_keyword {
+		my ($item_id, $category, $name) = @_;
+		my $key = join ("::", 'keyword', $category, $name);
+		my $id = $ID{$key};
+		if (!$id) {
+				$id = $ID{$key} = $dbh->selectrow_array
+						("insert into keywords(category, name, user_id, inserted_at, updated_at) " . 
+						 " values(?, ?, 1, current_timestamp, current_timestamp) returning id",
+						 undef, $category, $name);
+		}
+		if (!$ID_KEYWORD{$item_id  . "::" . $id}) {
+				$ID_KEYWORD{$item_id  . "::" . $id} = 
+						$dbh->do("insert into item_keywords(item_id, keyword_id, user_id, inserted_at, updated_at) " .
+										 " values(?,?,1, current_timestamp, current_timestamp)", undef,
+										 $item_id, $id);
+		}
+}
+
 sub handle_strings {
-		my ($item_id, $image_id, $s)=@_;
-		my %std = (
-				'Foto s/w' => [0,'keyword', 'Technik', 'Foto s/w'],
-				'Dia' =>      [0,'keyword', 'Technik', 'Dia'],
-				'Digital-Foto' => [0,'keyword', 'Technik', 'Digital-Foto'],
+	my ($item_id, $image_id, $s)=@_;
+	my %std = (
+						 'Foto s/w' => [0,'keyword', 'Technik', 'Foto s/w'],
+						 'Dia' =>      [0,'keyword', 'Technik', 'Dia'],
+						 'Digital-Foto' => [0,'keyword', 'Technik', 'Digital-Foto'],
 				'Foto farbig' => [0,'keyword', 'Technik', 'Foto farbig'],
 				'Foto s/w koloriert' => [0,'keyword', 'Technik', 'Foto s/w koloriert'],
 				'Glas-Dia 10 x 8.5 cm' => [0,'keyword', 'Technik', 'Glas-Dia 10 x 8.5 cm'],
@@ -349,192 +399,125 @@ sub handle_strings {
 				'Schwimmbad Seuzach von der Welsikonerstr. aus (Postkarte von O. Wohlgensinger)' =>
 				[1, 'place', 'Schwimmbad Seuzach'],
 				'Autobahn-Eröffnung; Koni Meier fährt mit Ross und Wagen (beladen mit Emmentaler-Käseleiben) zur Autobahn-Eröffnung' => [1, 'place', 'Autobahn']);
-		foreach my $e (split / *[\n\r]+ */, $s) {
-				my $std = $std{$e};
-				if ($std) {
-						if ($std eq 'P') {
-								$std = [0, 'place', $e];
-						}
-						my ($keep, $which, @params) = @{$std};
-						if ($which eq "place") {
-								create_place($image_id, $params[0], "")
-						} else {
-								my $id = $ID{join ("::", $which, @params)};
-								if (!$id) {
-										$id = $ID{join ("::", $which, @params)} =
-												$dbh->selectrow_array
-												("insert into keywords(category, name, user_id, inserted_at, updated_at) " . 
-												 " values(?, ?, 1, current_timestamp, current_timestamp) returning id",
-												 undef, $params[0], $params[1]);
-								}
-								if (!$ID_KEYWORD{$item_id  . "::" . $id}) {
-										$ID_KEYWORD{$item_id  . "::" . $id} = 
-												$dbh->do("insert into item_keywords(item_id, keyword_id, user_id, inserted_at, updated_at) " .
-																 " values(?,?,1, current_timestamp, current_timestamp)", undef,
-																 $item_id, $id);
-								}
-				}
-				}
+	foreach my $e (split / *[\n\r]+ */, $s) {
+		my $std = $std{$e};
+		if ($std) {
+			if ($std eq 'P') {
+				$std = [0, 'place', $e];
+			}
+			my ($keep, $which, @params) = @{$std};
+			if ($which eq "place") {
+				create_place($image_id, $params[0], "");
+			} else {
+				create_keyword($item_id, @params);
+			}
 		}
+	}
 }
+
 
 
 my %items;
 foreach my $row (1 .. $sheet -> {MaxRow}) {
-		my %r;
-		foreach my $col ($sheet -> {MinCol} ..  $sheet -> {MaxCol}) {
-				$r{$colnr{$col}} = decode_entities($sheet -> {Cells} [$row] [$col] -> {Val});
-		}
+	my %r;
+	foreach my $col ($sheet -> {MinCol} ..  $sheet -> {MaxCol}) {
+		$r{$colnr{$col}} = decode_entities(mark_utf8($sheet -> {Cells} [$row] [$col] -> {Val}));
+	}
 
-		# 'A_Datei' -> ignorieren
+	# Bilddatei anlegen
+	
+	my ($filename, $real_file) = 
+		get_file($r{'Pfad_Verzeichnis_01'}, $r{'Dateiname'}, $r{'Pfad_Ausgabe_Syst_URL_Kl_beschriftete'});
+	if (!$real_file) {
+		print STDERR "WARNING: NO FILE " . $r{'Pfad_Verzeichnis_01'} . "/" . $r{'Dateiname'} . "\n";
+		next;
+	}
+	my $type = ($filename =~ /jpe?g$/i) ? "jpg" : "tif";
+	my @ry = (2010,2011,2012,2013,2014,2015,2016);
+	my @rm = (1,2,3,4,5,6,7,8,9,10,11,12);
+	my $y = $ry[rand @ry] ; my $m = $rm[rand @rm] ;
+	my $ts = "$y-$m-01 12:00:01";
+	my ($image_id) =
+		$dbh->selectrow_array("insert into images(original_filename, comment, user_id, inserted_at, updated_at) " . 
+													" values(?,?, 1,?, ?) returning id", 
+													undef, $filename, $r{'Inh_Text'}, $ts, $ts) or die;
 
-		push @strings, split / *[\n\r]+ */, $r{'Aa_Hauptfeld'};
-		push @strings, split / *[\n\r]+ */, $r{'Inh_Inhalt'};
+	my $path_name = "$y/$m/$image_id";
+
+	$tocopy{$real_file} = $path_name . "/orig.$type";
+
+	my $name = $r{'Aa_Hauptfeld'};
+	if (!$name) {
+		next; # kein Hauptfeld -> nur bild
+	}
+	$item_id=$items{$name};
+	if (!$item_id) {
+		# item neu anlegen
+		my ($dcomment, $day, $month, $year)= map {$r{$_}} 
+			('Dat_Approx. 1', 'Dat_Tag 1', 'Dat_Monat 1', 'Dat_Jahr manuell 1');
+		my ($date_precision, $date_on)=get_date2($year, $month, $day, $comment);
+		$item_id = $items{$name} =
+			$dbh->selectrow_array("insert into items" .
+														" (name, itemtype_id, date_precision, date_on, user_id, inserted_at, updated_at) " .
+														" values('FIXME', 2, ?,?,1, current_timestamp, current_timestamp) returning id" ,undef,
+														$date_precision, $date_on);
+		handle_strings($item_id, $image_id, $r{'Aa_Hauptfeld'} . "\n" . $r{'Inh_Inhalt'});
+		$dbh->do("update items set name=?, comment=? where id=?", undef, $name, $comment, $item_id);
+	}
+	$dbh->do("insert into imagetags(item_id, image_id, user_id, inserted_At, updated_at) " .
+					 " values(?,?,1, current_timestamp, current_timestamp)", undef,
+					 $item_id, $image_id) or die;
+	## Places as listed in the topographic fields
+	foreach (1,2,3,4) {
+		my $prefix = $r{"Top_Präfix $_"};
 		
-		if (!$items{$r{'Aa_Hauptfeld'}}) { # item neu anlegen
-## 				$items{$r{'Aa_Hauptfeld'}} = $dbh->selectrow_array
-				## 						("insert into items.... returning id");
-				$items{$r{'Aa_Hauptfeld'}} = 1;
-		}
-		my $item_id=$items{$r{'Aa_Hauptfeld'}};
+		my $topo   = $r{"Top_topogr Bez $_"};
+		my $building = $r{"Top_Gebäude $_"};
+		my $comment = $r{"Top_Suffix $_"};
+		$comment = "$prefix $comment";
 		
-		# Bild anlegen
-
-		my ($keyword, $filename, $real_file) = 
-				get_file($r{'Pfad_Verzeichnis_01'}, $r{'Dateiname'}, $r{'Pfad_Ausgabe_Syst_URL_Kl_beschriftete'});
-		if (!$real_file) {
-				print STDERR "WARNING: NO FILE " . $r{'Pfad_Verzeichnis_01'} . "/" . $r{'Dateiname'} . "\n";
+		if ($topo || $building) {
+			if ($building && !$topo) {
+				$topo = $building;
+				$building = "";
+			}
+			create_place($image_id, $topo, $building, $comment);
+		}
+	}
+	
+	## PEOPLE
+	
+	foreach (1,2,3) {
+		my $name = $r{"Pers_A Name Vn $_"};
+		next unless $name;
+		my ($id, $comment) = @{$people{$name}};
+		if (!$id) {
+			print STDERR "WARNING: no person <<$name>> in $item_id\n";
 		} else {
-				my $type = ($filename =~ /jpe?g$/i) ? "jpg" : "tif";
-				my @ry = (2010,2011,2012,2013,2014,2015,2016);
-				my @rm = (1,2,3,4,5,6,7,8,9,10,11,12);
-				my $y = $ry[rand @ry] ; my $m = $rm[rand @rm] ;
-				my $ts = "$y-$m-01 12:00:01";
-				my ($image_id) =
-						$dbh->selectrow_array("insert into images(original_filename, user_id, inserted_at, updated_at) " . 
-																	" values(?,1,?, ?) returning id", 
-																	undef, $filename, $ts, $ts) or die;
+			$dbh->do("insert into imagetags(person_id, image_id, comment, user_id, inserted_at, updated_at) " .
+							 " values(?,?,?,1, current_timestamp, current_timestamp)", undef,
+							 $id, $image_id, $comment);
+		}
+	}
+	
+	if ($r{'Präs_Abteilung'}) {
+		my $k = $r{'Präs_Abteilung'};
+		$k =~ s/^\d+_//g;
+		create_keyword($item_id, 'Abteilung', $k);
+	}
+	create_keyword($item_id, 'Ordner', $r{'Pfad_Verzeichnis_01'});
+}	
 
-				my $path_name = "$y/$m/$image_id";
-				
-				$tocopy{$real_file} = $path_name . "/orig.$type";
+$dbh->commit();
 
-
-				## Places as listes in the topographic fields
-				foreach (1,2,3,4) {
-						my $prefix = $r{"Top_Präfix $_"};
-
-						my $topo   = $r{"Top_topogr Bez $_"};
-						my $building = $r{"Top_Gebäude $_"};
-						my $comment = $r{"Top_Suffix $_"};
-						$comment = "$prefix $comment";
-						
-						if ($topo || $building) {
-								if ($building && !$topo) {
-										$topo = $building;
-										$building = "";
-								}
-								create_place($image_id, $topo, $building, $comment);
-						}
-				}
-
-				## PEOPLE
-
-				
-						
-				my $name = $r{'Aa_Hauptfeld'};
-				handle_strings($item_id, $image_id, $r{'Aa_Hauptfeld'});
-				my $comment  = handle_strings($item_id, $image_id, $r{'Aa_Hauptfeld'} . "\n" . $r{'Inh_Inhalt'});
-				
-				# TODO item_keywords anlegen!!!!
-		}				
+open COPY, ">hkscopy.pl";
+print COPY "use File::Copy;\nuse File::Path;\n\$all=<<'__END__';\n";
+while(my ($real, $target)=each %tocopy) {
+	$target = "_target/$target";
+	my @elems = split /\//, $target;
+  pop @elems;
+	print COPY $real . "::" . (join "/", @elems) . "::$target\n";
 }
-
-my %count;
-foreach (@strings) {
-		$count{$_}++;
-}
-foreach $s (sort {$count{$b} <=> $count{$a}} (keys %count)) {
-		print "Key: $s -> $count{$s}\n";
-}
-
-__END__
-				
-		# 'Aa_Hauptfeld' -> name von wird zu item+image, gleiche hauptfelder werden werden gleichem item zugeordnet
-		# 'Dateiname' -> wird entsprechend gesucht
-		# 'Inh_Inhalt' -> zusammen mit Inh_Text zu Kommentar
-		# 'Inh_Text' -> s.o.
-		# 'Sach_Obj Techn' -> wird zu stichwort mit Kategorie "Technik"
-		48  'Dat_Art 1'
-49  'Dat_Approx. 1'
-50  'Dat_Tag 1'
-51  'Dat_Monat 1'
-52  'Dat_Jahr manuell 1'
-53  'Dat_Präfix 1'
-54  'Dat_Jh 1'
-55  'Dat_Suffix 1'
-56  'Dat_vnChr 1'
-57  'Dat_Jahr 1'
-58  'Dat_Zeitraum Verkn a'
-59  'Dat_Art 2'
-60  'Dat_Approx. 2'
-61  'Dat_Tag 2'
-62  'Dat_Monat 2'
-63  'Dat_Jahr manuell 2'
-64  'Dat_Präfix 2'
-65  'Dat_Jh 2'
-66  'Dat_Suffix 2'
-67  'Dat_vnChr 2'
-68  'Dat_Jahr 2'
-69  'Pers_A Präfix 1'
-70  'Pers_A Name Vn 1'
-71  'Pers_A Hauptfunktion 1'
-72  'Pers_A Lebensdaten 1'
-73  'Pers_A Funktion 1'
-74  'Pers_A Suffix 1'
-75  'Pers_A Präfix 2'
-76  'Pers_A Name Vn 2'
-77  'Pers_A Hauptfunktion 2'
-78  'Pers_A Lebensdaten 2'
-79  'Pers_A Funktion 2'
-80  'Pers_A Suffix 2'
-81  'Pers_A Präfix 3'
-82  'Pers_A Name Vn 3'
-83  'Pers_A Hauptfunktion 3'
-84  'Pers_A Lebensdaten 3'
-85  'Pers_A Funktion 3'
-86  'Pers_A Suffix 3'
-87  'Präs_Abteilung'
-88  'Pers_A Präfix 4'
-89  'Pers_A Name Vn 4'
-90  'Pers_A Hauptfunktion 4'
-91  'Pers_A Lebensdaten 4'
-92  'Pers_A Funktion 4'
-93  'Pers_A Suffix 4'
-94  'Top_Art 1'
-95  'Top_Präfix 1'
-96  'Top_topogr Bez 1'
-97  'Top_Gebäude 1'
-98  'Top_Suffix 1'
-99  'Top_Art 2'
-100  'Top_Präfix 2'
-101  'Top_topogr Bez 2'
-102  'Top_Gebäude 2'
-103  'Top_Suffix 2'
-104  'Top_Art 3'
-105  'Top_Präfix 3'
-106  'Top_topogr Bez 3'
-107  'Top_Gebäude 3'
-108  'Top_Suffix 3'
-109  'Top_Art 4'
-110  'Top_Präfix 4'
-111  'Top_topogr Bez 4'
-112  'Top_Gebäude 4'
-113  'Top_Suffix 4'
-114  'Pfad_Ausgabe_Syst_URL_Kl_beschriftete'
-115  'Pers_Präfix Ikon'
-116  'Pers_Nam Vn Funk Ldaten Ikon'
-117  'Pers_Funktion Ikon'
-118  'Pers_Suffix Ikon'
-119  'Thes_Hauptfeld'
-		
+print COPY "__END__\n";
+print COPY "foreach (split /\\n/, \$all) { \n";
+print COPY "my (\$f, \$p, \$t)=split /::/; mk_path(\$p); copy(\$f, \$t);}\n";

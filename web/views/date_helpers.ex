@@ -20,19 +20,22 @@ defmodule Heimchen.DateHelpers do
 
 	def heimchen_date_precision(form, field, opts \\ []) do
 		select(form, field, ["--keine Angabe--": "0", "genau": "1", "Jahr/Monat": "2",
-												 "nur Jahr": "3", "ungefähr": "4"], opts)
+												 "nur Jahr": "3", "ungefähr": "4", "nach": "5", "vor": "6"], opts)
 	end
 
 	def heimchen_show_date(0,_) do
 		content_tag :span do "---" end
 	end
+	
 	def heimchen_show_date(precision, %{day: d, month: m, year: y}) do
 		content_tag :span do
 			case precision do
 				1 ->  "#{d}.#{m}.#{y}" 
-				2 -> "#{m}/#{y}" 
-				3 ->  "#{y}" 
+        2 -> "#{m}/#{y}" 
+        3 ->  "#{y}" 
         4 ->  "ca. #{y}"
+				5 ->  "nach #{y}"
+			  6 ->  "vor #{y}"
 				_ -> "unbekannt"			
 			end
 		end

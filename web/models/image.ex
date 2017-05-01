@@ -90,6 +90,15 @@ defmodule Heimchen.Image do
 			order_by: [desc: i.inserted_at], limit: 500)
 		|> Enum.map(fn(i) -> to_result(i) end)
 	end
+
+	def untagged_images() do
+		(Repo.all from i in Heimchen.Image,
+			where: fragment("0=(select count(*) from imagetags where image_id=?)", i.id),
+			preload: [imagetags: [person: :keywords, item: :keywords, place: :keywords]],
+			order_by: [desc: i.inserted_at], limit: 500)
+		|> Enum.map(fn(i) -> to_result(i) end)
+	end
+
 	
 	def dir(image) do
 		{{y,m,_},_} = NaiveDateTime.to_erl(image.inserted_at)

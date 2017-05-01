@@ -65,6 +65,7 @@ defmodule Heimchen.Router do
 
 		
 		get  "/image", ImageController, :index
+  	get  "/image/untagged", ImageController, :untagged
 		get  "/image/new", ImageController, :new
 		post "/image/create", ImageController, :create
 		get  "/image/image/:id/:size", ImageController, :image

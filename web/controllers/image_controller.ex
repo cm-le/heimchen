@@ -31,6 +31,11 @@ defmodule Heimchen.ImageController do
 																clipboard: get_session(conn, :image_clipboard)])
 	end
 
+	def untagged(conn, _params, _user) do
+		render(conn, "untagged.html", [images: Heimchen.Image.untagged_images(),
+																	 clipboard: get_session(conn, :image_clipboard)])
+	end
+	
 	def new(conn, params, _user) do
 		item = if (params["item_id"] && String.length(params["item_id"]) > 0) do
 			Repo.get(Heimchen.Item, params["item_id"])

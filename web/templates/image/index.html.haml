@@ -1,12 +1,14 @@
 .row.page-header
-  .col-xs-12
+  .col-xs-6
     %h1 Bilddateien
-      .float-xs-right
-        =link("Datei hochladen", to: image_path(@conn, :new), class: "btn btn-outline-primary")
-      .float-xs-right(style="padding-right: 8px")
-        %a{href: "#{image_path(@conn, :clipboard)}", class: "btn btn-outline-primary"}
-          Zwischenablage (
-          %span#clipboard-count
-            =length(Map.keys(@clipboard))
-          =")"
+  .float-xs-right
+    =link("Nicht zugeordnet", to: image_path(@conn, :untagged), class: "btn btn-outline-primary")
+  .float-xs-right(style="padding-right: 8px")
+    =link("Datei hochladen", to: image_path(@conn, :new), class: "btn btn-outline-primary")
+  .float-xs-right(style="padding-right: 8px")
+    %a{href: "#{image_path(@conn, :clipboard)}", class: "btn btn-outline-primary"}
+      Zwischenablage (
+      %span#clipboard-count
+        =length(Map.keys(@clipboard))
+      =")"
 =render(Heimchen.SearchView, "index.html", results: @images, clipboard: @clipboard, headline: "Kürzlich bearbeitet", conn: @conn)      

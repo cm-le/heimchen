@@ -13,7 +13,7 @@ defmodule Heimchen.Repo.Migrations.Items do
 		end
 		
 		create table(:items) do
-			add :name, :string
+			add :name, :text
 			add :comment, :text
 			add :date_on, :date
 			add :date_precision, :integer
@@ -34,7 +34,7 @@ defmodule Heimchen.Repo.Migrations.Items do
 
 		
 		create table(:item_keywords) do
-			add :item_id, references(:people)
+			add :item_id, references(:items)
 			add :keyword_id, references(:keywords)
 
 			add :user_id, references(:users)

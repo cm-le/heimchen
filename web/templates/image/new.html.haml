@@ -2,14 +2,20 @@
 .row
   = form_for @conn, image_path(@conn, :create), [as: :upload, multipart: true], fn f ->
     .form-group.row
+      =hidden_input f, :item_id, value: @item_id
+      =hidden_input f, :person_id, value: @person_id
+      =hidden_input f, :place_id, value: @place_id
       %label.col-form-label.col-sm-2(for="upload_file") Datei
       .col-sm-10
-        =hidden_input f, :item_id, value: @item_id
-        =hidden_input f, :person_id, value: @person_id
-        =hidden_input f, :place_id, value: @place_id
         =file_input f, :file, class: "form-control"
         %p.form-text.text-muted
           Einzelne Bild-Datei in einem Standard-Format (JPEG, PNG) oder eine ZIP-Datei mit solchen Dateien
+    .form-group.row
+      %label.col-form-label.col-sm-2(for="upload_attachment") Anhang
+      .col-sm-10
+        =file_input f, :attachment, class: "form-control"
+        %p.form-text.text-muted
+          Anhang (zB PDF, Word oder ZIP-Datei). 
     .form-group.row
       %label.col-form-label.col-sm-2(for="upload_comment") Kommentar
       .col-sm-10

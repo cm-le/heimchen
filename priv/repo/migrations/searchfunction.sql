@@ -133,7 +133,7 @@ create trigger items_update_tsearch before insert or update on items
 
 
 create or replace function search_all(text, int)
-			 returns table(what varchar, id int, name text, comment text, keywords json, image_id int) as $$
+			 returns table(what varchar, id int, name text, comment text, keywords jsonb, image_id int) as $$
 with query as (select to_tsquery('german', $1) as query)
 (select 'person'::varchar, 
        p.id, 
@@ -199,7 +199,7 @@ union all
 			 concat_ws(' ', p.city, p.address),
 			 p.comment,
        (select jsonb_agg((select kk from (select k.id, k.category, k.name) kk)) from keywords k,
-			 				 place_keywords pk where pk.plcae_id=p.id and 
+			 				 places_keywords pk where pk.place_id=p.id and 
                             pk.keyword_id=k.id),
 			 (select image_id from imagetags where place_id=p.id order by is_primary desc limit 1)
 from places p, query  q where q.query @@ p.tsearch

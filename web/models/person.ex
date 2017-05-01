@@ -6,6 +6,7 @@ defmodule Heimchen.Person do
 	schema "people" do
 		field :firstname, :string
 		field :lastname,  :string
+		field :maidenname, :string
 		field :gender,    :string
 		field :born_on, Ecto.Date
 		field :born_precision, :integer
@@ -21,10 +22,22 @@ defmodule Heimchen.Person do
 		belongs_to :user, Heimchen.User
 		timestamps
 	end
+
+	def skiplist(person) do
+		{:ok, %{rows: results, num_rows: _}} =
+			Ecto.Adapters.SQL.query(Heimchen.Repo,
+				"select (select min(id) from people), " <>
+					"(select max(id) from people), " <>
+					" (select max(id) from people where id<$1)," <>
+					" (select min(id) from people where id>$1)", [person.id])
+		[min, max, prev, next] = List.first results
+		%{min: min, max: max, prev: prev, next: next}
+	end
+
 	
 	def changeset(model, params, user) do
 		model
-		|> cast(params, ~w(lastname firstname born_on born_precision died_on died_precision gender comment))
+		|> cast(params, ~w(lastname firstname maidenname born_on born_precision died_on died_precision gender comment))
 		|> put_change(:user_id,  user.id)
 		|> validate_required([:lastname], message: "Darf nicht leer sein")
 	end

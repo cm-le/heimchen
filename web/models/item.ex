@@ -33,7 +33,16 @@ defmodule Heimchen.Item do
 		Repo.update(change(Repo.get(Item, item_id), %{:user_id => user.id}), force: true)
 	end
 
-
+	def skiplist(item) do
+		{:ok, %{rows: results, num_rows: _}} =
+			Ecto.Adapters.SQL.query(Heimchen.Repo,
+				"select (select min(id) from items), " <>
+					"(select max(id) from items), " <>
+					" (select max(id) from items where id<$1)," <>
+					" (select min(id) from items where id>$1)", [item.id])
+		[min, max, prev, next] = List.first results
+		%{min: min, max: max, prev: prev, next: next}
+	end
 	
 	def changeset(model, params, user) do
 		model

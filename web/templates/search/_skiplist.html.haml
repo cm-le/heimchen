@@ -1,0 +1,12 @@
+.col-xs-3  
+  .btn-group(role="group")
+    - if @skiplist.prev do    
+      %a.btn.btn-secondary(href="#{result_path(@conn, @what, @skiplist.min)}")
+        %i.fa.fa-step-backward
+      %a.btn.btn-secondary{href="#{result_path(@conn, @what, @skiplist.prev)}"}
+        %i.fa.fa-backward
+    - if @skiplist.next do    
+      %a.btn.btn-secondary{href="#{result_path(@conn, @what, @skiplist.next)}"}
+        %i.fa.fa-forward
+      %a.btn.btn-secondary{href="#{result_path(@conn, @what, @skiplist.max)}"}
+        %i.fa.fa-step-forward

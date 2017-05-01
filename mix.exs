@@ -43,6 +43,8 @@ defmodule Heimchen.Mixfile do
 		 {:kerosene, "~> 0.5.0"},
 		 {:httpoison, "~> 0.10.0"},
 		 {:excellent, "~> 0.0.1" },
+		 {:timex, "~> 3.0"},
+		 {:tzdata, "~> 0.1.8", override: true},
 		 {:exrm, "~> 0.14.2" } ]
   end
 

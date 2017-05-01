@@ -13,6 +13,11 @@
     =text_input @f, :lastname, placeholder: "Nachname", class: "form-control"
     =error_tag @f, :lastname
 .form-group.row
+  %label.col-form-label.col-sm-2 Ledigname
+  .col-sm-10
+    =text_input @f, :maidenname, placeholder: "Ledigname", class: "form-control"
+    =error_tag @f, :maidenname
+.form-group.row
   %label.col-form-label.col-sm-2 Geboren
   .col-sm-3
     =heimchen_date_precision @f, :born_precision, class: "form-control"

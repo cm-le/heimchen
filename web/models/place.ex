@@ -7,6 +7,8 @@ defmodule Heimchen.Place do
 	schema "places" do
 		field :city, :string
 		field :address, :string
+		field :building, :string
+		field :housenr, :string
 		field :comment, :string
 		field :lat, :float
 		field :long, :float
@@ -22,7 +24,7 @@ defmodule Heimchen.Place do
 		key = Application.get_env(:heimchen, :googleapikey)
 		HTTPoison.start
 		case HTTPoison.get("https://maps.googleapis.com/maps/api/geocode/json?address=" <>
-					URI.encode("#{place.city},+#{place.address}") <>
+					URI.encode("#{place.city},+#{place.address}+#{place.housenr}") <>
 					"&key=#{key}") do
 			{:ok, %HTTPoison.Response{body: body}} ->
 				case Poison.decode!(body) do
@@ -44,7 +46,7 @@ defmodule Heimchen.Place do
 
 	def changeset(model, params, user) do
 		model
-		|> cast(params, ~w(city address comment lat long))
+		|> cast(params, ~w(city address comment building housenr lat long))
 		|> put_change(:user_id,  user.id)
 		|> validate_required([:city], message: "Darf nicht leer sein")
 	end
@@ -75,29 +77,44 @@ defmodule Heimchen.Place do
 
 	def nearby(place) do
 		# make this all use spacial datatypes ind indices in the far future...
-		Repo.all from p in Heimchen.Place,
+		(Repo.all from p in Heimchen.Place,
 			preload: [:user, :keywords,
 								imagetags: :image,
 								places_items: [item: :itemtype],
-								places_people: :person],# around 50km
-		where: fragment("? != ? and sqrt((? - ?)^2 + (? - ?)^2)< 0.5",
+								places_people: :person],# around 10km(?)
+		where: fragment("? != ? and sqrt((? - ?)^2 + (? - ?)^2)< 0.1",
 			p.id, ^place.id, p.lat, ^place.lat, p.long, ^place.long),
 			order_by:  fragment("sqrt((? - ?)^2 + (? - ?)^2)",
 				p.lat, ^place.lat, p.long, ^place.long),
-			limit: 100
+			limit: 10)
+		|> Enum.map(fn x -> to_result(x) end)
 	end
 
+	
+	def skiplist(place) do
+		{:ok, %{rows: results, num_rows: _}} =
+			Ecto.Adapters.SQL.query(Heimchen.Repo,
+				"select (select min(id) from places), " <>
+					"(select max(id) from places), " <>
+					" (select max(id) from places where id<$1)," <>
+					" (select min(id) from places where id>$1)", [place.id])
+		[min, max, prev, next] = List.first results
+		%{min: min, max: max, prev: prev, next: next}
+	end
+
+	
 	def longname(place) do
-		"#{place.city}: #{place.address}"
+		"#{place.city}: #{place.address} #{place.housenr}" <>
+		(if place.building && String.length(place.building)>0 do " (#{place.building})" else "" end)
 	end
 
 	def for_select() do
 		(Repo.all from p in Heimchen.Place,
 			order_by: [fragment("updated_at = (select max(updated_at) from places)"),
 								 p.city,
-								 p.address],
-			select: [p.city, p.address, p.id])
-		|> Enum.map(fn ([city, address, id]) -> {Enum.join([city, address], " "), id} end)
+								 p.address,
+								 p.housenr])
+		|> Enum.map(fn (p) -> {longname(p), p.id} end)
 	end
 	
 end

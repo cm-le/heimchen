@@ -4,10 +4,18 @@
     =text_input @f, :city, placeholder: "Bitte ausfüllen", class: "form-control"
     =error_tag @f, :city
 .form-group.row
-  %label.col-form-label.col-sm-2 Adresse
-  .col-sm-10
-    =textarea @f, :address, class: "form-control"
+  %label.col-form-label.col-sm-2 Straße/Nr.
+  .col-sm-7
+    =text_input @f, :address, class: "form-control"
     =error_tag @f, :address
+  .col-sm-3
+    =text_input @f, :housenr, class: "form-control"
+    =error_tag @f, :housenr
+.form-group.row
+  %label.col-form-label.col-sm-2 Gebäude
+  .col-sm-10
+    =textarea @f, :building, class: "form-control"
+    =error_tag @f, :building
 .form-group.row
   %label.col-form-label.col-sm-2 Kommentar
   .col-sm-10

@@ -64,6 +64,17 @@ defmodule Heimchen.ImageController do
 		end
 	end
 	
+	def attachment(conn, %{"id" => id}, _user) do
+		case Repo.get(Heimchen.Image, id) do
+			nil -> resp(conn, 404, "Not found")
+			image ->
+				conn
+				|> put_resp_content_type("application/octet-stream", nil)
+				|> put_resp_header("content-disposition", ~s[attachment; filename="#{image.attachment_filename}"])
+				|> send_file(200, Heimchen.Image.delayed_dir(image) <> "/" <> "attachment.bin") 
+		end
+	end
+	
 	def create(conn, %{"upload" => upload_params}, user) do
 		images = Heimchen.Image.create(upload_params, user)
 		cond do

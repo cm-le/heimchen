@@ -1,7 +1,6 @@
 defmodule Heimchen.SearchView do
   use Heimchen.Web, :view
 
-
 	def catname(what) do
 		names = %{"person" => "fa-male",
 							"keyword" => "Stichwort",
@@ -44,5 +43,20 @@ defmodule Heimchen.SearchView do
 		end
 	end
 
+
+	def last_updated(x) do
+		# believe me, I tried for 10 minutes to write this more clever....
+		u = Timex.Timezone.convert(x.updated_at, "Etc/UTC")
+		now = Timex.Timezone.convert(Timex.now(), "Europe/Berlin") 
+		cond do
+			Timex.diff(now, u, :years) > 0   -> "vor #{Timex.diff(now, u, :years)} Jahren"
+			Timex.diff(now, u, :months) > 0  -> "vor #{Timex.diff(now, u, :months)} Monaten"
+			Timex.diff(now, u, :weeks) > 0   -> "vor #{Timex.diff(now, u, :weeks)} Wochen"
+			Timex.diff(now, u, :days) > 0    -> "vor #{Timex.diff(now, u, :days)} Tagen"
+			Timex.diff(now, u, :hours) > 0   -> "vor #{Timex.diff(now, u, :hours)} Stunden"
+			Timex.diff(now, u, :minutes) > 0 -> "vor #{Timex.diff(now, u, :minutes)} Minuten"
+			true -> "gerade eben"
+		end
+	end
 	
 end

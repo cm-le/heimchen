@@ -13,6 +13,8 @@ defmodule Heimchen.Image do
 		field :exif, :map
 		field :comment, :string
 		field :processed, :boolean
+		field :attachment_filename, :string
+		field :attachment_filesize, :integer
 
 		field :orig_w, :integer
 		field :orig_h, :integer
@@ -34,9 +36,13 @@ defmodule Heimchen.Image do
 		resolution(zoom)
 	end
 	
-	def create_one(file_path,original_filename, comment, item_id, person_id, place_id, user) do
+	def create_one(file_path,original_filename, attachment, comment, item_id, person_id, place_id, user) do
 		{:ok, image} = Repo.insert(changeset(%Heimchen.Image{},
 					%{:comment => comment,
+						:attachment_filename => (case attachment do
+																			 %Plug.Upload{filename: filename} -> filename
+																			 _ -> nil
+																		 end),
 						:original_filename => original_filename}, user))
 		case Integer.parse(item_id) do
 			{i, _} -> Imagetag.add_item_mark(i, image.id, user)
@@ -50,10 +56,21 @@ defmodule Heimchen.Image do
 			{i, _} -> Imagetag.add_person_mark(i, image.id, user)
 			_ -> :error
 		end
-		spawn fn -> amend(image, file_path) end
+		spawn fn -> amend(image, file_path, attachment) end
 		image
 	end
 
+
+	def attachment_fullname(image) do
+		fs = image.attachment_filesize
+		h = cond do
+			fs < 1024 -> "#{fs} B"
+			fs < :math.pow(1024,2) -> "#{fs/1024 |> round()} kB"
+			fs < :math.pow(1024,3) -> "#{fs/:math.pow(1024,2) |> round()} MB"
+			true -> "#{fs/:math.pow(1024,3) |> Float.to_string(decimals: 1)} GB"
+		end
+		"#{image.attachment_filename} (#{h})"
+	end
 	
 	def to_result(image) do
 		%{what: "image",
@@ -114,8 +131,9 @@ defmodule Heimchen.Image do
 				end
 		end
 	end
+
 	
-	def amend(image, file_path) do 
+	def amend(image, file_path, attachment) do 
 		target_path = dir(image)
 		File.mkdir_p(target_path)
 		on = orig_name(image)
@@ -123,12 +141,21 @@ defmodule Heimchen.Image do
 		{w1,h1} = resolution(1)
 		{w2,h2} = resolution(2)
 		{w3,h3} = resolution(3)
-		
+
+		attachment_filesize = 0
+		case attachment do
+			%Plug.Upload{path: afile} ->
+				File.cp(afile, target_path <> "/attachment.bin")
+				%{size: attachment_filesize} = File.stat afile
+			_ -> nil
+		end
+			
 		System.cmd("gm",["convert", "-resize", "#{w1}x#{h1}", on, "-scale", "#{w1}x#{h1}", "thumb.jpg"], cd: target_path)
 		System.cmd("gm",["convert", "-resize", "#{w2}x#{h2}", on, "-scale", "#{w2}x#{h2}", "medium.jpg"], cd: target_path)
-		System.cmd("gm",["convert", "-resize", "#{w3}x#{h3}", on,"-scale",  "#{w3}x#{h3}", "large.jpg"], cd: target_path)
+		System.cmd("gm",["convert", "-resize", "#{w3}x#{h3}", on, "-scale", "#{w3}x#{h3}", "large.jpg"], cd: target_path)
 		{checksum, _} = System.cmd("sha1sum", [on], cd: target_path)
-		Repo.update(changeset(image, %{:processed => true, :original_sha1 => hd(String.split(checksum, " "))}))
+		Repo.update(changeset(image, %{:processed => true, :attachment_filesize => attachment_filesize,
+																	 :original_sha1 => hd(String.split(checksum, " "))}))
 		{output, _} = System.cmd("gm", ["identify", "-format", "%w %h", on], cd: target_path)
 		[w,h]=String.split(String.trim(output), " ")
 		Repo.update(changeset(image,%{orig_w: w, orig_h: h}))
@@ -140,8 +167,10 @@ defmodule Heimchen.Image do
 		end
 	end
 	
-	def create(%{"file" => file, "comment" => comment,
-							 "item_id" => item_id, "person_id" => person_id, "place_id" => place_id}, user) do
+	def create(params, user) do
+		%{"file" => file, "comment" => comment,
+			"item_id" => item_id, "person_id" => person_id, "place_id" => place_id} = params
+		attachment = params["attachment"] # optional
 		{dirname, basename, extension} =
 		  {Path.dirname(file.path), Path.basename(file.path), Path.extname(file.filename)}
 		if String.downcase(extension) == ".zip" do
@@ -152,10 +181,10 @@ defmodule Heimchen.Image do
 				!String.starts_with?(filename, ".") &&
 					Enum.member?(@image_extensions, String.downcase(Path.extname(filename))) end)
 			|> Enum.map(fn(filename) ->
-				create_one(dirname <> "/" <> filename, Path.basename(filename),
+				create_one(dirname <> "/" <> filename, Path.basename(filename),nil,
 					comment, item_id, person_id, place_id, user) end)
 		else
-			[create_one(file.path, file.filename,
+			[create_one(file.path, file.filename, attachment,
 					comment, item_id, person_id, place_id, user)]
 		end
 	end
@@ -168,7 +197,7 @@ defmodule Heimchen.Image do
 
 	def changeset(model, params) do
 		model
-		|> cast(params, ~w(original_filename original_sha1 comment exif processed orig_w orig_h))
+		|> cast(params, ~w(original_filename original_sha1 comment exif processed orig_w orig_h attachment_filename))
 	end
 
 	

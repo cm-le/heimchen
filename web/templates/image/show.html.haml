@@ -24,6 +24,11 @@
       .col-sm-3 Dateiname:
       .col-sm-9
         %tt=link(@changeset.data.original_filename, to: image_path(@conn, :image, @id, 4))
+    - if @changeset.data.attachment_filename do
+      .row
+        .col-sm-3 Anhang:
+        .col-sm-9
+          %tt=link(Heimchen.Image.attachment_fullname(@changeset.data), to: image_path(@conn, :attachment, @id))
     .row
       .col-sm-3 Auflösung:
       .col-sm-9
@@ -41,8 +46,6 @@
                 imagetag_colorindex++
             =Heimchen.Imagetag.name(it)
           =it.comment
-          %a{href: "#{image_path(@conn, :edit_imagetag, it.id)}"}
-            %i.fa.fa-edit
           %br
           %script
             =raw("$(window).one('load', function(){attach_canvas('img-cont',#{elem(Poison.encode(it.marks||'{}'),1)}, imagetag_colors[imagetag_colorindex]);imagetag_colorindex++});")

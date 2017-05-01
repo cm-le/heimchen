@@ -21,7 +21,7 @@ defmodule Heimchen.Imagetag do
 		(Repo.all(from p in Heimchen.Person, order_by: [p.lastname, p.firstname])
 			|> Enum.map(fn(p) -> "Person: #{p.lastname}, #{p.firstname} [#{p.id}]" end)) ++
 		(Repo.all(from p in Heimchen.Place, order_by: [p.city, p.address])
-			|> Enum.map(fn(p) -> "Ort: #{p.city} #{p.address} [#{p.id}]" end)) ++
+			|> Enum.map(fn(p) -> "Ort: #{Heimchen.Place.longname(p)} [#{p.id}]" end)) ++
 		(Repo.all(from i in Heimchen.Item, preload: [:itemtype], order_by: [:itemtype_id, :name])
 			|> Enum.map(fn(i) -> "#{i.itemtype.name}: #{i.name} [#{i.id}]" end))
 	end

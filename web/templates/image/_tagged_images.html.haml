@@ -10,6 +10,12 @@
       %br
       %tt= link(i.original_filename, to: image_path(@conn, :show, i.id))
       ="(#{i.orig_w}x#{i.orig_h})"
+      - if i.attachment_filename do
+        %br
+        Anhang:
+        %a{href= "#{image_path(@conn, :attachment, i.id)}"}
+          = Heimchen.Image.attachment_fullname(i)
+          %i.fa.fa-download
       %ul
         - wi = Enum.with_index(i.imagetags)
         - Enum.map wi, fn(tup) ->

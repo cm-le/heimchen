@@ -29,12 +29,6 @@ defmodule Heimchen.PersonController do
 		render(conn, "index.html", [people: Heimchen.Person.recently_updated()])
 	end
 
-	def search(conn, %{"name" => name}, _user) do
-		people = Heimchen.Person.search(name)
-		render(conn, "search.html", layout: {Heimchen.LayoutView, "empty.html"}, people: people)
-	end
-
-
 	def delete_keyword(conn, %{"person_id" => person_id, "keyword_id" => keyword_id}, _) do
 		case Repo.get_by(Heimchen.PersonKeyword, person_id: person_id, keyword_id: keyword_id) do
 			nil ->
@@ -67,7 +61,10 @@ defmodule Heimchen.PersonController do
 		|> Repo.preload([:user, :keywords, imagetags: [image: :imagetags],
 										 items: :itemtype, places_people: :place]) do
 			nil -> conn |> put_flash(:error, "Person nicht gefunden") |> redirect(to: person_path(conn, :index))
-			person -> conn |> render("show.html", person: person, id: id, keywords: Person.keywords(person))
+			person ->
+				conn
+				|> render("show.html", person: person, id: id,
+					skiplist: Person.skiplist(person))
 		end
 	end
 

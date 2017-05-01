@@ -4,12 +4,13 @@
   
 .row.page-header
   .col-xs-4
-    %h1 Ort anzeigen
-  .float-xs-right.col-xs-3
+    %h2 Ort anzeigen
+  = render(Heimchen.SearchView, "_skiplist.html", skiplist: @skiplist, conn: @conn, what: "place")
+  .float-xs-right.col-xs-2
     %button.btn.btn-outline-primary(type="button", data-toggle="modal", data-target="#addkeyword")
       %i.fa.fa-plus
       Stichwort
-  .float-xs-right
+  .float-xs-right.col-xs-2
     %a.btn.btn-outline-primary(href="#{place_path(@conn, :edit, @id)}")
       %i.fa.fa-edit
       Bearbeiten
@@ -24,8 +25,7 @@
 .row
   .col-xs-12.col-sm-6
     %h4 
-      = @place.city
-      = @place.address
+      = Heimchen.Place.longname(@place)
     - if @place.comment do
       .blockquote=@place.comment
   .col-xs-12.col-sm-6
@@ -61,7 +61,6 @@
 =render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @place, what: "place")
 
 - if !Enum.empty?(@nearby) do
-  %h4 Orte in der Nähe
-  =render("search.html", places: @nearby, conn: @conn)
+  =render(Heimchen.SearchView, "index.html", results: @nearby, headline: "Orte in der Nähe", conn: @conn)
 
 =render(Heimchen.LayoutView, "_footer.html", at: @place.updated_at, user: @place.user)  

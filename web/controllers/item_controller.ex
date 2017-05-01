@@ -28,17 +28,12 @@ defmodule Heimchen.ItemController do
 		render(conn, "index.html", [items: Item.recently_updated()])
 	end
 
-	def search(conn, %{"name" => name}, _user) do
-		items = Item.search(name)
-		render(conn, "search.html", layout: {Heimchen.LayoutView, "empty.html"}, items: items)
-	end
-
 	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Item,id)
 		|> Repo.preload([:user, :itemtype, :received_by, :room, :keywords,
 										 imagetags: [image: :imagetags], places_items: :place]) do
 			nil -> conn |> put_flash(:error, "Eintrag nicht gefunden") |> redirect(to: item_path(conn, :index))
-			item -> conn |> render("show.html", item: item, id: id)
+			item -> conn |> render("show.html", item: item, id: id, skiplist: Item.skiplist(item))
 		end
 	end
 

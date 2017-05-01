@@ -3,13 +3,14 @@
 = render(Heimchen.KeywordView, "_addkeyword.html", for: @item.itemtype.sid, what: "item", id: @id, conn: @conn)
     
 .row.page-header
-  .col-xs-6
-    %h1 Eintrag anzeigen
-  .float-xs-right.col-xs-3
+  .col-xs-4
+    %h2 Eintrag anzeigen
+  = render(Heimchen.SearchView, "_skiplist.html", skiplist: @skiplist, conn: @conn, what: "item")
+  .float-xs-right.col-xs-2
     %button.btn.btn-outline-primary(type="button", data-toggle="modal", data-target="#addkeyword")
         %i.fa.fa-plus
         Stichwort
-  .float-xs-right
+  .float-xs-right.col-xs-2
     %a.btn.btn-outline-primary(href="#{item_path(@conn, :edit, @id)}")
         %i.fa.fa-edit
         Bearbeiten

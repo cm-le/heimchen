@@ -3,7 +3,7 @@
 = render(Heimchen.KeywordView, "_addkeyword.html", for: "place", what: "place", id: @id, conn: @conn)
   
 .row.page-header
-  .col-xs-4
+  .col-xs-3
     %h2 Ort anzeigen
   = render(Heimchen.SearchView, "_skiplist.html", skiplist: @skiplist, conn: @conn, what: "place")
   .float-xs-right.col-xs-2

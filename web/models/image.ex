@@ -146,7 +146,9 @@ defmodule Heimchen.Image do
 		target_path = dir(image)
 		File.mkdir_p(target_path)
 		on = orig_name(image)
-		File.cp(file_path, target_path <> "/" <> on)
+		if file_path do # no file_path is given: file already present (hopefully)
+			File.cp(file_path, target_path <> "/" <> on)
+		end
 		{w1,h1} = resolution(1)
 		{w2,h2} = resolution(2)
 		{w3,h3} = resolution(3)

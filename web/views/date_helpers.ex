@@ -24,7 +24,7 @@ defmodule Heimchen.DateHelpers do
 	end
 
 	def heimchen_show_date(0,_) do
-		content_tag :span do "---" end
+		content_tag :span do "(kein Datum)" end
 	end
 	
 	def heimchen_show_date(precision, %{day: d, month: m, year: y}) do

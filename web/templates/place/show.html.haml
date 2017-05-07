@@ -35,7 +35,7 @@
       %script
         ="var map;"
         ="var mappos={lat:#{@place.lat}, lng: #{@place.long}};"
-        =raw("function initMap(){map = new google.maps.Map(document.getElementById('map'),{center:mappos,zoom: 14});")
+        =raw("function initMap(){map = new google.maps.Map(document.getElementById('map'),{center:mappos,zoom: 15});")
         ="var marker = new google.maps.Marker({position:mappos, map: map});"
         ="};"
       %script{src="https://maps.googleapis.com/maps/api/js?key=#{@googleapikey}&amp;callback=initMap", async , defer}

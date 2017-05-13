@@ -72,7 +72,7 @@ begin
   update places_people set place_id=p1 where place_id=p2;
   
   update places set
-     buiding=coalesce(nullif(building, ''),
+     building=coalesce(nullif(building, ''),
                         (select building from places where id=p2)),
      comment=coalesce(nullif(comment, ''),
                         (select comment from places where id=p2)),
@@ -83,6 +83,7 @@ begin
      where id=p1;
 
     delete from places where id=p2;
+    return true;
 end;
 $$ language plpgsql;
 

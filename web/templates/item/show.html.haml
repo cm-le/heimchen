@@ -36,16 +36,16 @@
   .col-xs-12.col-sm-6
     =render(Heimchen.KeywordView, "_keywordlist.html",conn: @conn,id: @item.id,keywords: @item.keywords,what: "item")
     - if !Enum.empty?(@item.places_items) do
-      %h4 Orte
-      %ul
-        - for pi <- @item.places_items do
-            %li
-                Datum:
-                =heimchen_show_date(pi.start_precision, pi.start_on)
-                =link(Heimchen.Place.longname(pi.place), to: place_path(@conn, :show, pi.place_id))
-                =pi.comment
-                %a{href="#{item_path(@conn, :delete_place, pi.id)}", onclick="return confirm('Verknüpfung wirklich entfernen?')"}
-                    %i.fa.fa-remove
-
+        %h4 Orte
+        %ul
+          - for pi <- @item.places_items do
+              %li
+                  Datum:
+                  =heimchen_show_date(pi.start_precision, pi.start_on)
+                  =link(Heimchen.Place.longname(pi.place), to: place_path(@conn, :show, pi.place_id))
+                  =pi.comment
+                  %a{href="#{item_path(@conn, :delete_place, pi.id)}", onclick="return confirm('Verknüpfung wirklich entfernen?')"}
+                      %i.fa.fa-remove
+    
 =render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @item, what: "item")              
 =render(Heimchen.LayoutView, "_footer.html", at: @item.updated_at, user: @item.user)

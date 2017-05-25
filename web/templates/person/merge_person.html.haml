@@ -1,0 +1,19 @@
+.row.page-header
+  .col-xs-4
+    %h2 Personen zusammenführen
+
+
+.row
+  .col-xs-12.col-sm-6
+    Personen
+    %br
+    %b
+      ="#{@person1.firstname} #{@person1.lastname}"
+    %br
+    und
+    %br
+    %b
+      ="#{@person2.firstname} #{@person2.lastname}"
+    %br
+    =link("Wirklich zusammenführen", to: person_path(@conn, :merge_person, @person2.id, 1), class: "btn btn-primary")
+    

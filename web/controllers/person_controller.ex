@@ -55,6 +55,30 @@ defmodule Heimchen.PersonController do
 	end
 
 
+	def mark_person(conn, %{"id" => id}, _user) do
+		conn
+		|> put_session(:marked_person, id)
+		|> put_flash(:success, "Person zum zusammenführen vorgemerkt")
+		|> redirect(to: person_path(conn, :show, id))
+	end
+
+	def merge_person(conn, %{"id" => id, "doit" => "0"}, _user) do
+		conn
+		|> render("merge_person.html",
+			person1: Heimchen.Repo.get(Heimchen.Person, get_session(conn, :marked_person)),
+			person2: Heimchen.Repo.get(Heimchen.Person, id))
+	end
+
+	def merge_person(conn, %{"id" => id, "doit" => "1"}, _user) do
+		Ecto.Adapters.SQL.query(Heimchen.Repo,
+			"select * from merge_people(?,?)",
+			[id, get_session(conn, :marked_person)])
+		conn
+		|> put_session(:marked_person, nil)
+		|> put_flash(:success, "Personen zusammengeführt")
+		|> redirect(to: person_path(conn, :show, id))
+	end
+
 	
 	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Person,id)
@@ -63,7 +87,7 @@ defmodule Heimchen.PersonController do
 			nil -> conn |> put_flash(:error, "Person nicht gefunden") |> redirect(to: person_path(conn, :index))
 			person ->
 				conn
-				|> render("show.html", person: person, id: id,
+				|> render("show.html", person: person, id: id, marked: get_session(conn, :marked_person),
 					skiplist: Person.skiplist(person))
 		end
 	end

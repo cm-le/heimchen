@@ -50,6 +50,8 @@ defmodule Heimchen.Router do
 		get  "/person/delete_keyword/:person_id/:keyword_id", PersonController, :delete_keyword
 		get  "/person/search/:name", PersonController, :search
 		post "/person/add_place", PersonController, :add_place
+		get  "/person/mark_person/:id", PersonController, :mark_person
+		get  "/person/merge_person/:id/:doit", PersonController, :merge_person
 		get  "/person/delete_place/:id", PersonController, :delete_place
 
 

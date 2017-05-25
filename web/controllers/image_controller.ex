@@ -118,7 +118,7 @@ defmodule Heimchen.ImageController do
 		end
 	end	
 
-
+	
 	def rotate(conn, %{"id" => id}, _user) do
 		case Repo.get(Heimchen.Image, id) do
 			image ->

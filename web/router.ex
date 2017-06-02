@@ -64,6 +64,9 @@ defmodule Heimchen.Router do
 		get  "/place/getlatlong/:id", PlaceController, :getlatlong
 		get  "/place/delete_keyword/:place_id/:keyword_id", PlaceController, :delete_keyword
 		get  "/place/search/:name", PlaceController, :search
+		get  "/place/mark_place/:id", PlaceController, :mark_place
+		get  "/place/merge_place/:id/:doit", PlaceController, :merge_place
+
 
 		
 		get  "/image", ImageController, :index

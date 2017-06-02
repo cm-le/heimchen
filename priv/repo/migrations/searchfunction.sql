@@ -196,7 +196,7 @@ union all
 
 (select 'place'::varchar, 
        p.id,
-			 concat_ws(' ', p.city, p.address),
+			 concat_ws(' ', p.city, p.address, p.housenr, '(' || p.building || ')'),
 			 p.comment,
        (select jsonb_agg((select kk from (select k.id, k.category, k.name) kk)) from keywords k,
 			 				 places_keywords pk where pk.place_id=p.id and 

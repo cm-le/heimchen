@@ -51,6 +51,35 @@ defmodule Heimchen.PlaceController do
 					|> redirect(to: place_path(conn, :show, id))
 		end
 	end
+
+	def mark_place(conn, %{"id" => id}, _user) do
+		conn
+		|> put_session(:marked_place, id)
+		|> put_flash(:success, "Ort zum zusammenführen vorgemerkt")
+		|> redirect(to: place_path(conn, :show, id))
+	end
+
+	
+	def merge_place(conn, %{"id" => id, "doit" => "0"}, _user) do
+		conn
+		|> render("merge_place.html",
+			place1: Heimchen.Repo.get(Heimchen.Place, get_session(conn, :marked_place)),
+			place2: Heimchen.Repo.get(Heimchen.Place, id))
+	end
+
+	
+	def merge_place(conn, %{"id" => id, "doit" => "1"}, _user) do
+		Ecto.Adapters.SQL.query(Heimchen.Repo,
+			"select * from merge_places(?,?)",
+			[get_session(conn, :marked_place), id])
+		conn
+		|> put_session(:marked_place, nil)
+		|> put_flash(:success, "Orte zusammengeführt")
+		|> redirect(to: place_path(conn, :show, id))
+	end
+
+
+
 	
 	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Place,id)
@@ -60,7 +89,8 @@ defmodule Heimchen.PlaceController do
 										 places_people: :person]) do
 			nil -> conn |> put_flash(:error, "Ort nicht gefunden") |> redirect(to: place_path(conn, :index))
 			place -> conn |> render("show.html", place: place, id: id,
-			                        nearby: Place.nearby(place),skiplist: Place.skiplist(place),
+                         			nearby: Place.nearby(place),skiplist: Place.skiplist(place),
+			                        marked: get_session(conn, :marked_place),
 			                        googleapikey: Application.get_env(:heimchen, :googleapikey) )
 		end
 	end

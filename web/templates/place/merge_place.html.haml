@@ -1,0 +1,19 @@
+.row.page-header
+  .col-xs-4
+    %h2 Orte zusammenführen
+
+
+.row
+  .col-xs-12.col-sm-6
+    Orte
+    %br
+    %b
+      ="#{Heimchen.Place.longname(@place1)}"
+    %br
+    und
+    %br
+    %b
+      ="#{Heimchen.Place.longname(@place2)}"
+    %br
+    =link("Wirklich zusammenführen", to: place_path(@conn, :merge_place, @place2.id, 1), class: "btn btn-primary")
+    

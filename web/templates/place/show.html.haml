@@ -58,6 +58,14 @@
         %i
           =pp.comment
 
+
+=link("Mark", to: place_path(@conn, :mark_place, @place.id))
+- if @marked && @marked != "#{@place.id}" do
+  /
+  =link("Merge", to: place_path(@conn, :merge_place, @place.id, 0))
+
+
+
 =render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @place, what: "place")
 
 - if !Enum.empty?(@nearby) do

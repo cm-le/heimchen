@@ -1,0 +1,201 @@
+\documentclass{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\begin{document}
+\def\DB{Datenbank der Heimatkundlichen Sammlung Seuzach}
+\section{Einleitung}
+
+Die neue Datenbank der Heimatkundlichen Sammlung Seuzach 
+
+\section{Grundkonzepte der Datenbank}
+
+Jede Datenbank ist aber nur so gut, wie die Daten, die sie enthält,
+deshalb ist es unerläßlich, dass alle, die mit der Erfassung und
+Pflege der Daten betraut sind, ein gutes Verständnis der
+zugrundeliegenden Konzepte und der sich daraus ergebenden Richtlinien
+(``Was wird wie/wo erfaßt?'')  haben.
+
+Als relationale Datenbank verwaltet die \DB{} ganz allgemein Dinge und ihre Beziehungen
+(Relationen) zueinander.
+
+Die Dinge, die die Datenbank verwaltet, sind dabei
+\begin{itemize}
+\item Personen
+\item Orte
+\item Stichwörter
+\item Bilddateien \textit{und}
+\item die eigentlichen Sammlungsstücke
+\end{itemize}
+
+Die Beziehungen zwischen diesen Dingen sind z\.B, dass bestimmte
+Personen auf bestimmten Bildern zu sehen sind, dass bestimmte Stichwörter
+zu bestimmten Sammlungsstücken gehören etc.
+
+Die zugrundeliegende Idee ist, dass eine Person -- mit ihrem Geburts- und Sterbedaten,
+Spitznamen (``Millimeter''), und wissenswertem zu dieser Person -- nur
+einmal in der Datenbank erfaßt wird, und alle mit dieser Person in Verbindung
+stehenden Dinge (Bilder, Orte) über entsprechende Verknüpfungen trotzdem direkt
+bei dem Personeneintrag angezeigt werden können.
+
+\paragraph{Personen} Bei einer Person ist es relativ klar, wer damit gemeint ist:
+Jeder Mensch ist einzigartig: Er wird geboren, er lebt und stirbt, aber immer ist
+es eine klar abgegrenzte Person.
+
+\paragraph{Orte} Bei einem Ort ist es schon nicht mehr so deutlich, was damit gemeint ist.
+Da ist einerseits die räumliche Unschärfe: Ist das Aussendorf ein Ort, oder doch
+eher speziell die Alte Poststrasse, oder ganz konkret der Spezereiladen der Frau Schäppi?
+Für manche Bilder oder Suchanfragen würde man eher die eine, für andere eher die andere
+Einteilung wählen. 
+
+Dann ist da die zeitliche Unschärfe. Der Migros ist ein jedem Seuzacher bekannter
+Ort, der auf vielen Bildern zu sehen ist. Ist es aber der gleiche Ort wie das
+Bauernhaus Gassmann, das vorher an dieser Stelle stand? Auch hier kann man je nach
+Anwendungsfall zu verschiedenen Schlüssen kommen.
+
+In der \DB{} wurde auf eine hierarchiche Erfassung von Orten
+verzichtet, da sich eine gewisse Zusammengehörigkeit aus dem
+Straßennamen und der geographischen Entfernung (zu allen Orten werden
+die geographischen Koordinaten erfaßt) ergibt. Häuser bei
+Besitzerwechsel bleiben der gleiche Ort, auch Straßen bei
+Umbenennungen. Ob man verschiedene Gebäude, die zu verschiedenen Zeiten
+auf dem gleichen Fleck standen, zu einem Ort zusammenfaßt bleibt sicher
+eine Einzelfallentscheidung, die auch mit dem Charakter der entsprechenden
+Gebäude zusammenhängt.
+
+\paragraph{Stichwörter} Zu den Sammlungsstücken -- aber auch zu Orten und Personen --
+können Stichwörter erfaßt werden. Die explizite Vergabe eines
+Stichwörtes zu einem Eintrag unterscheidet sich grundlegend von einem
+einfachen Kommentar. Bei dem Stichwort ist Schweibweise und Wortwahl
+vorgegeben (zB Wümet, Traubenernte oder Traubenlese).
+
+Dies erleichtert die Suche und bietet -- im Gegensatz zu Kommentaren
+-- auch eine einfache Übersicht, was für Stichwörter überhaupt
+verfügbar sind, d.\,h.  wonach man überhaupt suchen könnte.
+
+Damit geht aber auch eine Verantwortung einher, möglichst sinnvolle
+Stichwörter zu wählen, und die gewählten Stichwörter auch konsequent
+bei allen betreffenden Einträgen hinzuzufügen.
+
+Um sich in der Vielzahl der Stichwörter besser zurechtzufinden, ist es
+in der \DB{} vorgesehen, dass jedes Stichwort einer ``Kategorie''
+zugehörig ist.
+
+\paragraph{Bilddateien} Eine Bilddatei wird beim hochladen automatisch in verschiedene
+Auflösungen umgerechnet. Von einem Sammlungsstück, z\.B. einem Glasdia, können verschiedene
+Digitalisierungen, und damit verschiedene Bilddateien vorliegen.
+
+Markierungen von Personen auf Bildern müssen sich aber, da sie sich
+auf eine konkrete Position innerhalb des Bildes beziehen, auf eine konkrete Bilddatei beziehen.
+
+\paragraph{Sammlungsstücke} Dies sind die eigentlichen Einträge für die konkreten Sammlungsstücke --
+Bilder, Gegenstände etc.
+
+\subsection{Was ist ein Sammlungsstück, was ist ein Stichwort, was ist ein Bild?}
+
+Während vor einem Jahrhundert Fotographien mit teuren Gerätschaften
+und oft von speziell ausgebildeten Fotographen erstellt wurden, und
+eine Fotographie demzufolge eine Seltenheit war, die speziellen
+Anlässen (Hochzeit, Konfirmation) oder besonders erinnerungswürdigen
+Momenten vorbehalten war, können heutzutage Fotos duzend- und
+hundertfach von jedem HANDY-Besitzer ohne besonderen Aufwand erstellt
+werden.
+
+Entsprechend ändert sich der Charakter eines Bildes in der Datenbank
+mit der Zeit.
+
+Die älteren Bilder stellen zweifellos jedes für sich ein
+eigenständiges Sammlungsstück dar, welches sorgfältig kommentiert und
+mit entsprechenden Markierungen und Stichwörtern versehen werden
+sollte.
+
+Aber sollte man jeden Schnappschuß von der 750-Jahrfeier auf die
+gleiche Art behandeln, auch wenn er nur nochmal das Büffet aus einer
+weiteren Perspektive zeigt?
+
+Gleichzeitig kann man aber auch bei alten Fotos, z\.B. verschiedenen
+Fotos der gleichen Ausflugsgesellschaft, fragen, ob sie nicht besser
+zu einem Sammlungsstück zusammengefaßt werden sollten.
+
+Eine gute Richtschnur mag sein, dass man jedem Sammlungsstück einen
+Namen geben muß. Wenn mehrere Bilder eigentlich den gleichen Namen
+bekommen müßten (``Die Feuerwehr präsentiert sich im Freibad Weiher''),
+dann sollte man sie zu einem Sammlungsstück zusammenfassen.
+
+Wenn Bilder verschiedenes zeigen, aber doch unter bestimmten
+Gesichtspunkten zusammengehören, sollte ein entsprechendes Stichwort
+wergeben werden.
+
+\subsection{Kommentare, Kommentare}
+
+Die Anekdoten zu Personen, Begebenheiten oder Häusern bilden -- neben
+den historischen Fotographien -- den eigentlichen Schatz der \DB{}.
+
+Durch die expliziten Verknüpfungen zwischen den Einträgen ist es
+in der neuen Datenbank nicht mehr nötig, diese Anekdoten oder Hinweise
+bei jedem Bild zu wiederholen. Statt dessen können interessante
+Dinge zur Person bei der jeweiligen Person erfaßt werden, oder
+Dinge die einen Ort betreffen, ebendort.
+
+Eine Bemerkung wie ``Ich wollte unbedingt das neue, modische, weisse
+Brautkleid, sonst hätte ich nicht geheiratet.'' bezieht sich hingegen
+eher auf das entsprechende Foto.
+
+Andere Kommentare wie ``Hans und Seline Keller-Schwarz zogen wegen
+Arbeitsmangel 1920 nach Belfort'', können durchaus bei beiden
+betroffenen Personen stehen. Da die Personen aber ebenfalls explizit
+verknüpft sind (=sein sollten), wäre der Kommentar auch bei Seline
+sichtbar, auch wenn er nur bei Hans gegeben ist.
+
+Schließlich gibt es noch rein technische Kommentare
+(``Original-Glasdia ist qualitativ besser''), die sich auf die
+konkrete Bilddatei beziehen. 
+
+
+
+\section{Funktionen der Datenbank}
+\subsection{Neue Einträge erstellen}
+
+Ein neuer Eintrag -- ein neues Sammlungsstück -- wird nach dem Login und
+Auswahl des Menüpunktes ``Sammlung'' durch den Button \fbox{Neuer~Eintrag}
+oben rechts erstellt.
+
+Viele der Felder -- z\.B. Inventar-Nr. -- können meist leer bleiben,
+es empfielt sich jedoch sehr, sich eine treffende Bezeichnung zu überlegen.
+
+Auch ist die Abgrenzung zwischen ``Bezeichnung'' und ``Kommentar''
+nicht immer einfach.
+
+Zusätzlich sind viele Dinge wie ``Foto s/w'' oder das Datum der Aufnahme,
+z.\.T. auch die abgebildeten Orte und Personen besser durch explizite
+Verknüpfungen bzw. Stichworte erfaßt als alles in die Bezeichnung zu quetschen.
+
+Andererseits bleibt -- wenn man Personen und Orte wegnimmt -- nicht viel übrig,
+so dass eine gewisse Redundanz (Nennung des Ortes in der Bezeichnung, als auch
+explizite Verknüpfung des Ortes) wohl sinnvoll bleibt.
+
+
+\subsection{Bilddateien und Bildmarkierungen hinzufügen}
+
+Nach Erstellen des Eintrages (z.\.B. ``Vereinsreise der Seuzemer Turner'')
+ist es meist sinnvoll, eine oder mehrere Bilder hochzuladen. Derzeit werden die Bildformate
+JPEG und PNG unterstützt, andere sind einfach möglich.
+
+Es besteht die Möglichkeit, zu einem Bild einen Anhang zu erstellen, auf diese Weise
+ist es z\.B. möglich, ein Poster als Bild sowie als PDF (oder als Word-Datei etc)
+abzulegen. Tatsächlich kann diese Funktionalität genutzt werden, um ein simples Dokumentenarchiv
+der Heimatkundlichen Sammlung zu realisieren.
+
+
+
+
+\subsection{Suche}
+
+\section{Datenbereinigung}
+
+\section{Ausblick}
+
+\appendix
+
+\section{Technische Details}
+
+\end{document}

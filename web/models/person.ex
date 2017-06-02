@@ -80,6 +80,22 @@ defmodule Heimchen.Person do
 			select: %{id: pk.id, name: k.name, category: k.category, keyword_id: k.id},
 			order_by: [k.category, k.name]
 	end
-	
+
+
+	def relatives(person) do
+		(Repo.all from r in Heimchen.Relative,
+		  where: r.person1_id == ^person.id or r.person2_id == ^person.id)
+		|> Repo.preload([:person1, :person2])
+	end
+
+
+	def for_select() do
+		(Repo.all from p in Heimchen.Person,
+			order_by: [fragment("updated_at = (select max(updated_at) from places)"),
+								 p.lastname,
+								 p.firstname])
+		|> Enum.map(fn (p) -> {"#{p.lastname}, #{p.firstname}", p.id} end)
+	end
+
 	
 end

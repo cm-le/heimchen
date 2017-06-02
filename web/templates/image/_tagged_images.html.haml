@@ -1,4 +1,4 @@
-%h4 Bilder
+
 
 - for i <- (@tagged.imagetags |> Enum.sort(fn it1, it2 -> (it1.is_primary && !it2.is_primary) || false end) |> Enum.map(fn it -> it.image end) |> Enum.uniq()) do
   .row(style="margin-top: 15px")
@@ -20,8 +20,12 @@
         - wi = Enum.with_index(i.imagetags)
         - Enum.map wi, fn(tup) ->
           - {it, index} = tup
+          - if @what == "person" and it.person_id == @tagged.id do
+            - color_index = 0
+          - else
+            - color_index = index + 1 
           %script
-            =raw("$(window).one('load', function(){attach_canvas('#{i.id}_cc',#{elem(Poison.encode(it.marks||'{}'),1)}, imagetag_colors[#{index}]);});")
+            =raw("$(window).one('load', function(){attach_canvas('#{i.id}_cc',#{elem(Poison.encode(it.marks||'{}'),1)}, imagetag_colors[#{color_index}]);});")
           %li
             %a{href: "#{imagetag_backlink(@conn, it)}",id="itlink_#{it.id}"}
               %i.fa.fa-link(id="connection_#{it.id}")

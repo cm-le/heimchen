@@ -1,11 +1,11 @@
 - if !Enum.empty?(@keywords) do
   %h4 Stichwörter 
-  %ul
+  %ul.list-inline
   - for c <- Enum.uniq(Enum.map(@keywords, fn(k) -> k.category end)) do
-    %li
+    %li.list-inline-item
       %b=c
-      %ul
+      %ul.list-inline
         - for k <- Enum.filter(@keywords, fn(k) -> k.category == c end) do
-          %li
+          %li.list-inline-item
             = link(k.name , to: keyword_path(@conn, :show, k.id))
             = keyword_delete_link(@conn, @what, @id, k.id)

@@ -5,7 +5,7 @@
 .form-group.row
   %label.col-form-label.col-sm-2 Bezeichnung
   .col-sm-10
-    =text_input @f, :name, placeholder: "Bezeichnung", class: "form-control"
+    =textarea @f, :name, placeholder: "Bezeichnung", class: "form-control"
     =error_tag @f, :name
 .form-group.row
   %label.col-form-label.col-sm-2 Kommentar

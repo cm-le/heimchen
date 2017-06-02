@@ -21,8 +21,11 @@
 .row
   .col-xs-12.col-sm-6
     %h4 
-      = @person.firstname
       = @person.lastname
+      ,
+      = @person.firstname
+      - if @person.maidenname do
+        =" (geb. #{@person.maidenname})"
       - if @person.gender == "m" do
         %i.fa.fa-male
       - else

@@ -208,7 +208,7 @@ defmodule Heimchen.ImageController do
 		cond do 
 			it.person_id -> conn|> redirect(to: person_path(conn, :show, it.person_id))
 			it.item_id   -> conn|> redirect(to: item_path(conn, :show, it.item_id))
-			# FIXME place
+		        it.place_id  -> conn|> redirect(to: place_path(conn, :show, it.place_id))
 		end
 	end 
 

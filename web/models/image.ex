@@ -122,6 +122,9 @@ defmodule Heimchen.Image do
 		"orig" <> String.downcase(Path.extname(image.original_filename))
 	end
 
+	## DEBUG: rotate just the marks in iex for image i:
+	## for it <- i.imagetags do if it.marks && it.marks["x"] do {x,y} = {it.marks["x"], it.marks["y"]}; m2 = %{"x": Enum.map(y, fn(y) ->  1-y end), "y": x}; Heimchen.Repo.update(it |> Heimchen.Imagetag.changeset(%{}) |> Ecto.Changeset.put_change(:marks,  m2)); end; end 
+	
 	def rotate(image) do
 		{_, olddir} = File.cwd()
 		File.cd(dir(image))

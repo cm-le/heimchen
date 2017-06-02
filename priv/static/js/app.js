@@ -31,7 +31,7 @@ function image_cp_remove(i) {
 function draw_mark(ctx, w,h,marks, color) {
 		if (!marks || !marks.x || marks.x.length == 0) { return; }
 		ctx.strokeStyle = color;
-		ctx.lineWidth   = 2;
+               ctx.lineWidth   = (color == imagetag_colors[0]) ? 5 : 2;
 		ctx.lineJoin    = 'round';
 		ctx.beginPath();
 		ctx.moveTo(marks.x[0] * w, marks.y[0] * h);
@@ -55,7 +55,7 @@ function attach_canvas(container_id,marks,color) {
 		draw_mark(ctx,w,h,marks, color);
 }
 
-imagetag_colors=["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff"];
+imagetag_colors=["#ff0000", "#00ff00", "#0000ff", "#ffff00", "#00ffff", "#aa1155"];
 
 // the following functions act on the global variables imagetag_mark and imagetag_ctx imagetag_canvas
 imagetag_isdrawing=false;

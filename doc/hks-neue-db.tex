@@ -1,47 +1,91 @@
-\documentclass{scrartcl}
+\documentclass[12pt]{scrreprt}
 \usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\newlist{citemize}{itemize}{4}
+\setlist[citemize]{label=-,nosep,topsep=2mm}
 \usepackage[ngerman]{babel}
+\usepackage{xcolor}
+\usepackage{graphicx}
 \begin{document}
 \def\DB{Datenbank der Heimatkundlichen Sammlung Seuzach}
-\section{Einleitung}
+
+\strut
+\thispagestyle{empty}
+\vfill
+
+
+\begin{center}
+  
+{\Huge Die \textit{neue} Datenbank der
+
+  \medskip
+  
+Heimatkundlichen Sammlung Seuzach}
+
+\bigskip
+
+\frame{\includegraphics[width=0.5\hsize]{telefon.png}}
+
+\bigskip
+
+\today
+\end{center}
+
+
+\vfill
+
+\hfill \begin{minipage}{5cm}
+  Christof Meigen\\
+  Liegnitzer Str. 33 \\
+53119 Bonn \\
+christof@nicht-ich.de
+\end{minipage}
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\chapter{Einleitung}
 
 Die neue Datenbank der Heimatkundlichen Sammlung Seuzach 
 
-\section{Grundkonzepte der Datenbank}
+\chapter{Grundkonzepte der Datenbank}
 
-Jede Datenbank ist aber nur so gut, wie die Daten, die sie enthält,
-deshalb ist es unerläßlich, dass alle, die mit der Erfassung und
+Jede Datenbank ist nur so gut, wie die Daten, die sie enthält.
+Deshalb ist es unerläßlich, dass alle, die mit der Erfassung und
 Pflege der Daten betraut sind, ein gutes Verständnis der
 zugrundeliegenden Konzepte und der sich daraus ergebenden Richtlinien
 (``Was wird wie/wo erfaßt?'')  haben.
 
-Als relationale Datenbank verwaltet die \DB{} ganz allgemein Dinge und ihre Beziehungen
-(Relationen) zueinander.
+Als sogenannte relationale Datenbank verwaltet die \DB{} ganz allgemein Dinge und
+ihre Beziehungen (Relationen) zueinander.
 
 Die Dinge, die die Datenbank verwaltet, sind dabei
-\begin{itemize}
+\begin{citemize}
 \item Personen
 \item Orte
 \item Stichwörter
 \item Bilddateien \textit{und}
 \item die eigentlichen Sammlungsstücke
-\end{itemize}
+\end{citemize}
 
-Die Beziehungen zwischen diesen Dingen sind z\.B, dass bestimmte
+Die Beziehungen zwischen diesen Dingen sind z.\,B., dass bestimmte
 Personen auf bestimmten Bildern zu sehen sind, dass bestimmte Stichwörter
 zu bestimmten Sammlungsstücken gehören etc.
 
 Die zugrundeliegende Idee ist, dass eine Person -- mit ihrem Geburts- und Sterbedaten,
-Spitznamen (``Millimeter''), und wissenswertem zu dieser Person -- nur
+Spitznamen (``Millimeter''), und Wissenswertem zu dieser Person -- nur
 einmal in der Datenbank erfaßt wird, und alle mit dieser Person in Verbindung
 stehenden Dinge (Bilder, Orte) über entsprechende Verknüpfungen trotzdem direkt
 bei dem Personeneintrag angezeigt werden können.
 
-\paragraph{Personen} Bei einer Person ist es relativ klar, wer damit gemeint ist:
+\section{Personen} Bei einer Person ist es relativ klar, wer damit gemeint ist:
 Jeder Mensch ist einzigartig: Er wird geboren, er lebt und stirbt, aber immer ist
 es eine klar abgegrenzte Person.
 
-\paragraph{Orte} Bei einem Ort ist es schon nicht mehr so deutlich, was damit gemeint ist.
+\section{Orte} Bei einem Ort ist es schon nicht mehr so deutlich, was damit gemeint ist.
 Da ist einerseits die räumliche Unschärfe: Ist das Aussendorf ein Ort, oder doch
 eher speziell die Alte Poststrasse, oder ganz konkret der Spezereiladen der Frau Schäppi?
 Für manche Bilder oder Suchanfragen würde man eher die eine, für andere eher die andere
@@ -57,16 +101,26 @@ verzichtet, da sich eine gewisse Zusammengehörigkeit aus dem
 Straßennamen und der geographischen Entfernung (zu allen Orten werden
 die geographischen Koordinaten erfaßt) ergibt. Häuser bei
 Besitzerwechsel bleiben der gleiche Ort, auch Straßen bei
-Umbenennungen. Ob man verschiedene Gebäude, die zu verschiedenen Zeiten
-auf dem gleichen Fleck standen, zu einem Ort zusammenfaßt bleibt sicher
-eine Einzelfallentscheidung, die auch mit dem Charakter der entsprechenden
-Gebäude zusammenhängt.
+Umbenennungen. Ob man verschiedene Gebäude, die zu verschiedenen
+Zeiten auf dem gleichen Fleck standen, zu einem Ort zusammenfaßt
+bleibt sicher eine Einzelfallentscheidung, die auch mit dem Charakter
+der entsprechenden Gebäude zusammenhängt.\footnote{Dieses Problem der
+  Identität wird seit den alten griechen diskutiert, damals am
+  Beispiel von \textit{Theseus' Schiff}: ``Das Schiff, auf dem Theseus
+  mit den Jünglingen losgesegelt und auch sicher zurückgekehrt ist,
+  eine Galeere mit 30 Rudern, wurde von den Athenern bis zur Zeit des
+  Demetrios Phaleros aufbewahrt. Von Zeit zu Zeit entfernten sie
+  daraus alte Planken und ersetzten sie durch neue intakte. Das Schiff
+  wurde daher für die Philosophen zu einer ständigen Veranschaulichung
+  zur Streitfrage der Weiterentwicklung; denn die einen behaupteten,
+  das Boot sei nach wie vor dasselbe geblieben, die anderen hingegen,
+  es sei nicht mehr dasselbe.}
 
-\paragraph{Stichwörter} Zu den Sammlungsstücken -- aber auch zu Orten und Personen --
+\section{Stichwörter} Zu den Sammlungsstücken -- aber auch zu Orten und Personen --
 können Stichwörter erfaßt werden. Die explizite Vergabe eines
 Stichwörtes zu einem Eintrag unterscheidet sich grundlegend von einem
 einfachen Kommentar. Bei dem Stichwort ist Schweibweise und Wortwahl
-vorgegeben (zB Wümet, Traubenernte oder Traubenlese).
+vorgegeben (z.\,B. Wümet, Traubenernte oder Traubenlese).
 
 Dies erleichtert die Suche und bietet -- im Gegensatz zu Kommentaren
 -- auch eine einfache Übersicht, was für Stichwörter überhaupt
@@ -80,24 +134,27 @@ Um sich in der Vielzahl der Stichwörter besser zurechtzufinden, ist es
 in der \DB{} vorgesehen, dass jedes Stichwort einer ``Kategorie''
 zugehörig ist.
 
-\paragraph{Bilddateien} Eine Bilddatei wird beim hochladen automatisch in verschiedene
-Auflösungen umgerechnet. Von einem Sammlungsstück, z\.B. einem Glasdia, können verschiedene
-Digitalisierungen, und damit verschiedene Bilddateien vorliegen.
+
+\section{Bilddateien} Von einem Sammlungsstück, z.\,B. einem Glasdia, können
+verschiedene Digitalisierungen, und damit verschiedene Bilddateien
+vorliegen. Natürlich können insbesondere zu einem physischen
+Sammlungsstück mehrere Bilddateien vorliegen, z.\,B. verschiedene Fotos
+eines Waffeleisens.
 
 Markierungen von Personen auf Bildern müssen sich aber, da sie sich
-auf eine konkrete Position innerhalb des Bildes beziehen, auf eine konkrete Bilddatei beziehen.
+auf eine konkrete Position innerhalb des Bildes beziehen, auf eine
+konkrete Bilddatei beziehen.
 
-\paragraph{Sammlungsstücke} Dies sind die eigentlichen Einträge für die konkreten Sammlungsstücke --
-Bilder, Gegenstände etc.
-
-\subsection{Was ist ein Sammlungsstück, was ist ein Stichwort, was ist ein Bild?}
+\section{Sammlungsstücke} Dies sind die eigentlichen Einträge für die konkreten
+Sammlungsstücke -- Bilder, Gegenstände etc. Die Frage der Abgrenzung, was
+ein Sammlungsstück ist, ist aber noch schwieriger zu treffen als bei den Orten.
 
 Während vor einem Jahrhundert Fotographien mit teuren Gerätschaften
 und oft von speziell ausgebildeten Fotographen erstellt wurden, und
 eine Fotographie demzufolge eine Seltenheit war, die speziellen
 Anlässen (Hochzeit, Konfirmation) oder besonders erinnerungswürdigen
 Momenten vorbehalten war, können heutzutage Fotos duzend- und
-hundertfach von jedem HANDY-Besitzer ohne besonderen Aufwand erstellt
+hundertfach von jedem Natel-Besitzer ohne besonderen Aufwand erstellt
 werden.
 
 Entsprechend ändert sich der Charakter eines Bildes in der Datenbank
@@ -109,10 +166,10 @@ mit entsprechenden Markierungen und Stichwörtern versehen werden
 sollte.
 
 Aber sollte man jeden Schnappschuß von der 750-Jahrfeier auf die
-gleiche Art behandeln, auch wenn er nur nochmal das Büffet aus einer
+gleiche Art behandeln, auch wenn er nur nochmal das Buffet aus einer
 weiteren Perspektive zeigt?
 
-Gleichzeitig kann man aber auch bei alten Fotos, z\.B. verschiedenen
+Gleichzeitig kann man aber auch bei alten Fotos, z.\,B. verschiedenen
 Fotos der gleichen Ausflugsgesellschaft, fragen, ob sie nicht besser
 zu einem Sammlungsstück zusammengefaßt werden sollten.
 
@@ -125,7 +182,7 @@ Wenn Bilder verschiedenes zeigen, aber doch unter bestimmten
 Gesichtspunkten zusammengehören, sollte ein entsprechendes Stichwort
 wergeben werden.
 
-\subsection{Kommentare, Kommentare}
+\section{Kommentare, Kommentare}
 
 Die Anekdoten zu Personen, Begebenheiten oder Häusern bilden -- neben
 den historischen Fotographien -- den eigentlichen Schatz der \DB{}.
@@ -151,15 +208,19 @@ Schließlich gibt es noch rein technische Kommentare
 konkrete Bilddatei beziehen. 
 
 
-
-\section{Funktionen der Datenbank}
-\subsection{Neue Einträge erstellen}
+\chapter{Funktionen der Datenbank}
+\section{Neue Einträge erstellen}
 
 Ein neuer Eintrag -- ein neues Sammlungsstück -- wird nach dem Login und
-Auswahl des Menüpunktes ``Sammlung'' durch den Button \fbox{Neuer~Eintrag}
-oben rechts erstellt.
+Auswahl des Menüpunktes ``Sammlung'' durch den Button ``Neuer~Eintrag''
+oben rechts erstellt ({\color{red} 2} in Abbildung~\ref{neuer-eintrag}).
 
-Viele der Felder -- z\.B. Inventar-Nr. -- können meist leer bleiben,
+\begin{figure}
+  \frame{\includegraphics[width=\hsize]{neuer-eintrag.png}}
+  \caption{\label{neuer-eintrag} Erstellung eines Neuen Eintrages}
+\end{figure}
+
+Viele der Felder -- z.\,B. Inventar-Nr. -- können meist leer bleiben,
 es empfielt sich jedoch sehr, sich eine treffende Bezeichnung zu überlegen.
 
 Auch ist die Abgrenzung zwischen ``Bezeichnung'' und ``Kommentar''
@@ -169,33 +230,126 @@ Zusätzlich sind viele Dinge wie ``Foto s/w'' oder das Datum der Aufnahme,
 z.\.T. auch die abgebildeten Orte und Personen besser durch explizite
 Verknüpfungen bzw. Stichworte erfaßt als alles in die Bezeichnung zu quetschen.
 
-Andererseits bleibt -- wenn man Personen und Orte wegnimmt -- nicht viel übrig,
-so dass eine gewisse Redundanz (Nennung des Ortes in der Bezeichnung, als auch
-explizite Verknüpfung des Ortes) wohl sinnvoll bleibt.
+Andererseits bleibt -- wenn man Personen und Orte wegnimmt -- oft
+nicht viel als Bezeichnung übrig, so dass eine gewisse Redundanz
+(Nennung des Ortes in der Bezeichnung, als auch explizite Verknüpfung
+des Ortes) wohl sinnvoll bleibt.
 
 
-\subsection{Bilddateien und Bildmarkierungen hinzufügen}
+\section{Bilddateien und Bildmarkierungen hinzufügen}
 
-Nach Erstellen des Eintrages (z.\.B. ``Vereinsreise der Seuzemer Turner'')
-ist es meist sinnvoll, eine oder mehrere Bilder hochzuladen. Derzeit werden die Bildformate
-JPEG und PNG unterstützt, andere sind einfach möglich.
+\subsection{Bilddateien hochladen}
 
-Es besteht die Möglichkeit, zu einem Bild einen Anhang zu erstellen, auf diese Weise
-ist es z\.B. möglich, ein Poster als Bild sowie als PDF (oder als Word-Datei etc)
-abzulegen. Tatsächlich kann diese Funktionalität genutzt werden, um ein simples Dokumentenarchiv
-der Heimatkundlichen Sammlung zu realisieren.
+\begin{figure}
+  \frame{\includegraphics[width=\hsize]{eintrag-menu.png}}
+  \caption{\label{eintrag-menu} Die Titelzeile eines Eintrages}
+\end{figure}
+
+Nach Erstellen des Eintrages (z.\,B. ``Vereinsreise der Seuzemer
+Turner'') ist es meist sinnvoll, eine oder mehrere Bilder
+hochzuladen (Button {\color{red} 2} in Abbildung~\ref{eintrag-menu}).
+Derzeit werden die Bildformate JPEG und PNG unterstützt,
+andere sind einfach möglich.
+
+Es besteht die Möglichkeit, zu einem Bild einen Anhang zu erstellen,
+auf diese Weise ist es z.\,B. möglich, ein Poster als Bild sowie als
+PDF (oder als Word-Datei etc) abzulegen. Tatsächlich kann diese
+Funktionalität genutzt werden, um ein simples Dokumentenarchiv der
+Heimatkundlichen Sammlung zu realisieren.
+
+Eine Bilddatei wird beim Hochladen automatisch in verschiedene
+Auflösungen (Vorschau, größere Ansicht, und Hohe Qualität)
+umgerechnet. Selbstverständlich wird zusätzlich die Originaldatei
+gespeichert.
+
+Wichtig ist, dass der beim Hochladen gegebene Kommentar sich auf die
+konkrete Bilddatei bezieht (meist wird kein Kommentar nötig
+sein!). Inhaltliche Bemerkungen zum Sammlungsstück sollten hingegen
+bei dem Eintrag erfaßt werden.
+
+
+\textit{Hinweis:} Manchmal ist die Vorschau noch nicht direkt nach dem
+Hochladen verfügbar. In diesem Falle einfach die Seite neu laden.
+
+\subsection{Bildmarkierungen hinzufügen}
 
 
 
+\section{Suche}
 
-\subsection{Suche}
+\chapter{Datenbereinigung}
 
-\section{Datenbereinigung}
-
-\section{Ausblick}
+\chapter{Ausblick}
 
 \appendix
 
-\section{Technische Details}
+\chapter{Technische Details}
+
+\section{Notizen zum Server-Setup}
+
+Die \DB{} kann mit etwas technischen Grundkenntnissen auf jedem
+virtuellen Server installiert werden.
+
+
+\paragraph{Server-Setup in Debian 8}
+
+\begin{verbatim}
+apt-get update
+apt-get install postgresql-9.4 postgresql-client-9.4 # database
+apt-get install emacs24-nox tmux git # general development environment
+apt-get install build-essential
+apt-get install graphicsmagick
+\end{verbatim}
+
+\paragraph{Einfache Sicherheitsmaßnahmen}
+
+In der Datei \verb|/etc/ssh/sshd_config| die Einstellung \verb|PermitRootLogin no| setzen und dann
+\verb|/etc/init.d/ssh restart| ausführen.
+
+\paragraph{erlang + elixir installieren}
+
+\begin{verbatim}
+wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb 
+sudo dpkg -i erlang-solutions_1.0_all.deb
+apt-get update
+apt-get install esl-erlang
+apt-get install elixir
+\end{verbatim}
+
+
+\paragraph{Installation der Datenbank}
+\begin{verbatim}
+su postgres
+createuser heimchen -P -d
+createdb -h 127.0.0.1 -U heimchen
+\end{verbatim}
+
+\paragraph{Phoenix einrichten}
+
+Als ein normaler (nicht-pivilegierter) Benutzer:
+
+\begin{verbatim}
+mix local.hex
+mix archive.install \
+    https://github.com/phoenixframework/archives/raw/master/phoenix_new.ez
+\end{verbatim}
+
+
+Dann ein neues Verzeichnis anlegen und das Git-Archiv mit der Software
+dort einrichten
+
+
+\paragraph{Zusatzpakete herunterladen und Datenbank aktualisieren}
+\begin{verbatim}
+mix deps.get
+mix ecto.migrate
+\end{verbatim}
+
+\paragraph{Anwendung starten}
+
+\begin{verbatim}
+./iex.sh
+\end{verbatim}
+
 
 \end{document}

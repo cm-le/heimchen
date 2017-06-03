@@ -53,6 +53,5 @@
   =link("Zusammenführen", to: item_path(@conn, :merge_item, @item.id, 0))
 
 
-                        
 =render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @item, what: "item")              
 =render(Heimchen.LayoutView, "_footer.html", at: @item.updated_at, user: @item.user)

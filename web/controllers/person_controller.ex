@@ -69,9 +69,10 @@ defmodule Heimchen.PersonController do
 	end
 
 	def merge_person(conn, %{"id" => id, "doit" => "1"}, _user) do
+		{id1, _} = Integer.parse(id)
+		{id2, _} = Integer.parse(get_session(conn, :marked_person))
 		Ecto.Adapters.SQL.query(Heimchen.Repo,
-			"select * from merge_people($1,$2)",
-			[get_session(conn, :marked_person), id])
+			"select * from merge_people($1,$2)",[id1, id2])
 		conn
 		|> put_session(:marked_person, nil)
 		|> put_flash(:success, "Personen zusammengeführt")

@@ -73,10 +73,10 @@
             =link(item.name, to: item_path(@conn, :show, item.id))
             =item.received_comment
 
-=link("Mark", to: person_path(@conn, :mark_person, @person.id))
+=link("Vormerken", to: person_path(@conn, :mark_person, @person.id))
 - if @marked && @marked != "#{@person.id}" do
   /
-  =link("Merge", to: person_path(@conn, :merge_person, @person.id, 0))
+  =link("Zusammenführen", to: person_path(@conn, :merge_person, @person.id, 0))
 
 =render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @person, what: "person")                  
 =render(Heimchen.LayoutView, "_footer.html", at: @person.updated_at, user: @person.user)

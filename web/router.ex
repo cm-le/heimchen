@@ -99,6 +99,8 @@ defmodule Heimchen.Router do
 		put  "/item/update/:id", ItemController, :update
 		post "/item/add_place", ItemController, :add_place
 		get  "/item/delete_place/:id", ItemController, :delete_place
+		get  "/item/mark_item/:id", ItemController, :mark_item
+		get  "/item/merge_item/:id/:doit", ItemController, :merge_item
 
 
 		get  "/search/index/:id", SearchController, :index

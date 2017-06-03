@@ -28,12 +28,44 @@ defmodule Heimchen.ItemController do
 		render(conn, "index.html", [items: Item.recently_updated()])
 	end
 
+
+	def mark_item(conn, %{"id" => id}, _user) do
+		conn
+		|> put_session(:marked_item, id)
+		|> put_flash(:success, "Sammlungs-Stück zum zusammenführen vorgemerkt")
+		|> redirect(to: place_path(conn, :show, id))
+	end
+
+	
+	def merge_item(conn, %{"id" => id, "doit" => "0"}, _user) do
+		conn
+		|> render("merge_item.html",
+			place1: Heimchen.Repo.get(Heimchen.Item, get_session(conn, :marked_item)),
+			place2: Heimchen.Repo.get(Heimchen.Item, id))
+	end
+
+	
+	def merge_item(conn, %{"id" => id, "doit" => "1"}, _user) do
+		Ecto.Adapters.SQL.query(Heimchen.Repo,
+			"select * from merge_items(?,?)",
+			[get_session(conn, :marked_item), id])
+		conn
+		|> put_session(:marked_item, nil)
+		|> put_flash(:success, "Sammlungs-Stücke zusammengeführt")
+		|> redirect(to: place_path(conn, :show, id))
+	end
+
+
+
+	
 	def show(conn, %{"id" => id}, _user) do
 		case Repo.get(Item,id)
 		|> Repo.preload([:user, :itemtype, :received_by, :room, :keywords,
 										 imagetags: [image: :imagetags], places_items: :place]) do
 			nil -> conn |> put_flash(:error, "Eintrag nicht gefunden") |> redirect(to: item_path(conn, :index))
-			item -> conn |> render("show.html", item: item, id: id, skiplist: Item.skiplist(item))
+			item -> conn |> render("show.html", item: item, id: id,
+			                       marked: get_session(conn, :marked_item),
+			                       skiplist: Item.skiplist(item))
 		end
 	end
 

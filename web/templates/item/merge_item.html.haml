@@ -1,0 +1,18 @@
+.row.page-header
+  .col-xs-4
+    %h2 Sammlungs-Stücke zusammenführen
+
+.row
+  .col-xs-12.col-sm-6
+    Orte
+    %br
+    %b
+      ="#{Heimchen.Item.longname(@item1)}"
+    %br
+    und
+    %br
+    %b
+      ="#{Heimchen.Item.longname(@item2)}"
+    %br
+    =link("Wirklich zusammenführen", to: item_path(@conn, :merge_item, @item2.id, 1), class: "btn btn-primary")
+    

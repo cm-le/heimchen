@@ -46,6 +46,13 @@
                   =pi.comment
                   %a{href="#{item_path(@conn, :delete_place, pi.id)}", onclick="return confirm('Verknüpfung wirklich entfernen?')"}
                       %i.fa.fa-remove
-    
+
+=link("Vormerken", to: item_path(@conn, :mark_item, @item.id))
+- if @marked && @marked != "#{@item.id}" do
+  /
+  =link("Zusammenführen", to: item_path(@conn, :merge_item, @item.id, 0))
+
+
+                        
 =render(Heimchen.ImageView, "_tagged_images.html", conn: @conn, tagged: @item, what: "item")              
 =render(Heimchen.LayoutView, "_footer.html", at: @item.updated_at, user: @item.user)

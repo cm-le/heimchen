@@ -5,10 +5,11 @@
 \setlist[citemize]{label=-,nosep,topsep=2mm}
 \usepackage[ngerman]{babel}
 \usepackage{xcolor}
+\usepackage{url}
 \usepackage{graphicx}
 \begin{document}
 \def\DB{Datenbank der Heimatkundlichen Sammlung Seuzach}
-
+\def\RB#1{{\color{red} \textsf{\textbf{#1}}}}
 \strut
 \thispagestyle{empty}
 \vfill
@@ -24,7 +25,7 @@ Heimatkundlichen Sammlung Seuzach}
 
 \bigskip
 
-\frame{\includegraphics[width=0.5\hsize]{telefon.png}}
+\frame{\includegraphics[width=0.5\hsize]{telefon.jpg}}
 
 \bigskip
 
@@ -49,7 +50,26 @@ christof@nicht-ich.de
 
 \chapter{Einleitung}
 
-Die neue Datenbank der Heimatkundlichen Sammlung Seuzach 
+Die neue Datenbank der Heimatkundlichen Sammlung Seuzach wurde in der Weihnachtszeit 2016
+entwickelt und dann schrittweise erweitert. Bei einem Besuch in Seuzach zu Ostern 2017
+wurden noch einige Änderungen abgestimmt und kurz darauf erfolgte der Import der Daten aus
+der vorgehenden Datenbank DaDa.
+
+Die Datenbank ist derzeit unter der Adresse
+\url{http://replcast.org:4000} erreichbar.  Max Rüesch, Christiane
+Sibille und ich sind als Adminsitratoren erfaßt und können so auch
+neue Benutzerkonten anlegen.
+
+Insbesondere wenn die Daten bereinigt sind (siehe
+Kapitel~\ref{curation}), sind noch viele Funktionen denkbar, auch
+werden sich bei der Benutzung sicher noch Änderungswünsche
+ergeben. Auch ein Umzug auf einen Server der Gemeinde Seuzach kann
+noch erfolgen.
+
+Die Datenbank sollte trotzdem bereits in diesem Stadium intensiv genutzt werden,
+um die Grundlage für künftige Verbesserungen zu schaffen.
+
+
 
 \chapter{Grundkonzepte der Datenbank}
 
@@ -105,7 +125,7 @@ Umbenennungen. Ob man verschiedene Gebäude, die zu verschiedenen
 Zeiten auf dem gleichen Fleck standen, zu einem Ort zusammenfaßt
 bleibt sicher eine Einzelfallentscheidung, die auch mit dem Charakter
 der entsprechenden Gebäude zusammenhängt.\footnote{Dieses Problem der
-  Identität wird seit den alten griechen diskutiert, damals am
+  Identität wird seit den alten Griechen diskutiert, damals am
   Beispiel von \textit{Theseus' Schiff}: ``Das Schiff, auf dem Theseus
   mit den Jünglingen losgesegelt und auch sicher zurückgekehrt ist,
   eine Galeere mit 30 Rudern, wurde von den Athenern bis zur Zeit des
@@ -114,7 +134,7 @@ der entsprechenden Gebäude zusammenhängt.\footnote{Dieses Problem der
   wurde daher für die Philosophen zu einer ständigen Veranschaulichung
   zur Streitfrage der Weiterentwicklung; denn die einen behaupteten,
   das Boot sei nach wie vor dasselbe geblieben, die anderen hingegen,
-  es sei nicht mehr dasselbe.}
+  es sei nicht mehr dasselbe.''}
 
 \section{Stichwörter} Zu den Sammlungsstücken -- aber auch zu Orten und Personen --
 können Stichwörter erfaßt werden. Die explizite Vergabe eines
@@ -213,7 +233,7 @@ konkrete Bilddatei beziehen.
 
 Ein neuer Eintrag -- ein neues Sammlungsstück -- wird nach dem Login und
 Auswahl des Menüpunktes ``Sammlung'' durch den Button ``Neuer~Eintrag''
-oben rechts erstellt ({\color{red} 2} in Abbildung~\ref{neuer-eintrag}).
+oben rechts erstellt (Button \RB2 in Abbildung~\ref{neuer-eintrag}).
 
 \begin{figure}
   \frame{\includegraphics[width=\hsize]{neuer-eintrag.png}}
@@ -235,6 +255,9 @@ nicht viel als Bezeichnung übrig, so dass eine gewisse Redundanz
 (Nennung des Ortes in der Bezeichnung, als auch explizite Verknüpfung
 des Ortes) wohl sinnvoll bleibt.
 
+Stichwörter zu einem Eintrag werden erst nach dem Speichern des Eintrages
+mit Button \RB4 (vgl. Abbildung~\ref{eintrag-menu}) hinzugefügt. Es können
+nur bereits angelegte Stichwörter hinzugefügt werden. 
 
 \section{Bilddateien und Bildmarkierungen hinzufügen}
 
@@ -251,11 +274,16 @@ hochzuladen (Button {\color{red} 2} in Abbildung~\ref{eintrag-menu}).
 Derzeit werden die Bildformate JPEG und PNG unterstützt,
 andere sind einfach möglich.
 
+Alternativ können auch viele Bilddateien auf einmal hochgeladen werden,
+indem man einen  ZIP-gepackten Ordner hochlädt, der ausschließlich Bilddateien
+enthalten sollte.
+
 Es besteht die Möglichkeit, zu einem Bild einen Anhang zu erstellen,
 auf diese Weise ist es z.\,B. möglich, ein Poster als Bild sowie als
 PDF (oder als Word-Datei etc) abzulegen. Tatsächlich kann diese
 Funktionalität genutzt werden, um ein simples Dokumentenarchiv der
-Heimatkundlichen Sammlung zu realisieren.
+Heimatkundlichen Sammlung zu realisieren. (Dies funktioniert nicht,
+wenn man einen ZIP-Ordner hochlädt!).
 
 Eine Bilddatei wird beim Hochladen automatisch in verschiedene
 Auflösungen (Vorschau, größere Ansicht, und Hohe Qualität)
@@ -272,14 +300,89 @@ bei dem Eintrag erfaßt werden.
 Hochladen verfügbar. In diesem Falle einfach die Seite neu laden.
 
 \subsection{Bildmarkierungen hinzufügen}
+\begin{figure}
+  \begin{center}
+    \frame{\includegraphics[width=.5\hsize]{bild-edit.png}}
+  \end{center}
+  \caption{\label{bild-edit} Infos und Buttons neben einem hochgeladenen Bild}
+\end{figure}
 
+Nach dem Hochladen kann das Bild rotiert werden (Button \RB3 in Abbildung~\ref{bild-edit}) und
+es kann eine Markierung hinzugefügt werden (Button \RB4 in Abbildung~\ref{bild-edit}).
+Dazu muß eine existierende Person bzw. ein Ort ausgewählt werden. Wenn der entsprechende
+Ort/ oder die Person noch nicht existiert, muß zuerst ein entsprechender Eintrag angelegt werden.
 
+Nach dem Hinzufügen der Markierung kann man diese noch ergänzen
+(Button \RB1 in Abbildung~\ref{bild-edit}), insbesondere kann man mit
+der Maus eine Markierung -- eine Umrandung -- auf dem Bild
+zeichnen. Diese Markierungen verändern das Bild nicht, sondern werden
+separat gespeichert. Sie können in der Ansicht jederzeit durch bewegen
+des Mauszeigers über Button \RB2 ausgeblendet werden.
 
 \section{Suche}
 
-\chapter{Datenbereinigung}
+Die Suche in der Menüleiste durchsucht alle Bezeichnungen, Kommentare, Stichworte etc.
+Die Suche beginnt bereits beim Tippen des Suchbegriffes, es empfiehlt sich also,
+beim Tippen bereits die Suchergebnisse zu beobachten.
 
-\chapter{Ausblick}
+Es ist \textit{keine} unscharfe Suche mit Korrekurvorschlägen
+(``Meinten Sie vielleicht\ldots'').
+
+Eine komfortablere Suche, insbesondere mit Einschränkungen nach Jahr,
+Kombination von Stichwörtern etc. ist für das nächste Update der Datenbank geplant.
+
+\section{Weitere Funktionen}
+
+Unter dem Munüpunkt ``Dateien'' kann man beispielsweise Markierungen für mehrere Dateien auf einmal
+durchführen, das hat sich aber in der täglichen Arbeit als weniger sinnvoll herausgestellt.
+
+Das hinzufügen und Ändern von Stichwörtern ist weitgehend selbsterklärend, bis auf die
+Tatsache dass -- anders als an anderen Stellen der Datenbank -- eine neue Kategorie
+implizit erstellt wird, wenn man in das Textfeld ``Kategorie'' etwas einträgt (anstatt eine
+Kategorie aus der Liste auszuwählen).
+
+\chapter{Datenbereinigung\label{curation}}
+
+Trotz großer Sorgfalt beim Import ist ein Durchsehen und u.\,U. Nachbearbeiten
+jedes einzelnen Datensatzes unumgänglich. 
+
+Dazu existiert bei den Sammlungsstücken, den Personen und den Orten eine Blätter-Funktion
+(Buttons \RB1 in Abbildung~\ref{eintrag-menu}), um zum ersten Eintrag, zum vorherigen,
+zum nächsten und zum letzten zu sprüngen. Die Riehenfolge ist dabei die des Einlesens
+in die Datenbank um damit letztlich willkürlich.
+
+Da bei Auswahl des Menüpunktes ``Sammlung'', ``Person'', bzw. ``Ort'' zuerst eine Liste der
+zuletzt \textit{bearbeiteten} Einträge angezeigt wird, sollte es einfach möglich sein,
+über einen längeren Zeitraum die Einträge durchzublättern ein relativ einfach wieder den
+zu finden, bei dem man aufgehört hat.
+
+Bei der Datenbereinigung sollten
+\begin{citemize}
+\item Die Bezeichnungen angepaßt werden
+\item Die Verknüpfungen überprüft und ergänzt werden
+\item Bildmarkierungen gezeichnet werden und Kommentare zu Markierungen (``6. von links'')
+  gegeben werden
+\item Stichwörter vergeben werden
+\item Bilder gegebenenfalls rotiert werden
+\end{citemize}
+
+\section{Daten zusammenführen}
+Es wird häufiger vorkommen, dass man bei der Durchsicht der Daten feststellt, dass
+einzelne Personen, Orte oder Sammlungsstücke zusammengeührt werden sollten. Dies ist insbesondere
+der Fall, wenn beim automatischen Import beispielsweise ``Hans Keller'' und ``Hans Keller-Schwarz''
+als verschiedene Personen erfaßt wurden.
+
+Zum Zusammenführen geht man zuerst zu dem ersten Eintrag, und klickt auf den Link ``Vormerken''
+über den Bildern. Dann geht man -- entweder über Suche oder direkt über die Liste der kürzlich bearbeiteten
+Einträge -- zu dem Eintrag, der damit zusammengeführt werden soll und klickt auf den Link
+``Zusammenführen'' über den Bildern.
+
+Das Zusammenführen muß nochmal bestätigt werden, da man viel Unheil
+anrichten kann, wenn man nicht zusammenpassende Einträge
+zusammenführt.
+
+
+
 
 \appendix
 

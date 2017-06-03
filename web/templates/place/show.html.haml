@@ -59,10 +59,10 @@
           =pp.comment
 
 
-=link("Mark", to: place_path(@conn, :mark_place, @place.id))
+=link("Vormerken", to: place_path(@conn, :mark_place, @place.id))
 - if @marked && @marked != "#{@place.id}" do
   /
-  =link("Merge", to: place_path(@conn, :merge_place, @place.id, 0))
+  =link("Zusammenführen", to: place_path(@conn, :merge_place, @place.id, 0))
 
 
 

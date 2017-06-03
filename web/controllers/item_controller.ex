@@ -33,29 +33,27 @@ defmodule Heimchen.ItemController do
 		conn
 		|> put_session(:marked_item, id)
 		|> put_flash(:success, "Sammlungs-Stück zum zusammenführen vorgemerkt")
-		|> redirect(to: place_path(conn, :show, id))
+		|> redirect(to: item_path(conn, :show, id))
 	end
 
 	
 	def merge_item(conn, %{"id" => id, "doit" => "0"}, _user) do
 		conn
 		|> render("merge_item.html",
-			place1: Heimchen.Repo.get(Heimchen.Item, get_session(conn, :marked_item)),
-			place2: Heimchen.Repo.get(Heimchen.Item, id))
+			item1: Heimchen.Repo.get(Heimchen.Item, get_session(conn, :marked_item)),
+			item2: Heimchen.Repo.get(Heimchen.Item, id))
 	end
 
 	
 	def merge_item(conn, %{"id" => id, "doit" => "1"}, _user) do
 		Ecto.Adapters.SQL.query(Heimchen.Repo,
-			"select * from merge_items(?,?)",
+			"select * from merge_items($1,$2)",
 			[get_session(conn, :marked_item), id])
 		conn
 		|> put_session(:marked_item, nil)
 		|> put_flash(:success, "Sammlungs-Stücke zusammengeführt")
-		|> redirect(to: place_path(conn, :show, id))
+		|> redirect(to: item_path(conn, :show, id))
 	end
-
-
 
 	
 	def show(conn, %{"id" => id}, _user) do

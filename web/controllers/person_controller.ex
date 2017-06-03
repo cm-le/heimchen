@@ -70,7 +70,7 @@ defmodule Heimchen.PersonController do
 
 	def merge_person(conn, %{"id" => id, "doit" => "1"}, _user) do
 		Ecto.Adapters.SQL.query(Heimchen.Repo,
-			"select * from merge_people(?,?)",
+			"select * from merge_people($1,$2)",
 			[get_session(conn, :marked_person), id])
 		conn
 		|> put_session(:marked_person, nil)

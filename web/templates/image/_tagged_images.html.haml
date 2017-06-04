@@ -30,7 +30,7 @@
             %a{href: "#{imagetag_backlink(@conn, it)}",id="itlink_#{it.id}"}
               %i.fa.fa-link(id="connection_#{it.id}")
                 %script
-                  =raw("$('#connection_#{it.id}').css('color', imagetag_colors[#{index}]);")
+                  =raw("$('#connection_#{it.id}').css('color', imagetag_colors[#{color_index}]);")
               =Heimchen.Imagetag.name(it)
             &nbsp;
             %a{href: "#{image_path(@conn, :edit_imagetag, it.id, @what, @tagged.id)}"}

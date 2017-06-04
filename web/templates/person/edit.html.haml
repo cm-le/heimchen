@@ -29,25 +29,3 @@
       =submit("Speichern", class: "btn btn-primary")
 - end  
 
-
-%row
-%h2 Verknüpfung mit einer Person anlegen  
-= form_for @conn, person_path(@conn, :add_relative), [as: :r], fn f ->
-  =hidden_input f, :person1_id, value: @id
-  .form-group.row
-    %label.col-form-label.col-sm-2 2. Person
-    .col-sm-10
-      =select f, :person2_id, Heimchen.Person.for_select(), class: "form-control"
-  .form-group.row
-    %label.col-form-label.col-sm-2 (seit) Datum
-    .col-sm-3
-      =heimchen_date_precision f, :start_precision, class: "form-control"
-    =heimchen_date_select f, :start_on, class: "form-control col-sm-2"
-  .form-group.row
-    %label.col-form-label.col-sm-2 Kommentar
-    .col-sm-10
-      =textarea f, :comment, class: "form-control"
-  .form-group.row
-    .offset-sm-2.col-sm-10
-      =submit("Speichern", class: "btn btn-primary")
-- end  

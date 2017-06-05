@@ -1,9 +1,17 @@
-\documentclass{scrartcl}
+\documentclass[headsepline]{scrartcl}
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
+\usepackage[pdfborder={0 0 0}]{hyperref}
 \usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{scrlayer-scrpage}
 \begin{document}
-
+\ihead{Personenliste}
+\ohead{Stand \today}
+\cfoot{Heimatkundliche Sammlung Seuzach}
+\ofoot{Seite \pagemark}
+\pagestyle{scrheadings}
+\thispagestyle{empty}
 \begin{center}
 \Large
 Personen-Exportliste der Heimatkundlichen Datenbank Seuzach
@@ -12,14 +20,16 @@ Personen-Exportliste der Heimatkundlichen Datenbank Seuzach
 
 \end{center}
 
+\vskip2cm
+
 
 \parskip0pt\parindent0pt
 \def\Image#1{\includegraphics[width=0.3\hsize]{#1}\hfill}
-\long\def\Person#1#2#3#4#5{\par
-\vbox{  #1, #2 \if-#3\else geb. #3\fi
-  \textit{#4}\par
-  #5\par
-  \hrulefill\par}
+\long\def\Person#1#2#3#4#5#6{\par
+\vbox{  #2, #3 \if-#4\else geb. #4\fi~
+  \textit{#5}\hfill\href{http://replcast.org:4000/person/show/#1}{\color[gray]{0.5}\texttt{Link[#1]}}\par
+  #6\par
+  \dotfill\par}
   \bigskip
 }
 

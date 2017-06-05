@@ -1,7 +1,7 @@
 .row.page-header
   .col-xs-12
     %h1 Personen
-      .float-xs-right
+      .float-xs-right.col-xs-2
         =link("Gesamtliste", to: search_path(@conn, :personlist), class: "btn btn-outline-primary")
       .float-xs-right
         =link("Neue Person", to: person_path(@conn, :new), class: "btn btn-outline-primary")

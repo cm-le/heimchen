@@ -37,16 +37,17 @@ defmodule Heimchen.SearchController do
 
 	def personlist(conn, %{}) do
 		live = fn (p) ->
-						 if p.born_on do
+						 if p.born_precision > 0 && p.born_on do
 							 p.born_on.year
 						 else
 							 "-"
 						 end
 		end
 		plist =
-		(Heimchen.Repo.all(Heimchen.Person, order_by: [:lastname, :firstname]) |>
-			Heimchen.Repo.preload([[imagetags: :image], :keywords])) |>
-			Enum.map(fn p -> "\\Person{#{p.lastname}}{#{p.firstname}}{#{live.(p)}}{#{p.comment}}{" <>
+		(Heimchen.Repo.all(Heimchen.Person) |>
+		  Heimchen.Repo.preload([[imagetags: :image], :keywords])) |>
+		  Enum.sort(&(&1.lastname < &2.lastname)) |> 
+			Enum.map(fn p -> "\\Person{#{p.id}}{#{p.lastname}}{#{p.firstname}}{#{live.(p)}}{#{p.comment}}{" <>
 				(Enum.slice(p.imagetags,0,3) |>
 					Enum.map(fn it -> "\\Image{" <> Heimchen.Image.dir(it.image) <> "/thumb.jpg}" end)
 					|> Enum.join()) <>
@@ -55,13 +56,13 @@ defmodule Heimchen.SearchController do
 			Enum.join()
 		{_, t} = Phoenix.View.render(Heimchen.SearchView, "personlist.html", plist: plist)
 		dir = Application.get_env(:heimchen, :uploads)
-		{:ok, file} = File.open dir <> "plist.tex" , [:write] # FIXME no parallel plist creation :-(
+		{:ok, file} = File.open dir <> "/plist.tex" , [:write] # FIXME no parallel plist creation :-(
 		IO.binwrite file, t
 		File.close file
-		System.cmd("pdflatex", ["-interaction", "nonstopmode", file], cd: dir)
+		System.cmd("pdflatex", ["-interaction", "nonstopmode", "plist.tex"], cd: dir)
 		conn
 		|> put_resp_content_type("application/octet-stream", nil)
 		|> put_resp_header("content-disposition", ~s[attachment; filename="personenliste.pdf"])
-		|> send_file(200, dir <> "plist.pdf")
+		|> send_file(200, dir <> "/plist.pdf")
 	end
 end

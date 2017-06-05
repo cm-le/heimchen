@@ -67,7 +67,6 @@ defmodule Heimchen.Router do
 		get  "/place/mark_place/:id", PlaceController, :mark_place
 		get  "/place/merge_place/:id/:doit", PlaceController, :merge_place
 
-
 		
 		get  "/image", ImageController, :index
   	get  "/image/untagged", ImageController, :untagged
@@ -104,6 +103,7 @@ defmodule Heimchen.Router do
 
 
 		get  "/search/index/:id", SearchController, :index
+		get  "/search/personlist", SearchController, :personlist
   end
 
   # Other scopes may use custom stacks.

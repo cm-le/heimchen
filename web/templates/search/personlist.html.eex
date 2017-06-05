@@ -16,10 +16,10 @@ Personen-Exportliste der Heimatkundlichen Datenbank Seuzach
 \parskip0pt\parindent0pt
 \def\Image#1{\includegraphics[width=0.3\hsize]{#1}\hfill}
 \long\def\Person#1#2#3#4#5{\par
-  #1, #2 \if-#3\else geb. #3\fi
+\vbox{  #1, #2 \if-#3\else geb. #3\fi
   \textit{#4}\par
   #5\par
-  \hrulefill\par
+  \hrulefill\par}
   \bigskip
 }
 

@@ -4,6 +4,7 @@ defmodule Heimchen.PersonController do
 
 	alias Heimchen.Person
 	alias Heimchen.PlacePerson
+	alias Heimchen.Relative
 	
 	plug :authenticate
 
@@ -121,13 +122,36 @@ defmodule Heimchen.PersonController do
 			{:ok, pp} ->
 				conn
 				|> put_flash(:success, "Verknüpfung angelegt")
-				|> redirect(to: person_path(conn, :show, pp.person_id))
+				|> redirect(to: person_path(conn, :show, pp["person_id"]))
 			_ ->
 				conn
 				|> put_flash(:error, "Verknüpfung konnte nicht angelegt werden")
-				|> redirect(to: person_path(conn, :show, pp.person_id))
+				|> redirect(to: person_path(conn, :show, pp["person_id"]))
 		end
 	end
+
+	def add_relative(conn, %{"ar" => ar}, user) do
+		changeset = Relative.changeset(%Relative{}, ar, user)
+		case Repo.insert(changeset) do
+			{:ok, pp} ->
+				conn
+				|> put_flash(:success, "Verknüpfung angelegt")
+				|> redirect(to: person_path(conn, :show, ar["person1_id"]))
+			_ ->
+				conn
+				|> put_flash(:error, "Verknüpfung konnte nicht angelegt werden")
+				|> redirect(to: person_path(conn, :show, ar["person2_id"]))
+		end
+	end
+
+
+	def del_relative(conn, %{"id" => id, "person_id" => person_id}, user) do
+		Repo.delete(Repo.get(Relative,id))
+		conn
+		|> put_flash(:success, "Beziehung gelöscht")
+		|> redirect(to: person_path(conn, :show, person_id))
+	end
+	
 	
 	def update(conn, %{"id" => id, "person" => person_params}, user) do
 		changeset = Person.changeset(Repo.get(Person, id), person_params, user)

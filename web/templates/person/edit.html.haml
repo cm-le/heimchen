@@ -7,6 +7,29 @@
         =submit("Speichern", class: "btn btn-primary")
         %a.btn.btn-secondary(href="#{person_path(@conn, :show, @id)}") Abbrechen
   - end 
+
+%row
+%h2 Verknüpfung mit einer anderen Person anlegen  
+= form_for @conn, person_path(@conn, :add_relative), [as: :ar], fn f ->
+  =hidden_input f, :person1_id, value: @id
+  .form-group.row
+    %label.col-form-label.col-sm-2 Beziehung
+    .col-sm-10
+      =text_input f, :relname, class: "form-control"
+  .form-group.row
+    %label.col-form-label.col-sm-2 andere Person
+    .col-sm-10
+      =select f, :person2_id, Heimchen.Person.for_select(), class: "form-control"
+  .form-group.row
+    %label.col-form-label.col-sm-2 Beziehung rückwärs
+    .col-sm-10
+      =text_input f, :relname_back, class: "form-control"
+  .form-group.row
+    .offset-sm-2.col-sm-10
+      =submit("Speichern", class: "btn btn-primary")
+- end  
+
+
 %row
 %h2 Verknüpfung mit einem Ort anlegen  
 = form_for @conn, person_path(@conn, :add_place), [as: :pp], fn f ->

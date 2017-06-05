@@ -53,6 +53,8 @@ defmodule Heimchen.Router do
 		get  "/person/mark_person/:id", PersonController, :mark_person
 		get  "/person/merge_person/:id/:doit", PersonController, :merge_person
 		get  "/person/delete_place/:id", PersonController, :delete_place
+		post "/person/add_relative", PersonController, :add_relative
+		get  "/person/del_relative/:id/:person_id", PersonController, :del_relative
 
 
 		get  "/place", PlaceController, :index

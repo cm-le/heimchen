@@ -50,7 +50,10 @@
           - else
             = r.relname
           =link("#{r.person1.firstname} #{r.person1.lastname}", to: person_path(@conn, :show, r.person1_id))
-          
+        %a{href: "#{person_path(@conn, :del_relative, r.id, @person.id)}", onclick: "return confirm('Verknüpfung wirklich entfernen?')"}
+          %i.fa.fa-remove
+        %br
+        
   .col-xs-12.col-sm-6
     =render(Heimchen.KeywordView, "_keywordlist.html",conn: @conn,id: @person.id,keywords: @person.keywords,what: "person")
     - if !Enum.empty?(@person.places_people) do

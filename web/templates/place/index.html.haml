@@ -3,5 +3,6 @@
     %h1 Orte
       .float-xs-right
         =link("Neuer Ort", to: place_path(@conn, :new), class: "btn btn-outline-primary")
-
+      .float-xs-right{style="margin-right: 10px"}
+        =link("Übersicht", to: place_path(@conn, :allplaces), class: "btn btn-outline-primary")
 =render(Heimchen.SearchView, "index.html", results: @places, headline: "Kürzlich bearbeitet", conn: @conn)

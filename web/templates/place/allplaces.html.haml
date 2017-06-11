@@ -5,14 +5,15 @@
 #map{style="height: 700px"}
 %script
   ="var cpos={lat:47.5356603, lng: 8.7353528};"
-  =raw("function initMap(){var mpos;var title;map = new google.maps.Map(document.getElementById('map'),{center:cpos,zoom: 15});")
+  =raw("function initMap(){var mpos;var title;var marker;map = new google.maps.Map(document.getElementById('map'),{center:cpos,zoom: 15});")
   - for p <- @knownplaces do
-    =raw("mpos={lat:#{p.lat}, lng: #{p.long}};title='#{Heimchen.Place.longname(p)}';")
-    ="new google.maps.Marker({position:mpos, map: map, title:title});"
+    =raw("mpos={lat:#{p.lat}, lng: #{p.long}};title=`#{Heimchen.Place.longname(p)}`;")
+    ="marker = new google.maps.Marker({position:mpos, map: map, title:title, url: #{p.id}});"
+    =raw("google.maps.event.addListener(marker, 'click', function() {window.open('/place/show/' + this.url)})")
   ="};"
 %script{src="https://maps.googleapis.com/maps/api/js?key=#{@googleapikey}&amp;callback=initMap", async , defer}
 
 
 - if !Enum.empty?(@unknownplaces) do
-  =render(Heimchen.SearchView, "index.html", results: @unknownplaces, headline: "Orte ohne bekannte Position", conn: @conn)
+  =render(Heimchen.SearchView, "index.html", results: @unknownplaces |> Enum.slice(0,100), headline: "Orte ohne bekannte Position (erste 100)", conn: @conn)
 

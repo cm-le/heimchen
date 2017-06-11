@@ -108,6 +108,17 @@ defmodule Heimchen.Place do
 		(if place.building && String.length(place.building)>0 do " (#{place.building})" else "" end)
 	end
 
+	def knownplaces() do
+		Repo.all from p in Heimchen.Place,
+			where: not(is_nil(p.lat) or is_nil(p.long))
+	end
+
+	def unknownplaces() do
+		Repo.all from p in Heimchen.Place,
+			where: is_nil(p.lat) or is_nil(p.long)
+	end
+
+	
 	def for_select() do
 		(Repo.all from p in Heimchen.Place,
 			order_by: [fragment("updated_at = (select max(updated_at) from places)"),

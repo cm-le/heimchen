@@ -114,8 +114,14 @@ defmodule Heimchen.Place do
 	end
 
 	def unknownplaces() do
-		Repo.all from p in Heimchen.Place,
-			where: is_nil(p.lat) or is_nil(p.long)
+		(Repo.all from p in Heimchen.Place,
+			where: is_nil(p.lat) or is_nil(p.long),
+			preload: [:user, :keywords,
+								:imagetags,
+								places_items: [item: :itemtype],
+								places_people: :person],
+			order_by: [desc: p.address])
+		|> Enum.map(fn x -> to_result(x) end)
 	end
 
 	

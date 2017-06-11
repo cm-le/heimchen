@@ -79,7 +79,12 @@ defmodule Heimchen.PlaceController do
 		|> redirect(to: place_path(conn, :show, id))
 	end
 
-
+	def allplaces(conn, %{}, _user) do
+		render(conn, "allplaces.html",
+			googleapikey: Application.get_env(:heimchen, :googleapikey),
+			knownplaces: Place.knownplaces(),
+			unknownplaces: Place.unknownplaces())
+	end
 
 	
 	def show(conn, %{"id" => id}, _user) do

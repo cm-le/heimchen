@@ -68,6 +68,7 @@ defmodule Heimchen.Router do
 		get  "/place/search/:name", PlaceController, :search
 		get  "/place/mark_place/:id", PlaceController, :mark_place
 		get  "/place/merge_place/:id/:doit", PlaceController, :merge_place
+		get  "/place/allplaces", PlaceController, :allplaces
 
 		
 		get  "/image", ImageController, :index
